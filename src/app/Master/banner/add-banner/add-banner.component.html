@@ -1,0 +1,178 @@
+<form [formGroup]="bannerForm" (ngSubmit)="submitForm()" class="add-banner-form">
+  <div class="form-body">
+    <!-- Title Field (Full Width - 24 span) -->
+    <div nz-row [nzGutter]="16">
+      <div nz-col [nzSpan]="24">
+        <div class="form-field">
+          <label class="form-label">Title</label>
+          <input type="text" formControlName="title" placeholder="Enter Banner Title (e.g. Summer Sale)"
+            class="premium-input" />
+          <div class="form-error-msg"
+            *ngIf="bannerForm.get('title')?.dirty && bannerForm.get('title')?.hasError('maxlength')">
+            Please enter a valid title (max 100 characters).
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Subtitle Row -->
+    <div nz-row [nzGutter]="16">
+      <div nz-col [nzSpan]="24">
+        <div class="form-field">
+          <label class="form-label">Subtitle</label>
+          <input type="text" formControlName="subtitles" placeholder="Enter Subtitle" class="premium-input" />
+          <div class="form-error-msg"
+            *ngIf="bannerForm.get('subtitles')?.dirty && bannerForm.get('subtitles')?.hasError('maxlength')">
+            Subtitle is too long (max 200 characters).
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Description Row -->
+    <div nz-row>
+      <div nz-col [nzSpan]="24">
+        <div class="form-field">
+          <label class="form-label">Description</label>
+          <textarea formControlName="description" placeholder="Enter Description" class="premium-input"
+            rows="3"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- Status & Display Order Row -->
+    <div nz-row [nzGutter]="16">
+      <div nz-col [nzSpan]="12">
+        <div class="form-field">
+          <label class="form-label">Status</label>
+          <div style="margin-top: 8px;">
+            <nz-switch formControlName="isActive" nzCheckedChildren="Active" nzUnCheckedChildren="Inactive"></nz-switch>
+          </div>
+        </div>
+      </div>
+      
+      <div nz-col [nzSpan]="12">
+        <div class="form-field">
+          <label class="form-label"><span class="required-asterisk">*</span> Display Order</label>
+          <input type="text" formControlName="displayOrder" placeholder="e.g. 1" class="premium-input disabled-input" readonly />
+          <div class="form-error-msg"
+            *ngIf="bannerForm.get('displayOrder')?.dirty && bannerForm.get('displayOrder')?.hasError('required')">
+            Display order is required.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Row 2: Starts At (12 span) & Ends At (12 span) -->
+    <!-- <div nz-row [nzGutter]="16">
+      
+      <div nz-col [nzSpan]="12">
+        <div class="form-field">
+          <label class="form-label"><span class="required-asterisk">*</span> Starts At</label>
+          <nz-date-picker formControlName="startsAt" nzPlaceHolder="Select start date" nzFormat="yyyy-MM-dd"
+            class="premium-datepicker"></nz-date-picker>
+          <div class="form-error-msg"
+            *ngIf="bannerForm.get('startsAt')?.dirty && bannerForm.get('startsAt')?.hasError('required')">
+            Start date is required.
+          </div>
+        </div>
+      </div>
+
+      
+      <div nz-col [nzSpan]="12">
+        <div class="form-field">
+          <label class="form-label"><span class="required-asterisk">*</span> Ends At</label>
+          <nz-date-picker formControlName="endsAt" nzPlaceHolder="Select end date" nzFormat="yyyy-MM-dd"
+            class="premium-datepicker"></nz-date-picker>
+          <div class="form-error-msg"
+            *ngIf="bannerForm.get('endsAt')?.dirty && bannerForm.get('endsAt')?.hasError('required')">
+            End date is required.
+          </div>
+          <div class="form-error-msg"
+            *ngIf="(bannerForm.get('endsAt')?.dirty || bannerForm.get('startsAt')?.dirty) && bannerForm.hasError('dateRangeInvalid')">
+            End date must be greater than or equal to the start date.
+          </div>
+        </div>
+      </div>
+    </div> -->
+
+    <!-- Row 3: Image Upload (10 span) & Image Preview (14 span) -->
+    <div nz-row [nzGutter]="16">
+      <!-- Image/Video Upload Field (10 span) -->
+      <div nz-col [nzSpan]="10">
+        <div class="form-field">
+          <label class="form-label"><span class="required-asterisk">*</span> Media Upload</label>
+
+          <!-- Compact File Upload Box -->
+          <div class="image-upload-box compact-upload-box" (click)="!uploadingImage && fileInput.click()">
+            <input #fileInput type="file" accept="image/*,video/*" (change)="onFileSelected($event)"
+              class="hidden-file-input" />
+            <span nz-icon [nzType]="uploadingImage ? 'loading' : (uploadProgress === 100 ? 'check-circle' : 'plus')"
+              nzTheme="outline" class="upload-icon"></span>
+            <span class="upload-text">{{ uploadingImage ? 'Uploading (' + uploadProgress + '%)' : (uploadProgress ===
+              100 ? 'Uploaded (100%)' : 'Upload Media') }}</span>
+            <span class="upload-subtext">JPG, PNG, MP4</span>
+          </div>
+
+          <!-- Upload Progress Bar -->
+          <div class="upload-progress-wrapper" *ngIf="uploadingImage || uploadProgress > 0">
+            <nz-progress [nzPercent]="uploadProgress" [nzStatus]="uploadingImage ? 'active' : 'success'"
+              [nzStrokeColor]="{ '0%': '#9B4A54', '100%': '#722F37' }" nzSize="small"></nz-progress>
+          </div>
+
+          <div class="form-error-msg"
+            *ngIf="bannerForm.get('imageUrl')?.dirty && bannerForm.get('imageUrl')?.hasError('required')">
+            Media is required.
+          </div>
+        </div>
+      </div>
+
+      <!-- Media Preview Field (14 span) -->
+      <div nz-col [nzSpan]="14">
+        <div class="form-field">
+          <label class="form-label">Media Preview</label>
+
+          <!-- Media Preview Card -->
+          <div class="uploaded-image-card" *ngIf="imagePreviewUrl">
+            <img [src]="imagePreviewUrl" alt="Banner Preview" class="uploaded-preview-img" crossorigin="anonymous"
+              (error)="previewError = true" *ngIf="!previewError && !isVideoPreview" />
+              
+            <video [src]="imagePreviewUrl" class="uploaded-preview-img" controls crossorigin="anonymous"
+              (error)="previewError = true" *ngIf="!previewError && isVideoPreview">
+            </video>
+            <span class="preview-error-text" *ngIf="previewError">Unable to display preview</span>
+
+            <div class="uploaded-card-actions">
+              <button type="button" class="change-image-btn" (click)="fileInput2.click()" nz-tooltip
+                nzTooltipTitle="Change Image">
+                <span nz-icon nzType="edit" nzTheme="outline"></span>
+                Change
+              </button>
+              <button type="button" class="remove-image-btn" (click)="removeSelectedImage()" nz-tooltip
+                nzTooltipTitle="Remove Image">
+                <span nz-icon nzType="delete" nzTheme="outline"></span>
+              </button>
+              <input #fileInput2 type="file" accept="image/*,video/*" (change)="onFileSelected($event)"
+                class="hidden-file-input" />
+            </div>
+          </div>
+
+          <!-- Empty Preview Placeholder -->
+          <div class="empty-preview-placeholder" *ngIf="!imagePreviewUrl">
+            <span class="placeholder-text">No media uploaded yet</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer buttons -->
+  <div class="drawer-footer">
+    <button type="button" class="btn-secondary" (click)="handleCancel()" [disabled]="loading">
+      Cancel
+    </button>
+    <button type="submit" class="btn-primary" [disabled]="loading">
+      {{ loading ? 'Saving...' : (bannerToEdit ? 'Update' : 'Save') }}
+    </button>
+  </div>
+</form>

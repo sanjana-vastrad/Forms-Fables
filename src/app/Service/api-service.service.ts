@@ -1,0 +1,431 @@
+import {
+  HttpClient,
+  HttpEvent,
+  HttpHeaders,
+  HttpParams,
+  HttpRequest,
+} from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { CookieService } from 'ngx-cookie-service';
+import { forkJoin, Observable, of, switchMap } from 'rxjs';
+import { CommonFunctionService } from './CommonFunctionService';
+import { environment } from '../../environments/environment';
+@Injectable({
+  providedIn: 'root',
+})
+export class ApiServiceService {
+  clientId: number = 1;
+  public commonFunction = new CommonFunctionService();
+  cloudID: any;
+  httpHeaders = new HttpHeaders();
+  options = {
+    headers: this.httpHeaders,
+  };
+  httpHeaders1 = new HttpHeaders();
+  options1 = {
+    headers: this.httpHeaders1,
+  };
+  gmUrl = environment.gmUrl;
+  baseUrl = environment.baseUrl;
+  url = environment.url;
+  retriveimgUrl = environment.retriveimgUrl;
+  imgUrl = environment.imgUrl;
+  imgUrl1 = environment.imgUrl1;
+  dateforlog =
+    new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString();
+  emailId = typeof sessionStorage !== 'undefined' ? sessionStorage.getItem('emailId') : null;
+  userId = typeof sessionStorage !== 'undefined' ? Number(sessionStorage.getItem('userId')) : 0;
+  userName = typeof sessionStorage !== 'undefined' ? sessionStorage.getItem('userName') : null;
+  roleId = typeof sessionStorage !== 'undefined' ? sessionStorage.getItem('roleId') : null;
+  APPLICATION_KEY: string = 'ZU63HDzj79PEFzz5';
+  API_KEY: string = 'WGykEs0b241gNKcDshYU9C4I0Ft1JoSb'
+  // For  Testing server
+  getheader() {
+    this.httpHeaders = new HttpHeaders({
+      'Content-Type': 'application/json',
+      applicationkey: this.commonFunction.encryptdatas(this.APPLICATION_KEY),
+      apikey: this.commonFunction.encryptdatas(this.API_KEY),
+      deviceid: this.cookie.get('deviceId'),
+      supportkey: this.cookie.get('supportKey'),
+      Token: this.cookie.get('token'),
+      skip_zrok_interstitial: 'true',
+      'ngrok-skip-browser-warning': 'true',
+    });
+    this.options = {
+      headers: this.httpHeaders,
+    };
+
+  }
+  constructor(
+    private cookie: CookieService,
+    private httpClient: HttpClient) {
+    if (
+      this.cookie.get('deviceId') === '' ||
+      this.cookie.get('deviceId') === null
+    ) {
+      var deviceId = this.randomstring(16);
+      this.cookie.set(
+        'deviceId',
+        deviceId.toString(),
+        365,
+        '/',
+        '',
+        true,
+        'None'
+      );
+    }
+    this.getheader();
+  }
+
+  logoutcall(): Observable<any> {
+    var data = {
+      USER_ID: this.commonFunction.decryptdata(
+        sessionStorage.getItem('userId') || ''
+      ),
+      ROLE_ID: this.commonFunction.decryptdata(
+        sessionStorage.getItem('roleId') || ''
+      )
+    };
+    return this.httpClient.post<any>(
+      this.url + 'user/logout ',
+      JSON.stringify(data),
+      this.options
+    );
+  }
+  randomstring(L: any) {
+    var s = '';
+    var randomchar = function () {
+      var n = Math.floor(Math.random() * 62);
+      if (n < 10) return n; //1-10
+      if (n < 36) return String.fromCharCode(n + 55); //A-Z
+      return String.fromCharCode(n + 61); //a-z
+    };
+    while (s.length < L) s += randomchar();
+    return s;
+  }
+  login(email: string, password: string, cloudid: any, type: any) {
+    this.getheader();
+    this.options = {
+      headers: this.httpHeaders,
+    };
+    var data = {
+      username: email,
+      password: password,
+      cloudid: cloudid,
+      DEVICE_ID: this.cookie.get('deviceId'),
+      type: type
+    };
+    return this.httpClient.post(
+      this.baseUrl + 'user/login',
+      JSON.stringify(data),
+      this.options
+    );
+  }
+  loginAuth(email: string, password: string): Observable<any> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json'
+    });
+    const data = { email, password };
+    return this.httpClient.post<any>(
+      environment.authUrl + 'api/v1/auth/login',
+      data,
+      { headers }
+    );
+  }
+  createUser(user: any): Observable<any> {
+    user.CLIENT_ID = this.clientId;
+    return this.httpClient.post<any>(
+      this.baseUrl + 'api/user/create',
+      JSON.stringify(user),
+      this.options
+    );
+  }
+  loggerInit() {
+    this.getheader();
+    this.options1 = {
+      headers: this.httpHeaders1,
+    };
+    var data = {
+      CLIENT_ID: this.clientId,
+    };
+    return this.httpClient.post(
+      this.gmUrl + 'device/init',
+      JSON.stringify(data),
+      this.options1
+    );
+  }
+  getForms(roleId: number) {
+    this.getheader();
+    this.options = {
+      headers: this.httpHeaders,
+    };
+    var data = {
+      ROLE_ID: roleId,
+    };
+    return this.httpClient.post<any>(
+      this.url + 'user/getForms',
+      JSON.stringify(data),
+      this.options
+    );
+  }
+  getAllForms(
+    pageIndex: number,
+    pageSize: number,
+    sortKey: string,
+    sortValue: string,
+    filter: string
+  ): Observable<any> {
+    var data = {
+      pageIndex: pageIndex,
+      pageSize: pageSize,
+      sortKey: sortKey,
+      sortValue: sortValue,
+      filter: filter,
+    };
+    return this.httpClient.post<any>(
+      this.baseUrl + 'api/form/get',
+      JSON.stringify(data),
+      this.options
+    );
+  }
+  createForm(form: any): Observable<any> {
+    form.CLIENT_ID = this.clientId;
+    return this.httpClient.post<any>(
+      this.baseUrl + 'api/form/create',
+      JSON.stringify(form),
+      this.options
+    );
+  }
+  updateForm(form: any): Observable<any> {
+    form.CLIENT_ID = this.clientId;
+    return this.httpClient.put<any>(
+      this.baseUrl + 'api/form/update',
+      JSON.stringify(form),
+      this.options
+    );
+  }
+  getAllRoles(
+    pageIndex: number,
+    pageSize: number,
+    sortKey: string,
+    sortValue: string,
+    filter: string
+  ): Observable<any> {
+    var data = {
+      pageIndex: pageIndex,
+      pageSize: pageSize,
+      sortKey: sortKey,
+      sortValue: sortValue,
+      filter: filter,
+    };
+    return this.httpClient.post<any>(
+      this.baseUrl + 'api/role/get',
+      JSON.stringify(data),
+      this.options
+    );
+  }
+  getCheckAccessOfForm(roleId: number, link: string) {
+    var data = {
+      ROLE_ID: roleId,
+      LINK: link,
+    };
+    return this.httpClient.post<any>(
+      this.url + 'roleDetails/checkAccess',
+      JSON.stringify(data),
+      this.options
+    );
+  }
+  createRole(application: any): Observable<any> {
+    application.CLIENT_ID = this.clientId;
+    return this.httpClient.post<any>(
+      this.baseUrl + 'api/role/create',
+      JSON.stringify(application),
+      this.options
+    );
+  }
+  updateRole(application: any): Observable<any> {
+    application.CLIENT_ID = this.clientId;
+    return this.httpClient.put<any>(
+      this.baseUrl + 'api/role/update',
+      JSON.stringify(application),
+      this.options
+    );
+  }
+  updateUser(user: any): Observable<any> {
+    user.CLIENT_ID = this.clientId;
+    return this.httpClient.put<any>(
+      this.baseUrl + 'api/user/update',
+      JSON.stringify(user),
+      this.options
+    );
+  }
+  getRoleDetails(roleId: number) {
+    var data = {
+      ROLE_ID: roleId,
+    };
+    return this.httpClient.post<any>(
+      this.baseUrl + 'api/roleDetails/getData',
+      JSON.stringify(data),
+      this.options
+    );
+  }
+  getAllUsers(
+    pageIndex: number,
+    pageSize: number,
+    sortKey: string,
+    sortValue: string,
+    filter: string
+  ): Observable<any> {
+    var data = {
+      pageIndex: pageIndex,
+      pageSize: pageSize,
+      sortKey: sortKey,
+      sortValue: sortValue,
+      filter: filter,
+    };
+    return this.httpClient.post<any>(
+      this.baseUrl + 'api/user/get',
+      JSON.stringify(data),
+      this.options
+    );
+  }
+
+  private getAuthOptions() {
+    let token = '';
+    if (typeof window !== 'undefined' && window.localStorage) {
+      token = localStorage.getItem('token') || '';
+    }
+    // Fallback to cookie if localStorage is empty
+    if (!token && this.cookie) {
+      token = this.cookie.get('token') || '';
+      if (token && typeof window !== 'undefined' && window.localStorage) {
+        localStorage.setItem('token', token);
+      }
+    }
+    return {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      })
+    };
+  }
+
+  // ===== City Master APIs =====
+  getCities(
+    page: number = 1,
+    limit: number = 10,
+    search: string = '',
+    sortBy: string = 'name',
+    sortOrder: string = 'DESC'
+  ): Observable<any> {
+    let token = '';
+    if (typeof window !== 'undefined' && window.localStorage) {
+      token = localStorage.getItem('token') || '';
+    }
+    if (!token && this.cookie) {
+      token = this.cookie.get('token') || '';
+    }
+
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('limit', limit.toString())
+      .set('sortBy', sortBy)
+      .set('sortOrder', sortOrder)
+      .set('token', token);
+
+    if (search) {
+      params = params.set('search', search);
+    }
+
+    const authOptions = this.getAuthOptions();
+    const requestOptions = {
+      headers: authOptions.headers,
+      params: params
+    };
+
+    return this.httpClient.get<any>(environment.authUrl + 'api/v1/cities', requestOptions);
+  }
+
+  createCity(cityData: { name: string, state: string, isActive?: boolean, sequenceNo?: number }): Observable<any> {
+    return this.httpClient.post<any>(environment.authUrl + 'api/v1/cities', cityData, this.getAuthOptions());
+  }
+
+  updateCity(id: string | number, cityData: { name?: string, state?: string, isActive?: boolean, sequenceNo?: number }): Observable<any> {
+    return this.httpClient.put<any>(environment.authUrl + `api/v1/cities/${id}`, cityData, this.getAuthOptions());
+  }
+
+  deactivateCity(id: string | number): Observable<any> {
+    return this.httpClient.patch<any>(environment.authUrl + `api/v1/cities/${id}/deactivate`, {}, this.getAuthOptions());
+  }
+
+  // ===== FAQs APIs =====
+  getFaqs(
+    page: number = 1,
+    limit: number = 10,
+    search: string = '',
+    sortBy: string = 'displayOrder',
+    sortOrder: string = 'ASC'
+  ): Observable<any> {
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('limit', limit.toString())
+      .set('sortBy', sortBy)
+      .set('sortOrder', sortOrder);
+
+    if (search) {
+      params = params.set('search', search);
+    }
+
+    const authOptions = this.getAuthOptions();
+    const requestOptions = {
+      headers: authOptions.headers,
+      params: params
+    };
+
+    return this.httpClient.get<any>(environment.authUrl + 'api/v1/faqs', requestOptions);
+  }
+
+  createFaq(faqData: { question: string, answer: string }): Observable<any> {
+    return this.httpClient.post<any>(environment.authUrl + 'api/v1/faqs', faqData, this.getAuthOptions());
+  }
+
+  updateFaq(id: string | number, faqData: { question?: string, answer?: string, displayOrder?: number, isActive?: boolean }): Observable<any> {
+    return this.httpClient.put<any>(environment.authUrl + `api/v1/faqs/${id}`, faqData, this.getAuthOptions());
+  }
+
+  reorderFaqs(items: { id: string | number, displayOrder: number }[]): Observable<any> {
+    return this.httpClient.patch<any>(environment.authUrl + `api/v1/faqs/reorder`, { items }, this.getAuthOptions());
+  }
+
+  toggleFaqActiveStatus(id: string | number, isActive: boolean): Observable<any> {
+    return this.httpClient.put<any>(environment.authUrl + `api/v1/faqs/${id}`, { isActive }, this.getAuthOptions());
+  }
+
+  deleteFaq(id: string | number): Observable<any> {
+    return this.httpClient.delete<any>(environment.authUrl + `api/v1/faqs/${id}`, this.getAuthOptions());
+  }
+
+  uploadImage(file: File, folderName: string = 'banner'): Observable<any> {
+    const formData = new FormData();
+    formData.append('image', file);
+
+    let token = '';
+    if (typeof window !== 'undefined' && window.localStorage) {
+      token = localStorage.getItem('token') || '';
+    }
+    if (!token && this.cookie) {
+      token = this.cookie.get('token') || '';
+    }
+
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
+
+    return this.httpClient.post<any>(
+      environment.authUrl + `api/v1/upload/${folderName}`,
+      formData,
+      { headers }
+    );
+  }
+
+}

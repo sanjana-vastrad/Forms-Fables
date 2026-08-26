@@ -1,0 +1,206 @@
+<div class="banner-master-page">
+  <!-- Page Header -->
+  <div class="page-header-flex">
+    <div>
+      <h2 class="page-title">Banner Master</h2>
+    </div>
+    <div class="header-actions">
+      <div class="search-input-wrapper">
+        <input
+          type="text"
+          [(ngModel)]="searchQuery"
+          (ngModelChange)="onSearch()"
+          placeholder="Search banner..."
+          class="premium-input table-search-input"
+        />
+        <span nz-icon nzType="search" nzTheme="outline" class="search-input-icon"></span>
+      </div>
+      <button class="btn-primary" (click)="openAddDrawer()">
+        <span nz-icon nzType="plus" nzTheme="outline"></span>
+        Add New Banner
+      </button>
+    </div>
+  </div>
+
+  <!-- Banner List Table Container with Horizontal Scroll above Pagination -->
+  <div class="table-card-wrapper">
+    <div class="premium-table-container">
+      <div class="table-scroll-wrapper">
+        <table class="premium-table" style="min-width: 1000px;">
+          <thead>
+            <tr>
+              <th style="width: 90px;" class="text-center">Action</th>
+              <th class="sortable-header" (click)="toggleSort('title')">
+                <span class="header-label-flex">
+                  Title
+                  <span class="sort-icon-container">
+                    <span nz-icon nzType="caret-up" [class.active-sort]="sortBy === 'title' && sortOrder === 'ASC'"></span>
+                    <span nz-icon nzType="caret-down" [class.active-sort]="sortBy === 'title' && sortOrder === 'DESC'"></span>
+                  </span>
+                </span>
+              </th>
+              <th>Subtitle</th>
+              <th>Description</th>
+
+              <th style="width: 120px;" class="text-center">
+                <span>Display Order</span>
+              </th>
+              <th style="width: 90px;" class="text-center">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let data of banners; let i = index">
+              <!-- Action Column (Edit + Delete) -->
+              <td class="text-center">
+                <div class="action-buttons-flex">
+                  <button
+                    type="button"
+                    class="table-action-btn edit-action-btn"
+                    (click)="openEditDrawer(data)"
+                    nz-tooltip
+                    nzTooltipTitle="Edit"
+                  >
+                    <span nz-icon nzType="edit" nzTheme="outline"></span>
+                  </button>
+                  <button
+                    type="button"
+                    class="table-action-btn delete-action-btn"
+                    nz-popconfirm
+                    nzPopconfirmTitle="Are you sure you want to delete this banner?"
+                    nzOkText="Delete"
+                    nzCancelText="Cancel"
+                    [nzOkDanger]="true"
+                    (nzOnConfirm)="deleteBanner(data)"
+                    nz-tooltip
+                    nzTooltipTitle="Delete"
+                  >
+                    <span nz-icon nzType="delete" nzTheme="outline"></span>
+                  </button>
+                </div>
+              </td>
+
+              <!-- Title column -->
+              <td class="banner-title-cell" nz-tooltip [nzTooltipTitle]="data.title">
+                <span class="truncated-text" style="max-width: 200px; display: inline-block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ data.title }}</span>
+              </td>
+              
+              <!-- Subtitle column -->
+              <td nz-tooltip [nzTooltipTitle]="data.subtitles">
+                <span class="truncated-text" style="max-width: 200px; display: inline-block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ data.subtitles || '-' }}</span>
+              </td>
+
+              <!-- Description column -->
+              <td nz-tooltip [nzTooltipTitle]="data.description">
+                <span class="truncated-text" style="max-width: 200px; display: inline-block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ data.description || '-' }}</span>
+              </td>
+
+
+
+              <!-- Link column removed -->
+
+              <!-- Display Order column with reorder action buttons -->
+              <td class="text-center">
+                <div class="display-order-flex">
+                  <span class="display-order-number">{{ data.displayOrder }}</span>
+                  <div class="reorder-arrow-buttons">
+                    <button
+                      type="button"
+                      class="reorder-btn"
+                      [disabled]="i === 0 || reordering"
+                      (click)="moveDisplayOrder(data, 'UP')"
+                      nz-tooltip
+                      nzTooltipTitle="Move Up"
+                    >
+                      <span nz-icon nzType="arrow-up" nzTheme="outline"></span>
+                    </button>
+                    <button
+                      type="button"
+                      class="reorder-btn"
+                      [disabled]="i === banners.length - 1 || reordering"
+                      (click)="moveDisplayOrder(data, 'DOWN')"
+                      nz-tooltip
+                      nzTooltipTitle="Move Down"
+                    >
+                      <span nz-icon nzType="arrow-down" nzTheme="outline"></span>
+                    </button>
+                  </div>
+                </div>
+              </td>
+
+              <!-- Starts At/Ends At columns removed -->
+
+              <!-- Status Switch column with inside text -->
+              <td class="text-center">
+                <div class="status-switch-wrapper">
+                  <nz-switch
+                    [ngModel]="data.isActive"
+                    (ngModelChange)="toggleStatus(data, $event)"
+                    [nzLoading]="updatingStatusId === data.id"
+                    nzCheckedChildren="Active"
+                    nzUnCheckedChildren="Inactive"
+                  ></nz-switch>
+                </div>
+              </td>
+            </tr>
+
+            <!-- Empty Table Row -->
+            <tr *ngIf="banners.length === 0 && !loading">
+              <td colspan="8" class="text-center empty-table-cell">
+                <nz-empty nzNotFoundImage="simple"></nz-empty>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination Footer (Fixed at card bottom, outside table scroll) -->
+      <div class="table-pagination-footer" *ngIf="totalCount > 0">
+        <div class="pagination-info">
+          Showing {{ showingStart() }} to {{ showingEnd() }} of {{ totalCount }} banners
+        </div>
+        <div class="pagination-controls">
+          <button
+            type="button"
+            class="btn-pagination"
+            [disabled]="pageIndex === 1"
+            (click)="prevPage()"
+          >
+            Previous
+          </button>
+          <span class="pagination-current-page">
+            Page {{ pageIndex }} of {{ totalPages() }}
+          </span>
+          <button
+            type="button"
+            class="btn-pagination"
+            [disabled]="pageIndex === totalPages()"
+            (click)="nextPage()"
+          >
+            Next
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add/Edit Banner Drawer -->
+<nz-drawer
+  *ngIf="drawerVisible"
+  [nzVisible]="drawerVisible"
+  nzPlacement="right"
+  [nzWidth]="680"
+  [nzTitle]="selectedBanner ? 'Edit Banner' : 'Add New Banner'"
+  [nzClosable]="true"
+  (nzOnClose)="closeDrawer()"
+  class="banner-drawer"
+>
+  <ng-container *nzDrawerContent>
+    <app-add-banner
+      [bannerToEdit]="selectedBanner"
+      [nextDisplayOrder]="nextDisplayOrder"
+      (onSave)="handleSaveSuccess()"
+      (onCancel)="closeDrawer()"
+    ></app-add-banner>
+  </ng-container>
+</nz-drawer>

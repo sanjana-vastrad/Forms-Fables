@@ -1,0 +1,70 @@
+<form [formGroup]="cityForm" (ngSubmit)="submitForm()" class="add-city-form">
+  <div class="form-body">
+    <!-- State Field -->
+    <div class="form-field">
+      <label class="form-label"><span class="required-asterisk">*</span> State</label>
+      <select formControlName="state" class="premium-select-native">
+        <option [ngValue]="null" disabled selected>Select State</option>
+        <option *ngFor="let state of statesList" [value]="state">{{ state }}</option>
+      </select>
+      <div class="form-error-msg" *ngIf="cityForm.get('state')?.dirty && cityForm.get('state')?.hasError('required')">
+        State is required.
+      </div>
+    </div>
+
+    <!-- City Name Field -->
+    <div class="form-field">
+      <label class="form-label"><span class="required-asterisk">*</span> City Name</label>
+      <input
+        type="text"
+        formControlName="cityName"
+        placeholder="Enter City Name"
+        class="premium-input"
+      />
+      <div class="form-error-msg" *ngIf="cityForm.get('cityName')?.dirty && cityForm.get('cityName')?.hasError('required')">
+        City name is required.
+      </div>
+      <div class="form-error-msg" *ngIf="cityForm.get('cityName')?.dirty && cityForm.get('cityName')?.hasError('maxlength')">
+        Please enter a valid city name (max 100 characters).
+      </div>
+    </div>
+
+    <div style="display: flex; gap: 20px; margin-top: 8px;">
+      <!-- Active Status Field -->
+      <div class="form-field" style="flex: 1;">
+        <label class="form-label">Status</label>
+        <div class="status-switch-wrapper">
+          <nz-switch 
+            formControlName="isActive"
+            nzCheckedChildren="Active" 
+            nzUnCheckedChildren="Inactive">
+          </nz-switch>
+        </div>
+      </div>
+
+      <!-- Sequence No Field -->
+      <div class="form-field" style="flex: 1;">
+        <label class="form-label"><span class="required-asterisk">*</span> Sequence No</label>
+        <input
+          type="number"
+          formControlName="sequenceNo"
+          class="premium-input"
+          placeholder="Enter Sequence No"
+        />
+        <div class="form-error-msg" *ngIf="cityForm.get('sequenceNo')?.dirty && cityForm.get('sequenceNo')?.hasError('required')">
+          Sequence No is required.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer buttons -->
+  <div class="drawer-footer">
+    <button type="button" class="btn-secondary" (click)="handleCancel()" [disabled]="loading">
+      Cancel
+    </button>
+    <button type="submit" class="btn-primary" [disabled]="loading">
+      {{ loading ? 'Saving...' : 'Save' }}
+    </button>
+  </div>
+</form>

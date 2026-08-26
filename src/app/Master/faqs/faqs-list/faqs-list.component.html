@@ -1,0 +1,127 @@
+<div class="faq-master-page">
+  <!-- Page Header -->
+  <div class="page-header-flex">
+    <div>
+      <h2 class="page-title">FAQs Master</h2>
+    </div>
+    <div class="header-actions">
+      <div class="search-input-wrapper">
+        <input type="text" [(ngModel)]="searchQuery" (ngModelChange)="onSearch()" placeholder="Search FAQs..."
+          class="premium-input table-search-input" />
+        <span nz-icon nzType="search" nzTheme="outline" class="search-input-icon"></span>
+      </div>
+      <button class="btn-primary" (click)="openAddDrawer()">
+        <span nz-icon nzType="plus" nzTheme="outline"></span>
+        Add New FAQ
+      </button>
+    </div>
+  </div>
+
+  <!-- FAQs List Table -->
+  <div class="table-card-wrapper">
+    <div class="premium-table-container">
+      <table class="premium-table">
+        <thead>
+          <tr>
+            <th style="width: 120px;">Action</th>
+            <th class="sortable-header" (click)="toggleSort('displayOrder')" style="width: 150px;">
+              <span class="header-label-flex">
+                Order
+                <span class="sort-icon-container">
+                  <span nz-icon nzType="caret-up"
+                    [class.active-sort]="sortBy === 'displayOrder' && sortOrder === 'ASC'"></span>
+                  <span nz-icon nzType="caret-down"
+                    [class.active-sort]="sortBy === 'displayOrder' && sortOrder === 'DESC'"></span>
+                </span>
+              </span>
+            </th>
+            <th class="sortable-header" (click)="toggleSort('question')">
+              <span class="header-label-flex">
+                Question
+                <span class="sort-icon-container">
+                  <span nz-icon nzType="caret-up"
+                    [class.active-sort]="sortBy === 'question' && sortOrder === 'ASC'"></span>
+                  <span nz-icon nzType="caret-down"
+                    [class.active-sort]="sortBy === 'question' && sortOrder === 'DESC'"></span>
+                </span>
+              </span>
+            </th>
+            <th>Answer</th>
+            <th style="width: 120px;" class="text-center">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let data of faqs; let i = index">
+            <td>
+              <div class="action-buttons-flex">
+                <button type="button" class="table-edit-btn" (click)="openEditDrawer(data)" title="Edit FAQ">
+                  <span nz-icon nzType="edit" nzTheme="outline"></span>
+                </button>
+                <button type="button" class="table-delete-btn" nz-popconfirm
+                  nzPopconfirmTitle="Are you sure you want to delete this FAQ?" nzPopconfirmPlacement="topRight"
+                  (nzOnConfirm)="data.id && deleteFaq(data.id)" title="Delete FAQ">
+                  <span nz-icon nzType="delete" nzTheme="outline"></span>
+                </button>
+              </div>
+            </td>
+            <td>
+              <div class="reorder-actions">
+                <!-- <button type="button" class="btn-reorder" (click)="moveUp(i)" [disabled]="i === 0" title="Move Up">
+                  <span nz-icon nzType="up" nzTheme="outline"></span>
+                </button> -->
+                <span class="order-number">{{ data.displayOrder }}</span>
+                <!-- <button type="button" class="btn-reorder" (click)="moveDown(i)" [disabled]="i === faqs.length - 1"
+                  title="Move Down">
+                  <span nz-icon nzType="down" nzTheme="outline"></span>
+                </button> -->
+              </div>
+            </td>
+            <td class="faq-question-cell" nz-tooltip [nzTooltipTitle]="data.question">
+              <span class="truncated-text" style="max-width: 250px; display: inline-block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ data.question }}</span>
+            </td>
+            <td class="faq-answer-cell" nz-tooltip [nzTooltipTitle]="data.answer">
+              <span class="truncated-text" style="max-width: 300px; display: inline-block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ data.answer }}</span>
+            </td>
+            <td class="text-center">
+              <nz-switch [(ngModel)]="data.isActive" (ngModelChange)="onStatusChange(data, $event)"
+                [nzLoading]="data.statusLoading" nzCheckedChildren="On" nzUnCheckedChildren="Off">
+              </nz-switch>
+            </td>
+          </tr>
+          <tr *ngIf="faqs.length === 0">
+            <td colspan="5" class="text-center empty-table-cell">
+              <nz-empty nzNotFoundImage="simple"></nz-empty>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Pagination Footer -->
+      <div class="table-pagination-footer" *ngIf="totalCount > 0">
+        <div class="pagination-info">
+          Showing {{ showingStart() }} to {{ showingEnd() }} of {{ totalCount }} FAQs
+        </div>
+        <div class="pagination-controls">
+          <button type="button" class="btn-pagination" [disabled]="pageIndex === 1" (click)="prevPage()">
+            Previous
+          </button>
+          <span class="pagination-current-page">
+            Page {{ pageIndex }} of {{ totalPages() }}
+          </span>
+          <button type="button" class="btn-pagination" [disabled]="pageIndex === totalPages()" (click)="nextPage()">
+            Next
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add/Edit FAQ Drawer -->
+<nz-drawer *ngIf="drawerVisible" [nzVisible]="drawerVisible" nzPlacement="right" [nzWidth]="420"
+  [nzTitle]="selectedFaq ? 'Edit FAQ' : 'Add New FAQ'" [nzClosable]="true" (nzOnClose)="closeDrawer()"
+  class="faq-drawer">
+  <ng-container *nzDrawerContent>
+    <app-add-faq [faqToEdit]="selectedFaq" [nextDisplayOrder]="nextDisplayOrder" (onSave)="handleSaveSuccess()" (onCancel)="closeDrawer()"></app-add-faq>
+  </ng-container>
+</nz-drawer>

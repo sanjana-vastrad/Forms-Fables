@@ -1,0 +1,111 @@
+<div class="dashboard-page">
+  <!-- Page Header -->
+  <div class="dashboard-header">
+    <div>
+      <h2 class="page-title">Dashboard</h2>
+      <p class="page-subtitle">Overview of your forms, surveys, and submission performance.</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn-primary">
+        <span nz-icon nzType="plus" nzTheme="outline"></span>
+        Create New Form
+      </button>
+    </div>
+  </div>
+
+  <!-- Stats Grid -->
+  <div class="stats-grid">
+    <div class="premium-card stat-card" *ngFor="let stat of stats">
+      <div class="stat-header">
+        <span class="stat-title">{{ stat.title }}</span>
+        <div class="stat-icon-wrapper">
+          <span nz-icon [nzType]="stat.icon" nzTheme="outline" class="stat-icon"></span>
+        </div>
+      </div>
+      <div class="stat-body">
+        <span class="stat-value">{{ stat.value }}</span>
+        <div class="stat-meta">
+          <span class="stat-change" [ngClass]="stat.changeType">
+            {{ stat.change }}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dashboard Content Grid -->
+  <div class="content-grid">
+    <!-- Visual Performance Card -->
+    <div class="premium-card performance-card">
+      <div class="card-header-flex">
+        <h3 class="card-heading">Submission Analytics</h3>
+        <span class="badge badge-info">Live Updates</span>
+      </div>
+      <p class="card-subheading">Submission volume trend over the last 30 days.</p>
+      
+      <!-- Mock Visual Analytics Graph -->
+      <div class="mock-chart-container">
+        <div class="mock-chart-bars">
+          <div class="chart-bar" style="height: 40%">
+            <span class="bar-value">400</span>
+            <span class="bar-label">W1</span>
+          </div>
+          <div class="chart-bar" style="height: 65%">
+            <span class="bar-value">650</span>
+            <span class="bar-label">W2</span>
+          </div>
+          <div class="chart-bar active" style="height: 85%">
+            <span class="bar-value">850</span>
+            <span class="bar-label">W3</span>
+          </div>
+          <div class="chart-bar" style="height: 55%">
+            <span class="bar-value">550</span>
+            <span class="bar-label">W4</span>
+          </div>
+          <div class="chart-bar" style="height: 75%">
+            <span class="bar-value">750</span>
+            <span class="bar-label">W5</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Submissions Table -->
+    <div class="premium-card table-card">
+      <div class="card-header-flex">
+        <h3 class="card-heading">Recent Forms</h3>
+        <a class="view-all-link">View All Forms</a>
+      </div>
+      <p class="card-subheading">Latest forms created and their submission counts.</p>
+
+      <div class="premium-table-container">
+        <table class="premium-table">
+          <thead>
+            <tr>
+              <th>Form Name</th>
+              <th>Created Date</th>
+              <th>Submissions</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let form of recentForms">
+              <td class="form-name-cell">{{ form.name }}</td>
+              <td>{{ form.createdDate }}</td>
+              <td class="submissions-cell">{{ form.submissions }}</td>
+              <td>
+                <span class="badge" [ngClass]="{
+                  'badge-active': form.status === 'Active',
+                  'badge-pending': form.status === 'Pending',
+                  'badge-inactive': form.status === 'Inactive'
+                }">
+                  {{ form.status }}
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

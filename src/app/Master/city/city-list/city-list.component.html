@@ -1,0 +1,160 @@
+<div class="city-master-page">
+  <!-- Page Header -->
+  <div class="page-header-flex">
+    <div>
+      <h2 class="page-title">City Master</h2>
+    </div>
+    <div class="header-actions">
+      <div class="search-input-wrapper">
+        <input
+          type="text"
+          [(ngModel)]="searchQuery"
+          (ngModelChange)="onSearch()"
+          placeholder="Search city..."
+          class="premium-input table-search-input"
+        />
+        <span nz-icon nzType="search" nzTheme="outline" class="search-input-icon"></span>
+      </div>
+      <button class="btn-primary" (click)="openAddDrawer()">
+        <span nz-icon nzType="plus" nzTheme="outline"></span>
+        Add New City
+      </button>
+    </div>
+  </div>
+
+  <!-- City List Table -->
+  <div class="table-card-wrapper">
+    <div class="premium-table-container">
+      <table class="premium-table">
+        <thead>
+          <tr>
+            <th style="width: 100px;">Edit</th>
+            <th class="sortable-header" (click)="toggleSort('sequenceNo')" style="width: 150px;">
+              <span class="header-label-flex">
+                Seq No
+                <span class="sort-icon-container">
+                  <span nz-icon nzType="caret-up" [class.active-sort]="sortBy === 'sequenceNo' && sortOrder === 'ASC'"></span>
+                  <span nz-icon nzType="caret-down" [class.active-sort]="sortBy === 'sequenceNo' && sortOrder === 'DESC'"></span>
+                </span>
+              </span>
+            </th>
+            <th class="sortable-header" (click)="toggleSort('state')">
+              <span class="header-label-flex">
+                State
+                <span class="sort-icon-container">
+                  <span nz-icon nzType="caret-up" [class.active-sort]="sortBy === 'state' && sortOrder === 'ASC'"></span>
+                  <span nz-icon nzType="caret-down" [class.active-sort]="sortBy === 'state' && sortOrder === 'DESC'"></span>
+                </span>
+              </span>
+            </th>
+            <th class="sortable-header" (click)="toggleSort('name')">
+              <span class="header-label-flex">
+                City
+                <span class="sort-icon-container">
+                  <span nz-icon nzType="caret-up" [class.active-sort]="sortBy === 'name' && sortOrder === 'ASC'"></span>
+                  <span nz-icon nzType="caret-down" [class.active-sort]="sortBy === 'name' && sortOrder === 'DESC'"></span>
+                </span>
+              </span>
+            </th>
+            <th style="width: 120px;" class="text-center">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let data of cities">
+            <td>
+              <button
+                type="button"
+                class="table-edit-btn"
+                (click)="openEditDrawer(data)"
+                title="Edit City"
+              >
+                <span nz-icon nzType="edit" nzTheme="outline"></span>
+              </button>
+            </td>
+            <td>
+              <span class="order-number">{{ data.sequenceNo }}</span>
+            </td>
+            <td class="state-cell">{{ data.state }}</td>
+            <td class="city-name-cell">{{ data.name }}</td>
+            <td class="text-center">
+              <!-- Active status: Click to deactivate -->
+              <button
+                type="button"
+                *ngIf="data.isActive"
+                class="status-active-btn"
+                (click)="deactivateCity(data)"
+                title="Click to Deactivate"
+              >
+                <span nz-icon nzType="check-circle" nzTheme="outline"></span>
+              </button>
+              <!-- Inactive status: Display close circle -->
+              <button
+                type="button"
+                *ngIf="!data.isActive"
+                class="status-inactive-btn"
+                title="Deactivated"
+                disabled
+              >
+                <span nz-icon nzType="close-circle" nzTheme="outline"></span>
+              </button>
+            </td>
+          </tr>
+          <tr *ngIf="cities.length === 0">
+            <td colspan="5" class="text-center empty-table-cell">
+              <nz-empty nzNotFoundImage="simple"></nz-empty>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Pagination Footer -->
+      <div class="table-pagination-footer" *ngIf="totalCount > 0">
+        <div class="pagination-info">
+          Showing {{ showingStart() }} to {{ showingEnd() }} of {{ totalCount }} cities
+        </div>
+        <div class="pagination-controls">
+          <button
+            type="button"
+            class="btn-pagination"
+            [disabled]="pageIndex === 1"
+            (click)="prevPage()"
+          >
+            Previous
+          </button>
+          <span class="pagination-current-page">
+            Page {{ pageIndex }} of {{ totalPages() }}
+          </span>
+          <button
+            type="button"
+            class="btn-pagination"
+            [disabled]="pageIndex === totalPages()"
+            (click)="nextPage()"
+          >
+            Next
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add/Edit City Drawer -->
+<nz-drawer
+  *ngIf="drawerVisible"
+  [nzVisible]="drawerVisible"
+  nzPlacement="right"
+  [nzWidth]="420"
+  [nzTitle]="selectedCity ? 'Edit City' : 'Add New City'"
+  [nzClosable]="true"
+  (nzOnClose)="closeDrawer()"
+  class="city-drawer"
+>
+  <ng-container *nzDrawerContent>
+    <app-add-city
+      [cityToEdit]="selectedCity"
+      [nextSequenceNo]="nextSequenceNo"
+      (onSave)="handleSaveSuccess()"
+      (onCancel)="closeDrawer()"
+    ></app-add-city>
+  </ng-container>
+</nz-drawer>

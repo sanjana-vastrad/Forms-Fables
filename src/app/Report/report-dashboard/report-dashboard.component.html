@@ -1,0 +1,95 @@
+<div class="report-dashboard-page">
+  <!-- Page Header -->
+  <div class="report-header">
+    <div>
+      <h2 class="page-title">Reports Dashboard</h2>
+      <p class="page-subtitle">Generate, schedule, view, and export submission analytics and performance reports.</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn-primary">
+        <span nz-icon nzType="download" nzTheme="outline"></span>
+        Export All Data
+      </button>
+    </div>
+  </div>
+
+  <!-- Summary Cards -->
+  <div class="report-stats-grid">
+    <div class="premium-card r-stat-card">
+      <div class="r-stat-info">
+        <span class="r-stat-title">Reports Generated</span>
+        <span class="r-stat-value">48</span>
+      </div>
+      <div class="r-stat-icon-box info">
+        <span nz-icon nzType="file-done" nzTheme="outline"></span>
+      </div>
+    </div>
+    <div class="premium-card r-stat-card">
+      <div class="r-stat-info">
+        <span class="r-stat-title">Scheduled Reports</span>
+        <span class="r-stat-value">6 Active</span>
+      </div>
+      <div class="r-stat-icon-box warning">
+        <span nz-icon nzType="clock-circle" nzTheme="outline"></span>
+      </div>
+    </div>
+    <div class="premium-card r-stat-card">
+      <div class="r-stat-info">
+        <span class="r-stat-title">Total Downloads</span>
+        <span class="r-stat-value">833 Times</span>
+      </div>
+      <div class="r-stat-icon-box success">
+        <span nz-icon nzType="cloud-download" nzTheme="outline"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reports Table Section -->
+  <div class="premium-card reports-list-card">
+    <div class="card-header-flex">
+      <h3 class="card-heading">Generated Reports History</h3>
+      <div class="card-header-actions">
+        <button class="btn-secondary">
+          <span nz-icon nzType="filter" nzTheme="outline"></span>
+          Filter Reports
+        </button>
+      </div>
+    </div>
+    <p class="card-subheading">View download history and manage generated spreadsheet and PDF assets.</p>
+
+    <div class="premium-table-container">
+      <table class="premium-table">
+        <thead>
+          <tr>
+            <th>Report Title</th>
+            <th>Category</th>
+            <th>Generated Date</th>
+            <th>File Size</th>
+            <th>Downloads</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let report of reports">
+            <td class="report-title-cell">
+              <span nz-icon nzType="file-text" nzTheme="outline" class="file-icon-lead"></span>
+              {{ report.reportName }}
+            </td>
+            <td>
+              <span class="badge badge-info">{{ report.category }}</span>
+            </td>
+            <td>{{ report.generatedDate }}</td>
+            <td class="file-size-cell">{{ report.fileSize }}</td>
+            <td class="downloads-cell">{{ report.downloadsCount }}</td>
+            <td>
+              <button class="download-action-btn">
+                <span nz-icon nzType="download" nzTheme="outline"></span>
+                Download
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

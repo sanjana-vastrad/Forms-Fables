@@ -1,0 +1,240 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+
+:host {
+  display: block;
+  width: 100%;
+  height: 100vh;
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.login-container {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  background-color: #f8fafc;
+  background-image: radial-gradient(circle at 50% 0%, #ffffff 0%, #f1f5f9 100%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Background blob decorations (kept but very subtle for elegance) */
+.background-decorations {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.15;
+  animation: float 20s infinite alternate ease-in-out;
+}
+
+.blob-1 {
+  width: 600px;
+  height: 600px;
+  background: #9B4A54; /* Lighter Burgundy */
+  top: -150px;
+  left: -150px;
+}
+
+.blob-2 {
+  width: 500px;
+  height: 500px;
+  background: #c9a961; /* Gold */
+  bottom: -100px;
+  right: -100px;
+  animation-delay: -10s;
+}
+
+@keyframes float {
+  0% { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(60px, 40px) scale(1.05); }
+}
+
+/* Card */
+.login-card {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  max-width: 420px; /* Slightly narrower for a compact look */
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-top: 4px solid #c9a961; /* Gold accent top */
+  border-radius: 12px;
+  padding: 32px 36px; /* Reduced padding to lower height */
+  box-shadow: 0 10px 25px rgba(114, 47, 55, 0.08), 0 4px 6px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+/* Logo and header */
+.logo-area {
+  text-align: center;
+  margin-bottom: 28px;
+  display: flex;
+  justify-content: center;
+}
+
+.brand-logo {
+  max-width: 100%;
+  height: auto;
+  max-height: 75px; /* Fits perfectly above the form */
+  object-fit: contain;
+}
+
+/* Forms input custom styling */
+::ng-deep .custom-input-group.ant-input-group-wrapper {
+  background: #ffffff !important;
+  border: 1px solid #cbd5e1 !important;
+  border-radius: 8px !important;
+  transition: all 0.2s ease;
+  height: 44px; /* Reduced input height */
+  display: flex;
+  align-items: center;
+  padding: 0 14px;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.02);
+}
+
+::ng-deep .custom-input-group.ant-input-group-wrapper:hover {
+  border-color: #9B4A54 !important; /* Lighter Burgundy */
+}
+
+::ng-deep .custom-input-group.ant-input-group-wrapper-focus {
+  border-color: #722F37 !important; /* Burgundy */
+  box-shadow: 0 0 0 3px rgba(114, 47, 55, 0.1) !important;
+  background: #ffffff !important;
+}
+
+::ng-deep .ant-input-affix-wrapper {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  width: 100% !important;
+}
+
+::ng-deep .custom-input.ant-input {
+  background: transparent !important;
+  border: none !important;
+  color: #1e293b !important;
+  font-size: 14px !important;
+  height: 100% !important;
+  padding: 0 !important;
+}
+
+::ng-deep .custom-input.ant-input::placeholder {
+  color: #94a3b8 !important;
+}
+
+.input-icon {
+  color: #94a3b8;
+  font-size: 17px;
+  margin-right: 10px;
+}
+
+.toggle-password-icon {
+  color: #94a3b8;
+  font-size: 17px;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.toggle-password-icon:hover {
+  color: #722F37; /* Burgundy */
+}
+
+::ng-deep .ant-form-item {
+  margin-bottom: 20px !important;
+}
+
+::ng-deep .ant-form-item-explain-error {
+  font-size: 12px !important;
+  color: #ef4444 !important;
+  margin-top: 4px !important;
+  padding-left: 2px !important;
+}
+
+/* Actions area */
+.form-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+::ng-deep .remember-me.ant-checkbox-wrapper {
+  color: #475569 !important;
+  font-size: 13px !important;
+  user-select: none;
+}
+
+::ng-deep .remember-me .ant-checkbox-inner {
+  background-color: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  border-radius: 4px !important;
+}
+
+::ng-deep .remember-me .ant-checkbox-checked .ant-checkbox-inner {
+  background-color: #722F37 !important; /* Burgundy */
+  border-color: #722F37 !important;
+}
+
+.forgot-password {
+  color: #722F37; /* Burgundy */
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.forgot-password:hover {
+  color: #c9a961; /* Gold */
+}
+
+/* Button Custom Styles */
+.login-button {
+  width: 100%;
+  height: 44px !important; /* Reduced button height */
+  border-radius: 8px !important;
+  background: #722F37 !important; /* Burgundy */
+  border: none !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 10px rgba(114, 47, 55, 0.2) !important;
+  transition: all 0.2s ease !important;
+}
+
+.login-button:hover {
+  background: #9B4A54 !important; /* Lighter Burgundy on hover */
+  transform: translateY(-1px) !important;
+  box-shadow: 0 6px 14px rgba(155, 74, 84, 0.25) !important;
+}
+
+.login-button:active {
+  transform: translateY(0) !important;
+}
+
+/* Footer note */
+.footer-note {
+  text-align: center;
+  margin-top: 24px;
+}
+
+.footer-note p {
+  color: #94a3b8;
+  font-size: 12px;
+  margin: 0;
+}

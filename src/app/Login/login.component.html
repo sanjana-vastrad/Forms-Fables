@@ -1,0 +1,54 @@
+<div class="login-container">
+  <div class="background-decorations">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+  </div>
+
+  <div class="login-card">
+    <div class="logo-area">
+      <img src="/logo.png" alt="Forms & Fables Logo" class="brand-logo" />
+    </div>
+
+    <form nz-form [formGroup]="loginForm" (ngSubmit)="submitForm()" class="login-form">
+      <nz-form-item>
+        <nz-form-control nzErrorTip="Please input a valid email address!">
+          <nz-input-group [nzPrefix]="prefixEmail" class="custom-input-group">
+            <input type="email" nz-input formControlName="email" placeholder="Email Address" class="custom-input" />
+          </nz-input-group>
+          <ng-template #prefixEmail>
+            <span nz-icon nzType="user" class="input-icon"></span>
+          </ng-template>
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-control nzErrorTip="Please input your password!">
+          <nz-input-group [nzPrefix]="prefixLock" [nzSuffix]="suffixPassword" class="custom-input-group">
+            <input [type]="passwordVisible ? 'text' : 'password'" nz-input formControlName="password"
+              placeholder="Password" class="custom-input" />
+          </nz-input-group>
+          <ng-template #prefixLock>
+            <span nz-icon nzType="lock" class="input-icon"></span>
+          </ng-template>
+          <ng-template #suffixPassword>
+            <span nz-icon [nzType]="passwordVisible ? 'eye-invisible' : 'eye'"
+              (click)="passwordVisible = !passwordVisible" class="toggle-password-icon"></span>
+          </ng-template>
+        </nz-form-control>
+      </nz-form-item>
+
+      <div class="form-actions">
+        <label nz-checkbox formControlName="remember" class="remember-me">Remember me</label>
+        <a class="forgot-password">Forgot password?</a>
+      </div>
+
+      <button nz-button nzType="primary" nzSize="large" [nzLoading]="loading" class="login-button">
+        Sign In
+      </button>
+    </form>
+
+    <div class="footer-note">
+      <p>&copy; 2026 Forms & Fables. All rights reserved.</p>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,217 @@
+<nz-layout class="app-layout">
+  <!-- Sidebar -->
+  <nz-sider class="app-sider" nzCollapsible [(nzCollapsed)]="isCollapsed" [nzTrigger]="null" [nzWidth]="250"
+    [nzCollapsedWidth]="72" nzBreakpoint="md">
+    <!-- Logo area -->
+    <div class="sidebar-logo" [class.collapsed]="isCollapsed">
+      <img src="/logo.png" alt="Forms & Fables" class="sidebar-logo-img" *ngIf="!isCollapsed" />
+      <img src="/logo.png" alt="FF" class="sidebar-logo-icon" *ngIf="isCollapsed" />
+    </div>
+
+    <div class="sidebar-divider"></div>
+
+    <!-- Navigation menu -->
+    <ul nz-menu nzMode="inline" [nzInlineCollapsed]="isCollapsed" class="sidebar-menu">
+      <li nz-menu-item nzMatchRouter routerLink="/dashboard">
+        <span nz-icon nzType="dashboard" nzTheme="outline"></span>
+        <span>Dashboard</span>
+      </li>
+
+      <!-- Master -->
+      <li nz-submenu nzTitle="Master" nzIcon="database">
+        <ul>
+          <li nz-menu-item nzMatchRouter routerLink="/master">
+            <span>Master Dashboard</span>
+          </li>
+          <li nz-menu-item nzMatchRouter routerLink="/master/city">
+            <span>City</span>
+          </li>
+          <li nz-menu-item nzMatchRouter routerLink="/master/banner">
+            <span>Banner</span>
+          </li>
+          <li nz-menu-item nzMatchRouter routerLink="/master/faqs">
+            <span>FAQs</span>
+          </li>
+
+        </ul>
+      </li>
+
+      <!-- Reports -->
+      <li nz-submenu nzTitle="Reports" nzIcon="bar-chart">
+        <ul>
+          <li nz-menu-item nzMatchRouter routerLink="/report">
+            <span>Report Dashboard</span>
+          </li>
+        </ul>
+      </li>
+
+      <!-- Forms -->
+      <li nz-menu-item nzMatchRouter>
+        <span nz-icon nzType="form" nzTheme="outline"></span>
+        <span>Forms</span>
+      </li>
+
+      <!-- Tables -->
+      <li nz-menu-item nzMatchRouter>
+        <span nz-icon nzType="table" nzTheme="outline"></span>
+        <span>Tables</span>
+      </li>
+
+      <!-- Charts -->
+      <li nz-menu-item nzMatchRouter>
+        <span nz-icon nzType="pie-chart" nzTheme="outline"></span>
+        <span>Charts</span>
+      </li>
+
+      <!-- Pages -->
+      <li nz-submenu nzTitle="Pages" nzIcon="file">
+        <ul>
+          <li nz-menu-item>
+            <span>Page 1</span>
+          </li>
+          <li nz-menu-item>
+            <span>Page 2</span>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </nz-sider>
+
+  <!-- Main content area -->
+  <nz-layout class="content-layout" [class.content-collapsed]="isCollapsed">
+    <!-- Header -->
+    <nz-header class="app-header">
+      <div class="header-left">
+        <span class="sidebar-toggle" nz-icon [nzType]="isCollapsed ? 'menu-unfold' : 'menu-fold'"
+          (click)="toggleSidebar()"></span>
+        <div class="header-breadcrumb">
+          <span class="breadcrumb-parent">Forms & Fables</span>
+          <span class="breadcrumb-separator">/</span>
+          <span class="breadcrumb-current">Admin Dashboard</span>
+        </div>
+      </div>
+      <div class="header-right">
+        <!-- Notification Bell -->
+        <div class="header-notification">
+          <span nz-icon nzType="bell" nzTheme="outline" class="notification-icon"></span>
+          <span class="notification-badge"></span>
+        </div>
+
+        <div class="header-sep"></div>
+
+        <!-- User Profile Dropdown -->
+        <div class="header-profile" nz-dropdown [nzDropdownMenu]="headerProfileMenu" nzTrigger="click"
+          nzPlacement="bottomRight">
+          <nz-avatar nzIcon="user" [nzSize]="34" class="header-avatar"></nz-avatar>
+          <div class="header-user-details">
+            <span class="header-username">Admin</span>
+            <span class="header-role">Super Admin</span>
+          </div>
+          <span nz-icon nzType="down" class="header-profile-arrow"></span>
+        </div>
+        <nz-dropdown-menu #headerProfileMenu>
+          <ul nz-menu class="header-profile-menu">
+            <li nz-menu-item (click)="openChangePassword()">
+              <span nz-icon nzType="lock" nzTheme="outline"></span>
+              <span>Change Password</span>
+            </li>
+            <li nz-menu-divider></li>
+            <li nz-menu-item (click)="logout()">
+              <span nz-icon nzType="logout" nzTheme="outline"></span>
+              <span>Logout</span>
+            </li>
+          </ul>
+        </nz-dropdown-menu>
+      </div>
+    </nz-header>
+
+    <!-- Content -->
+    <nz-content class="app-content">
+      <div class="content-wrapper">
+        <router-outlet></router-outlet>
+      </div>
+    </nz-content>
+  </nz-layout>
+</nz-layout>
+
+<!-- Change Password Modal -->
+<nz-modal [(nzVisible)]="isChangePasswordVisible" nzTitle="Change Password" [nzFooter]="changePasswordFooter"
+  (nzOnCancel)="closeChangePassword()" [nzWidth]="440" nzCentered class="change-password-modal">
+  <ng-container *nzModalContent>
+    <form [formGroup]="changePasswordForm" class="change-password-form">
+
+      <!-- Current Password -->
+      <div class="cp-field">
+        <label class="cp-label"><span class="cp-required">*</span> Current Password</label>
+        <nz-input-group [nzPrefix]="prefixCurPwd" [nzSuffix]="suffixCurPwd" class="cp-input-group">
+          <input [type]="currentPasswordVisible ? 'text' : 'password'" nz-input formControlName="currentPassword"
+            placeholder="Enter Current Password" class="cp-input" />
+        </nz-input-group>
+        <ng-template #prefixCurPwd>
+          <span nz-icon nzType="lock" class="cp-input-icon"></span>
+        </ng-template>
+        <ng-template #suffixCurPwd>
+          <span nz-icon [nzType]="currentPasswordVisible ? 'eye-invisible' : 'eye'"
+            (click)="currentPasswordVisible = !currentPasswordVisible" class="cp-toggle-icon"></span>
+        </ng-template>
+        <div class="cp-error"
+          *ngIf="changePasswordForm.get('currentPassword')?.dirty && changePasswordForm.get('currentPassword')?.hasError('required')">
+          Please enter your current password!
+        </div>
+      </div>
+
+      <!-- New Password -->
+      <div class="cp-field">
+        <label class="cp-label"><span class="cp-required">*</span> New Password</label>
+        <nz-input-group [nzPrefix]="prefixNewPwd" [nzSuffix]="suffixNewPwd" class="cp-input-group">
+          <input [type]="newPasswordVisible ? 'text' : 'password'" nz-input formControlName="newPassword"
+            placeholder="Enter New Password" class="cp-input" />
+        </nz-input-group>
+        <ng-template #prefixNewPwd>
+          <span nz-icon nzType="lock" class="cp-input-icon"></span>
+        </ng-template>
+        <ng-template #suffixNewPwd>
+          <span nz-icon [nzType]="newPasswordVisible ? 'eye-invisible' : 'eye'"
+            (click)="newPasswordVisible = !newPasswordVisible" class="cp-toggle-icon"></span>
+        </ng-template>
+        <div class="cp-error"
+          *ngIf="changePasswordForm.get('newPassword')?.dirty && changePasswordForm.get('newPassword')?.hasError('required')">
+          Please enter a new password!
+        </div>
+      </div>
+
+      <!-- Confirm Password -->
+      <div class="cp-field">
+        <label class="cp-label"><span class="cp-required">*</span> Confirm Password</label>
+        <nz-input-group [nzPrefix]="prefixConfirmPwd" [nzSuffix]="suffixConfirmPwd" class="cp-input-group">
+          <input [type]="confirmPasswordVisible ? 'text' : 'password'" nz-input formControlName="confirmPassword"
+            placeholder="Re-Enter New Password" class="cp-input" />
+        </nz-input-group>
+        <ng-template #prefixConfirmPwd>
+          <span nz-icon nzType="lock" class="cp-input-icon"></span>
+        </ng-template>
+        <ng-template #suffixConfirmPwd>
+          <span nz-icon [nzType]="confirmPasswordVisible ? 'eye-invisible' : 'eye'"
+            (click)="confirmPasswordVisible = !confirmPasswordVisible" class="cp-toggle-icon"></span>
+        </ng-template>
+        <div class="cp-error"
+          *ngIf="changePasswordForm.get('confirmPassword')?.dirty && changePasswordForm.get('confirmPassword')?.hasError('required')">
+          Please confirm your password!
+        </div>
+        <div class="cp-error"
+          *ngIf="changePasswordForm.get('confirmPassword')?.dirty && changePasswordForm.get('confirmPassword')?.hasError('mismatch')">
+          Passwords do not match!
+        </div>
+      </div>
+
+    </form>
+  </ng-container>
+
+  <ng-template #changePasswordFooter>
+    <div class="cp-modal-footer">
+      <button nz-button nzType="default" (click)="closeChangePassword()" class="cp-cancel-btn">Cancel</button>
+      <button nz-button nzType="primary" [nzLoading]="changingPassword" (click)="submitChangePassword()"
+        class="cp-save-btn">Save</button>
+    </div>
+  </ng-template>
+</nz-modal>

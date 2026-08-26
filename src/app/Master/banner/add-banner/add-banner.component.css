@@ -1,0 +1,266 @@
+.add-banner-form {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  position: relative;
+  font-family: 'Inter', sans-serif !important;
+}
+
+.form-body {
+  padding-bottom: 24px;
+  flex: 1;
+}
+
+.form-field {
+  margin-bottom: 18px;
+}
+
+.form-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: #292929;
+  margin-bottom: 6px;
+}
+
+.required-asterisk {
+  color: #e53935;
+  margin-right: 3px;
+  font-weight: bold;
+}
+
+.form-error-msg {
+  font-size: 12px;
+  color: #e53935;
+  margin-top: 4px;
+  line-height: 1.4;
+}
+
+/* Segmented URL Input Design */
+.segmented-url-wrapper {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.url-protocol-select {
+  border: 1px solid #E5E2DE;
+  border-right: none;
+  border-radius: 6px 0 0 6px;
+  height: 42px;
+  padding: 0 10px;
+  background-color: #FAF9F6;
+  color: #722F37;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  outline: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg fill='%23722F37' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 4px center;
+  background-size: 16px;
+  padding-right: 20px;
+}
+
+.url-protocol-select:focus,
+.url-protocol-select:hover {
+  border-color: #9B4A54;
+}
+
+.url-path-input {
+  border-radius: 0 6px 6px 0 !important;
+  flex: 1;
+}
+
+/* Image Upload Control Design */
+.hidden-file-input {
+  display: none !important;
+}
+
+.image-upload-box {
+  border: 2px dashed #E5E2DE;
+  border-radius: 6px;
+  padding: 8px 10px;
+  background-color: #FAF9F6;
+  text-align: center;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 70px;
+  box-sizing: border-box;
+  transition: all 0.2s ease;
+}
+
+.image-upload-box:hover {
+  border-color: #9B4A54;
+  background-color: #FFFDF6;
+}
+
+.upload-icon {
+  font-size: 18px;
+  color: #722F37;
+  margin-bottom: 2px;
+}
+
+.upload-text {
+  font-size: 12px;
+  font-weight: 600;
+  color: #292929;
+}
+
+.upload-subtext {
+  font-size: 10px;
+  color: #8A8A8A;
+}
+
+/* Uploaded Image Preview Card & Placeholder */
+.uploaded-image-card {
+  border: 1px solid #E5E2DE;
+  border-radius: 6px;
+  padding: 6px 10px;
+  background-color: #FAF9F6;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  height: 70px;
+  box-sizing: border-box;
+}
+
+.uploaded-preview-img {
+  max-height: 52px;
+  max-width: 90px;
+  object-fit: contain;
+  border-radius: 4px;
+  border: 1px solid #E5E2DE;
+  background-color: #FFFFFF;
+}
+
+.uploaded-card-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.change-image-btn,
+.remove-image-btn {
+  border: 1px solid #E5E2DE;
+  background-color: #FFFFFF;
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.2s ease;
+}
+
+.change-image-btn {
+  color: #722F37;
+}
+
+.change-image-btn:hover {
+  background-color: #F8F7F5;
+  border-color: #9B4A54;
+}
+
+.remove-image-btn {
+  color: #E53935;
+  border-color: #FFCDD2;
+  background-color: #FFF8F8;
+}
+
+.remove-image-btn:hover {
+  background-color: #FFEBEE;
+  border-color: #E53935;
+}
+
+.empty-preview-placeholder {
+  border: 1px dashed #E5E2DE;
+  border-radius: 6px;
+  height: 70px;
+  background-color: #FAF9F6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.placeholder-text {
+  font-size: 12px;
+  color: #999999;
+  font-style: italic;
+}
+
+.preview-error-text {
+  font-size: 11px;
+  color: #E53935;
+  font-style: italic;
+}
+
+.upload-progress-wrapper {
+  margin-top: 6px;
+}
+
+/* Date Picker styling override */
+::ng-deep .premium-datepicker {
+  width: 100% !important;
+  height: 42px !important;
+  border-radius: 6px !important;
+  border-color: #E5E2DE !important;
+}
+
+::ng-deep .premium-datepicker:hover {
+  border-color: #9B4A54 !important;
+}
+
+::ng-deep .premium-datepicker.ant-picker-focused {
+  border-color: #722F37 !important;
+  box-shadow: 0 0 0 3px rgba(114, 47, 55, 0.08) !important;
+}
+
+/* Drawer Footer position and styles */
+.drawer-footer {
+  position: sticky;
+  bottom: -20px;
+  margin-top: auto;
+  margin-left: -20px;
+  margin-right: -20px;
+  margin-bottom: -20px;
+  padding: 16px 20px;
+  border-top: 1px solid #E5E2DE;
+  background-color: #FFFFFF;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  z-index: 100;
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.03);
+}
+
+@media (max-width: 600px) {
+
+  ::ng-deep .ant-col-16,
+  ::ng-deep .ant-col-14,
+  ::ng-deep .ant-col-12,
+  ::ng-deep .ant-col-10,
+  ::ng-deep .ant-col-8 {
+    width: 100% !important;
+    max-width: 100% !important;
+    flex: 0 0 100% !important;
+  }
+
+  .disabled-input {
+    background-color: #F5F5F5 !important;
+    color: #8A8A8A !important;
+    cursor: not-allowed !important;
+    border-color: #E5E2DE !important;
+  }
+}

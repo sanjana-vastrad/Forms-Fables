@@ -1,0 +1,301 @@
+.city-master-page {
+  padding: 8px 0;
+  font-family: 'Inter', sans-serif !important;
+}
+
+.page-header-flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.page-subtitle {
+  font-size: 14px;
+  color: #6B6B6B;
+  margin: 0;
+}
+
+.table-card-wrapper {
+  margin-bottom: 0 !important;
+  padding: 0 !important;
+}
+
+.text-center {
+  text-align: center !important;
+}
+
+/* Custom Table overrides for Ng-Zorro Table */
+::ng-deep .premium-nz-table .ant-table {
+  background: transparent !important;
+  font-family: 'Inter', sans-serif !important;
+}
+
+::ng-deep .premium-nz-table .ant-table-thead > tr > th {
+  background-color: #FAF9F6 !important;
+  color: #292929 !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  border-bottom: 1px solid #E5E2DE !important;
+  padding: 14px 16px !important;
+}
+
+::ng-deep .premium-nz-table .ant-table-tbody > tr > td {
+  font-size: 14px !important;
+  color: #292929 !important;
+  padding: 14px 16px !important;
+  border-bottom: 1px solid #E5E2DE !important;
+  transition: background-color 0.15s ease !important;
+}
+
+::ng-deep .premium-nz-table .ant-table-tbody > tr:hover > td {
+  background-color: #FAF9F8 !important;
+}
+
+.state-cell {
+  font-weight: 500;
+}
+
+.city-name-cell {
+  font-weight: 600;
+  color: #722F37;
+}
+
+/* Icons & Actions buttons */
+.table-edit-btn,
+.status-active-btn,
+.status-inactive-btn {
+  background: transparent !important;
+  border: none !important;
+  padding: 4px !important;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.table-edit-btn {
+  font-size: 17px;
+  color: #6B6B6B !important;
+}
+
+.table-edit-btn:hover {
+  color: #722F37 !important;
+  background-color: #F8F7F5 !important;
+  transform: scale(1.05);
+}
+
+.status-active-btn {
+  font-size: 18px;
+  color: #2E7D32 !important;
+}
+
+.status-active-btn:hover {
+  color: #1B5E20 !important;
+  transform: scale(1.1);
+}
+
+.status-inactive-btn {
+  font-size: 18px;
+  color: #E53935 !important;
+  cursor: not-allowed;
+}
+
+/* Custom Drawer styling to align with premium SaaS design */
+::ng-deep .city-drawer .ant-drawer-content-wrapper {
+  box-shadow: -4px 0 24px rgba(114, 47, 55, 0.05) !important;
+}
+
+::ng-deep .city-drawer .ant-drawer-content {
+  border-radius: 12px 0 0 12px;
+  overflow: hidden;
+}
+
+::ng-deep .city-drawer .ant-drawer-header {
+  background: #FFFFFF;
+  border-bottom: 1px solid #E5E2DE;
+  padding: 16px 24px;
+}
+
+::ng-deep .city-drawer .ant-drawer-title {
+  font-family: 'Inter', sans-serif !important;
+  font-size: 18px !important;
+  font-weight: 600 !important;
+  color: #292929 !important;
+}
+
+::ng-deep .city-drawer .ant-drawer-close {
+  color: #8A8A8A !important;
+  transition: color 0.2s ease !important;
+}
+
+::ng-deep .city-drawer .ant-drawer-close:hover {
+  color: #722F37 !important;
+}
+
+::ng-deep .city-drawer .ant-drawer-body {
+  padding: 20px !important;
+  background-color: #FFFFFF;
+}
+
+/* Responsive design adjustments */
+@media (max-width: 768px) {
+  .page-header-flex {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .header-actions {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .table-search-input {
+    width: 100% !important;
+  }
+
+  .header-actions button {
+    width: 100%;
+  }
+
+  ::ng-deep .city-drawer .ant-drawer-content-wrapper {
+    width: 100% !important;
+  }
+}
+
+/* Search Input in Page Header */
+.search-input-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.table-search-input {
+  width: 240px !important;
+  height: 38px !important;
+  font-size: 13px !important;
+  padding: 8px 36px 8px 12px !important;
+}
+
+.search-input-icon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #8A8A8A;
+  font-size: 14px;
+  pointer-events: none;
+  transition: color 0.2s ease;
+}
+
+.table-search-input:focus + .search-input-icon {
+  color: #722F37;
+}
+
+/* Header actions layout */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Pagination Footer */
+.table-pagination-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background-color: #FAF9F6;
+  border-top: 1px solid #E5E2DE;
+  font-family: 'Inter', sans-serif !important;
+  font-size: 13px;
+  color: #6B6B6B;
+}
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.btn-pagination {
+  background-color: #FFFFFF;
+  border: 1px solid #E5E2DE;
+  border-radius: 4px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #292929;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.btn-pagination:hover:not(:disabled) {
+  border-color: #9B4A54;
+  color: #722F37;
+  background-color: #F8F7F5;
+}
+
+.btn-pagination:disabled {
+  color: #CCCCCC;
+  cursor: not-allowed;
+  background-color: #FAF9F6;
+}
+
+.pagination-current-page {
+  font-weight: 500;
+  color: #292929;
+}
+
+.empty-table-cell {
+  color: #8A8A8A;
+  padding: 30px !important;
+  font-style: italic;
+}
+
+/* Sortable Table Headers */
+.sortable-header {
+  cursor: pointer !important;
+  user-select: none !important;
+  transition: background-color 0.2s ease !important;
+}
+
+.sortable-header:hover {
+  background-color: #FAF6F0 !important;
+}
+
+.header-label-flex {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sort-icon-container {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+  margin-left: 6px;
+}
+
+.sort-icon-container .anticon {
+  font-size: 10px !important;
+  color: #CCCCCC !important;
+  line-height: 1 !important;
+  margin: -2px 0 !important;
+  transition: color 0.15s ease;
+  height: auto !important;
+  display: inline-block !important;
+}
+
+.sort-icon-container .anticon.active-sort {
+  color: #9B4A54 !important; /* Secondary Rose highlights active sorting */
+  font-weight: bold;
+}

@@ -1,0 +1,70 @@
+<form [formGroup]="faqForm" (ngSubmit)="submitForm()" class="add-faq-form">
+  <div class="form-body">
+    <!-- Question Field -->
+    <div class="form-field">
+      <label class="form-label"><span class="required-asterisk">*</span> Question</label>
+      <textarea
+        formControlName="question"
+        placeholder="Enter Question"
+        class="premium-input"
+        rows="3"
+      ></textarea>
+      <div class="form-error-msg" *ngIf="faqForm.get('question')?.dirty && faqForm.get('question')?.hasError('required')">
+        Question is required.
+      </div>
+    </div>
+
+    <!-- Answer Field -->
+    <div class="form-field">
+      <label class="form-label"><span class="required-asterisk">*</span> Answer</label>
+      <textarea
+        formControlName="answer"
+        placeholder="Enter Answer"
+        class="premium-input"
+        rows="5"
+      ></textarea>
+      <div class="form-error-msg" *ngIf="faqForm.get('answer')?.dirty && faqForm.get('answer')?.hasError('required')">
+        Answer is required.
+      </div>
+    </div>
+
+    <div style="display: flex; gap: 20px; margin-top: 8px;">
+      <!-- Active Status Field -->
+      <div class="form-field" style="flex: 1;">
+        <label class="form-label">Status</label>
+        <div class="status-switch-wrapper">
+          <nz-switch 
+            formControlName="isActive"
+            nzCheckedChildren="Active" 
+            nzUnCheckedChildren="Inactive">
+          </nz-switch>
+        </div>
+      </div>
+
+      <!-- Display Order Field -->
+      <div class="form-field" style="flex: 1;">
+        <label class="form-label"><span class="required-asterisk">*</span> Display Order</label>
+        <input
+          type="number"
+          formControlName="displayOrder"
+          class="premium-input disabled-input"
+          style="background-color: #f5f5f5; color: #a0a0a0; cursor: not-allowed;"
+          readonly
+        />
+        <div class="form-error-msg" *ngIf="faqForm.get('displayOrder')?.dirty && faqForm.get('displayOrder')?.hasError('required')">
+          Display Order is required.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer buttons -->
+  <div class="drawer-footer">
+    <button type="button" class="btn-secondary" (click)="handleCancel()" [disabled]="loading">
+      Cancel
+    </button>
+    <button type="submit" class="btn-primary" [disabled]="loading">
+      {{ loading ? 'Saving...' : 'Save' }}
+    </button>
+  </div>
+</form>

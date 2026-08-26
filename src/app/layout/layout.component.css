@@ -1,0 +1,603 @@
+:host {
+  display: block;
+  height: 100vh;
+  font-family: 'Inter', sans-serif !important;
+}
+
+/* ===== LAYOUT ===== */
+.app-layout {
+  min-height: 100vh;
+  background-color: #F8F7F5;
+}
+
+/* ===== SIDEBAR ===== */
+.app-sider {
+  background: #FFFFFF !important;
+  border-right: 1px solid #E5E2DE !important;
+  box-shadow: 2px 0 8px rgba(114, 47, 55, 0.01);
+  overflow-y: auto;
+  overflow-x: hidden;
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s ease;
+}
+
+.app-sider::-webkit-scrollbar {
+  width: 5px;
+}
+
+.app-sider::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.app-sider::-webkit-scrollbar-thumb {
+  background: #D5D2CE;
+  border-radius: 3px;
+}
+
+.app-sider::-webkit-scrollbar-thumb:hover {
+  background: #B8B5B1;
+}
+
+/* Logo Area */
+.sidebar-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+  transition: all 0.3s ease;
+  height: 60px;
+  box-sizing: border-box;
+}
+
+.sidebar-logo.collapsed {
+  padding: 20px 8px;
+}
+
+.sidebar-logo-img {
+  height: 38px;
+  width: auto;
+  max-width: 100%;
+  object-fit: contain;
+  transition: all 0.3s ease;
+}
+
+.sidebar-logo-icon {
+  height: 32px;
+  width: 32px;
+  object-fit: contain;
+  border-radius: 6px;
+}
+
+.sidebar-divider {
+  height: 1px;
+  background-color: #E5E2DE;
+  margin: 0 20px 12px 20px;
+}
+
+/* Navigation Menu */
+.sidebar-menu {
+  border-right: none !important;
+  flex: 1;
+}
+
+::ng-deep .sidebar-menu.ant-menu-inline {
+  border-right: none !important;
+}
+
+/* Menu Item Common */
+::ng-deep .sidebar-menu .ant-menu-item {
+  margin: 4px 12px !important;
+  padding-left: 16px !important;
+  border-radius: 6px !important;
+  height: 42px !important;
+  line-height: 42px !important;
+  color: #6B6B6B !important;
+  font-family: 'Inter', sans-serif !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  transition: all 0.2s cubic-bezier(0.645, 0.045, 0.355, 1) !important;
+  position: relative;
+}
+
+::ng-deep .sidebar-menu .ant-menu-item:hover {
+  background-color: #F8F7F5 !important;
+  color: #722F37 !important;
+}
+
+::ng-deep .sidebar-menu .ant-menu-item:hover .anticon {
+  color: #722F37 !important;
+}
+
+/* Active Menu Item State */
+::ng-deep .sidebar-menu .ant-menu-item-selected {
+  background-color: rgba(114, 47, 55, 0.06) !important;
+  color: #722F37 !important;
+  font-weight: 600 !important;
+}
+
+::ng-deep .sidebar-menu .ant-menu-item-selected .anticon {
+  color: #722F37 !important;
+}
+
+/* Left Indicator for Active State */
+::ng-deep .sidebar-menu .ant-menu-item-selected::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 12px;
+  bottom: 12px;
+  width: 3px;
+  background-color: #722F37;
+  border-radius: 0 4px 4px 0;
+}
+
+/* Menu Icons */
+::ng-deep .sidebar-menu .ant-menu-item .anticon,
+::ng-deep .sidebar-menu .ant-menu-submenu-title .anticon {
+  font-size: 16px !important;
+  color: #8A8A8A;
+  transition: color 0.2s ease;
+}
+
+/* Submenu Title */
+::ng-deep .sidebar-menu .ant-menu-submenu-title {
+  margin: 4px 12px !important;
+  padding-left: 16px !important;
+  border-radius: 6px !important;
+  height: 42px !important;
+  line-height: 42px !important;
+  color: #6B6B6B !important;
+  font-family: 'Inter', sans-serif !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  transition: all 0.2s ease !important;
+}
+
+::ng-deep .sidebar-menu .ant-menu-submenu-title:hover {
+  background-color: #F8F7F5 !important;
+  color: #722F37 !important;
+}
+
+::ng-deep .sidebar-menu .ant-menu-submenu-title:hover .anticon {
+  color: #722F37 !important;
+}
+
+::ng-deep .sidebar-menu .ant-menu-submenu-open > .ant-menu-submenu-title {
+  color: #722F37 !important;
+}
+
+::ng-deep .sidebar-menu .ant-menu-submenu-open > .ant-menu-submenu-title .anticon {
+  color: #722F37 !important;
+}
+
+::ng-deep .sidebar-menu .ant-menu-sub.ant-menu-inline {
+  background: transparent !important;
+}
+
+::ng-deep .sidebar-menu .ant-menu-sub .ant-menu-item {
+  padding-left: 48px !important;
+  height: 38px !important;
+  line-height: 38px !important;
+  font-size: 13px !important;
+}
+
+::ng-deep .sidebar-menu .ant-menu-submenu-arrow {
+  color: #999999 !important;
+}
+
+::ng-deep .sidebar-menu .ant-menu-submenu-open > .ant-menu-submenu-title .ant-menu-submenu-arrow {
+  color: #722F37 !important;
+}
+
+
+/* ===== CONTENT AREA ===== */
+.content-layout {
+  margin-left: 250px;
+  transition: margin-left 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  background: #F8F7F5;
+}
+
+.content-layout.content-collapsed {
+  margin-left: 72px;
+}
+
+
+/* ===== HEADER ===== */
+.app-header {
+  background: #FFFFFF !important;
+  padding: 0 24px !important;
+  height: 60px !important;
+  line-height: 60px !important;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #E5E2DE;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.01);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.sidebar-toggle {
+  font-size: 18px;
+  color: #6B6B6B;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 8px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sidebar-toggle:hover {
+  color: #722F37;
+  background-color: #F8F7F5;
+}
+
+/* Breadcrumbs */
+.header-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #6B6B6B;
+}
+
+.breadcrumb-parent {
+  color: #6B6B6B;
+}
+
+.breadcrumb-separator {
+  color: #B8B5B1;
+}
+
+.breadcrumb-current {
+  color: #292929;
+  font-weight: 600;
+}
+
+/* Header Right */
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-left: auto;
+}
+
+/* Notification Bell */
+.header-notification {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.header-notification:hover {
+  background-color: #F8F7F5;
+}
+
+.notification-icon {
+  font-size: 18px;
+  color: #6B6B6B;
+  transition: color 0.2s ease;
+}
+
+.header-notification:hover .notification-icon {
+  color: #722F37;
+}
+
+.notification-badge {
+  position: absolute;
+  top: 8px;
+  right: 9px;
+  width: 7px;
+  height: 7px;
+  background-color: #E53935;
+  border-radius: 50%;
+  border: 1.5px solid #FFFFFF;
+}
+
+/* Vertical Separator */
+.header-sep {
+  width: 1px;
+  height: 20px;
+  background-color: #E5E2DE;
+}
+
+/* Profile Dropdown trigger */
+.header-profile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+}
+
+.header-profile:hover {
+  background-color: #F8F7F5;
+}
+
+::ng-deep .header-avatar {
+  background: linear-gradient(135deg, #722F37, #9B4A54) !important;
+  color: #FFFFFF !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+}
+
+.header-user-details {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.header-username {
+  font-size: 14px;
+  font-weight: 600;
+  color: #292929;
+}
+
+.header-role {
+  font-size: 11px;
+  color: #6B6B6B;
+  font-weight: 500;
+}
+
+.header-profile-arrow {
+  font-size: 10px;
+  color: #8A8A8A;
+  transition: transform 0.2s ease;
+}
+
+.header-profile:hover .header-profile-arrow {
+  color: #722F37;
+}
+
+/* Dropdown Menu */
+::ng-deep .header-profile-menu {
+  min-width: 170px;
+  padding: 4px 0;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  border: 1px solid #E5E2DE;
+  background-color: #FFFFFF !important;
+}
+
+::ng-deep .header-profile-menu .ant-dropdown-menu-item {
+  padding: 10px 16px !important;
+  font-size: 14px !important;
+  font-family: 'Inter', sans-serif !important;
+  color: #292929 !important;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.15s ease !important;
+}
+
+::ng-deep .header-profile-menu .ant-dropdown-menu-item:hover {
+  background-color: #FDF5F6 !important;
+  color: #722F37 !important;
+}
+
+::ng-deep .header-profile-menu .ant-dropdown-menu-item:hover .anticon {
+  color: #722F37 !important;
+}
+
+::ng-deep .header-profile-menu .ant-dropdown-menu-item .anticon {
+  font-size: 15px;
+  color: #8A8A8A;
+  transition: color 0.15s ease;
+  margin-right: 10px !important;
+}
+
+::ng-deep .header-profile-menu .ant-dropdown-menu-item-divider {
+  margin: 4px 12px !important;
+  background: #E5E2DE !important;
+}
+
+
+/* ===== CONTENT ===== */
+.app-content {
+  min-height: calc(100vh - 60px);
+}
+
+.content-wrapper {
+  padding: 24px;
+}
+
+
+/* ===== CHANGE PASSWORD MODAL ===== */
+::ng-deep .change-password-modal .ant-modal-content {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+  border: 1px solid #E5E2DE;
+}
+
+::ng-deep .change-password-modal .ant-modal-header {
+  background: #FFFFFF;
+  border-bottom: 1px solid #E5E2DE;
+  padding: 12px 20px;
+}
+
+::ng-deep .change-password-modal .ant-modal-title {
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: #292929;
+}
+
+::ng-deep .change-password-modal .ant-modal-close {
+  color: #8A8A8A;
+  transition: color 0.2s ease;
+  top: 10px;
+}
+
+::ng-deep .change-password-modal .ant-modal-close:hover {
+  color: #722F37;
+}
+
+::ng-deep .change-password-modal .ant-modal-body {
+  padding: 16px 20px 4px 20px;
+}
+
+::ng-deep .change-password-modal .ant-modal-footer {
+  border-top: 1px solid #E5E2DE;
+  padding: 10px 20px;
+}
+
+/* Form Styling */
+.change-password-form {
+  font-family: 'Inter', sans-serif;
+}
+
+.cp-field {
+  margin-bottom: 12px;
+}
+
+.cp-field:last-child {
+  margin-bottom: 4px;
+}
+
+.cp-label {
+  display: block;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: #292929;
+  margin-bottom: 2px;
+}
+
+.cp-required {
+  color: #E53935 !important;
+  margin-right: 3px;
+  font-weight: bold;
+}
+
+.cp-error {
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  color: #E53935 !important;
+  margin-top: 2px;
+  line-height: 1.3;
+}
+
+/* Input Groups */
+::ng-deep .cp-input-group.ant-input-affix-wrapper {
+  border: 1px solid #E5E2DE !important;
+  border-radius: 6px !important;
+  height: 36px !important;
+  transition: all 0.2s ease !important;
+  background: #FFFFFF !important;
+  padding: 0 10px !important;
+  display: flex !important;
+  align-items: center !important;
+  box-sizing: border-box !important;
+}
+
+::ng-deep .cp-input-group.ant-input-affix-wrapper:hover {
+  border-color: #9B4A54 !important;
+}
+
+::ng-deep .cp-input-group.ant-input-affix-wrapper-focused,
+::ng-deep .cp-input-group.ant-input-affix-wrapper:focus-within {
+  border-color: #722F37 !important;
+  box-shadow: 0 0 0 3px rgba(114, 47, 55, 0.08) !important;
+}
+
+::ng-deep .cp-input-group.ant-input-affix-wrapper input.cp-input.ant-input {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  height: 100% !important;
+  padding: 0 6px !important;
+  margin: 0 !important;
+  color: #292929 !important;
+  font-family: 'Inter', sans-serif !important;
+  font-size: 13px !important;
+}
+
+::ng-deep .cp-input-group.ant-input-affix-wrapper input.cp-input.ant-input::placeholder {
+  color: #999999 !important;
+  font-weight: 400 !important;
+}
+
+::ng-deep .cp-input-icon {
+  color: #999999 !important;
+  font-size: 14px !important;
+}
+
+::ng-deep .cp-toggle-icon {
+  color: #999999 !important;
+  font-size: 14px !important;
+  cursor: pointer !important;
+  transition: color 0.2s ease !important;
+}
+
+::ng-deep .cp-toggle-icon:hover {
+  color: #722F37 !important;
+}
+
+/* Footer Buttons */
+.cp-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+::ng-deep .cp-cancel-btn {
+  font-family: 'Inter', sans-serif !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  height: 34px !important;
+  padding: 0 18px !important;
+  border-radius: 6px !important;
+  border: 1px solid #E5E2DE !important;
+  color: #6B6B6B !important;
+  transition: all 0.2s ease !important;
+}
+
+::ng-deep .cp-cancel-btn:hover {
+  border-color: #722F37 !important;
+  color: #722F37 !important;
+  background-color: #F8F7F5 !important;
+}
+
+::ng-deep .cp-save-btn {
+  font-family: 'Inter', sans-serif !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  height: 34px !important;
+  padding: 0 22px !important;
+  border-radius: 6px !important;
+  background: #722F37 !important;
+  border: none !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 2px 4px rgba(114, 47, 55, 0.15) !important;
+  transition: all 0.2s ease !important;
+}
+
+::ng-deep .cp-save-btn:hover {
+  background: #5E2730 !important;
+  box-shadow: 0 4px 8px rgba(114, 47, 55, 0.25) !important;
+}

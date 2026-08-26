@@ -1,0 +1,78 @@
+<div class="master-dashboard-page">
+  <!-- Page Header -->
+  <div class="master-header">
+    <div>
+      <h2 class="page-title">Master Dashboard</h2>
+      <p class="page-subtitle">Configure system settings, user roles, security rules, and global access keys.</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn-primary">
+        <span nz-icon nzType="plus" nzTheme="outline"></span>
+        Create New Role
+      </button>
+    </div>
+  </div>
+
+  <!-- Quick Info Row -->
+  <div class="quick-info-row">
+    <div class="premium-card info-card">
+      <span class="info-title">System Users</span>
+      <span class="info-value">62 Active</span>
+    </div>
+    <div class="premium-card info-card">
+      <span class="info-title">Total User Roles</span>
+      <span class="info-value">5 Defined</span>
+    </div>
+    <div class="premium-card info-card">
+      <span class="info-title">API Keys</span>
+      <span class="info-value">4 Active</span>
+    </div>
+  </div>
+
+  <!-- Roles Management Section -->
+  <div class="premium-card roles-card">
+    <div class="card-header-flex">
+      <h3 class="card-heading">Roles & Permissions</h3>
+      <button class="btn-secondary">
+        <span nz-icon nzType="setting" nzTheme="outline"></span>
+        Global Settings
+      </button>
+    </div>
+    <p class="card-subheading">Manage standard roles and their assignment counts.</p>
+
+    <div class="premium-table-container">
+      <table class="premium-table">
+        <thead>
+          <tr>
+            <th>Role Name</th>
+            <th>Description</th>
+            <th>Assigned Users</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let role of roles">
+            <td class="role-name-cell">{{ role.roleName }}</td>
+            <td class="description-cell">{{ role.description }}</td>
+            <td class="users-count-cell">{{ role.usersCount }} Users</td>
+            <td>
+              <span class="badge" [ngClass]="{
+                'badge-active': role.status === 'Active',
+                'badge-inactive': role.status === 'Inactive'
+              }">
+                {{ role.status }}
+              </span>
+            </td>
+            <td>
+              <div class="table-actions">
+                <span nz-icon nzType="edit" nzTheme="outline" class="action-icon edit-icon" nzTooltipTitle="Edit Role"></span>
+                <span nz-icon nzType="delete" nzTheme="outline" class="action-icon delete-icon" nzTooltipTitle="Delete Role"></span>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
