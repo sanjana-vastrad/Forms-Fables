@@ -429,6 +429,120 @@ export class ApiServiceService {
     );
   }
 
+  // ===== Design Idea Category APIs =====
+  getDesignIdeaCategories(
+    page: number = 1,
+    limit: number = 10,
+    search: string = '',
+    sortBy: string = 'displayOrder',
+    sortOrder: string = 'ASC'
+  ): Observable<any> {
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('limit', limit.toString())
+      .set('sortBy', sortBy)
+      .set('sortOrder', sortOrder);
+
+    if (search) {
+      params = params.set('search', search);
+    }
+
+    const authOptions = this.getAuthOptions();
+    const requestOptions = {
+      headers: authOptions.headers,
+      params: params
+    };
+
+    return this.httpClient.get<any>(environment.authUrl + 'api/v1/design-idea-categories', requestOptions);
+  }
+
+  createDesignIdeaCategory(categoryData: { name: string, displayOrder?: number, isActive?: boolean }): Observable<any> {
+    return this.httpClient.post<any>(environment.authUrl + 'api/v1/design-idea-categories', categoryData, this.getAuthOptions());
+  }
+
+  updateDesignIdeaCategory(id: string | number, categoryData: { name?: string, displayOrder?: number, isActive?: boolean }): Observable<any> {
+    return this.httpClient.put<any>(environment.authUrl + `api/v1/design-idea-categories/${id}`, categoryData, this.getAuthOptions());
+  }
+
+  reorderDesignIdeaCategories(items: { id: string | number, displayOrder: number }[]): Observable<any> {
+    return this.httpClient.patch<any>(environment.authUrl + `api/v1/design-idea-categories/reorder`, { items }, this.getAuthOptions());
+  }
+
+  toggleDesignIdeaCategoryActiveStatus(id: string | number, isActive: boolean): Observable<any> {
+    return this.httpClient.put<any>(environment.authUrl + `api/v1/design-idea-categories/${id}`, { isActive }, this.getAuthOptions());
+  }
+
+  deleteDesignIdeaCategory(id: string | number): Observable<any> {
+    return this.httpClient.delete<any>(environment.authUrl + `api/v1/design-idea-categories/${id}`, this.getAuthOptions());
+  }
+
+  // ===== Project Category APIs =====
+  getProjectCategories(
+    page: number = 1,
+    limit: number = 10,
+    search: string = '',
+    sortBy: string = 'displayOrder',
+    sortOrder: string = 'ASC'
+  ): Observable<any> {
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('limit', limit.toString())
+      .set('sortBy', sortBy)
+      .set('sortOrder', sortOrder);
+
+    if (search) {
+      params = params.set('search', search);
+    }
+
+    const authOptions = this.getAuthOptions();
+    const requestOptions = {
+      headers: authOptions.headers,
+      params: params
+    };
+
+    return this.httpClient.get<any>(environment.authUrl + 'api/v1/project-categories', requestOptions);
+  }
+
+  createProjectCategory(categoryData: { name: string, displayOrder?: number, isActive?: boolean }): Observable<any> {
+    return this.httpClient.post<any>(environment.authUrl + 'api/v1/project-categories', categoryData, this.getAuthOptions());
+  }
+
+  updateProjectCategory(id: string | number, categoryData: { name?: string, displayOrder?: number, isActive?: boolean }): Observable<any> {
+    return this.httpClient.put<any>(environment.authUrl + `api/v1/project-categories/${id}`, categoryData, this.getAuthOptions());
+  }
+
+  reorderProjectCategories(items: { id: string | number, displayOrder: number }[]): Observable<any> {
+    return this.httpClient.patch<any>(environment.authUrl + `api/v1/project-categories/reorder`, { items }, this.getAuthOptions());
+  }
+
+  toggleProjectCategoryActiveStatus(id: string | number, isActive: boolean): Observable<any> {
+    return this.httpClient.put<any>(environment.authUrl + `api/v1/project-categories/${id}`, { isActive }, this.getAuthOptions());
+  }
+
+  deleteProjectCategory(id: string | number): Observable<any> {
+    return this.httpClient.delete<any>(environment.authUrl + `api/v1/project-categories/${id}`, this.getAuthOptions());
+  }
+
+  // --- Services API ---
+  getServices(): Observable<any> {
+    return this.httpClient.get<any>(environment.authUrl + 'api/v1/services', this.getAuthOptions());
+  }
+
+  getServiceByIdOrSlug(idOrSlug: string | number): Observable<any> {
+    return this.httpClient.get<any>(environment.authUrl + `api/v1/services/${idOrSlug}`, this.getAuthOptions());
+  }
+
+  createService(data: any): Observable<any> {
+    return this.httpClient.post<any>(environment.authUrl + 'api/v1/services', data, this.getAuthOptions());
+  }
+
+  updateService(id: string | number, data: any): Observable<any> {
+    return this.httpClient.put<any>(environment.authUrl + `api/v1/services/${id}`, data, this.getAuthOptions());
+  }
+
+  reorderServices(data: any): Observable<any> {
+    return this.httpClient.patch<any>(environment.authUrl + 'api/v1/services/reorder', data, this.getAuthOptions());
+  }
   fetchImageBlob(imageUrl: string): Observable<Blob> {
     let fullUrl = imageUrl;
     if (!fullUrl.startsWith('http://') && !fullUrl.startsWith('https://') && !fullUrl.startsWith('data:') && !fullUrl.startsWith('blob:')) {

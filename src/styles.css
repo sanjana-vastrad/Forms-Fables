@@ -1,4 +1,5 @@
 /* ===== Global Variables & Design Tokens ===== */
+
 :root {
   --primary-burgundy: #722F37;
   --secondary-burgundy: #9B4A54;
@@ -304,4 +305,30 @@ h1, h2, h3, h4, h5, h6 {
 
 .ant-switch-checked:hover {
   background-color: var(--secondary-burgundy) !important;
+}
+
+/* ===== Ng-Zorro Primary Button Theme Colors ===== */
+.ant-btn-primary {
+  background-color: var(--primary-burgundy) !important;
+  border-color: var(--primary-burgundy) !important;
+}
+
+.ant-btn-primary:hover, .ant-btn-primary:focus {
+  background-color: var(--secondary-burgundy) !important;
+  border-color: var(--secondary-burgundy) !important;
+}
+
+/* ===== Ng-Zorro Default Button Theme Colors (Cancel, etc.) ===== */
+.ant-btn-default, .ant-popover-buttons .ant-btn:not(.ant-btn-primary), .ant-modal-footer .ant-btn:not(.ant-btn-primary) {
+  background-color: #FFFFFF !important;
+  border-color: var(--border-color) !important;
+  color: var(--text-primary) !important;
+}
+
+.ant-btn-default:hover, .ant-btn-default:focus,
+.ant-popover-buttons .ant-btn:not(.ant-btn-primary):hover, .ant-popover-buttons .ant-btn:not(.ant-btn-primary):focus,
+.ant-modal-footer .ant-btn:not(.ant-btn-primary):hover, .ant-modal-footer .ant-btn:not(.ant-btn-primary):focus {
+  border-color: var(--primary-burgundy) !important;
+  color: var(--primary-burgundy) !important;
+  background-color: #FDF5F6 !important;
 }
