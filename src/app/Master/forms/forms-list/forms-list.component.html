@@ -1,0 +1,163 @@
+<div class="forms-master-page">
+  <!-- Page Header -->
+  <div class="page-header-flex">
+    <div>
+      <h2 class="page-title">Form Master</h2>
+    </div>
+    <div class="header-actions">
+      <div class="search-input-wrapper">
+        <input
+          type="text"
+          [(ngModel)]="searchQuery"
+          (ngModelChange)="onSearch()"
+          placeholder="Search forms..."
+          class="premium-input table-search-input"
+        />
+        <span nz-icon nzType="search" nzTheme="outline" class="search-input-icon"></span>
+      </div>
+      <button class="btn-primary" (click)="openAddDrawer()">
+        <span nz-icon nzType="plus" nzTheme="outline"></span>
+        Add New Form
+      </button>
+    </div>
+  </div>
+
+  <!-- Form List Table -->
+  <div class="table-card-wrapper">
+    <div class="premium-table-container">
+      <div class="table-scroll-wrapper">
+        <table class="premium-table" style="min-width: 900px;">
+          <thead>
+            <tr>
+              <th style="width: 80px;" class="text-center">Action</th>
+              <th class="sortable-header" (click)="toggleSort('name')">
+                <span class="header-label-flex">
+                  Form Name
+                  <span class="sort-icon-container">
+                    <span nz-icon nzType="caret-up" [class.active-sort]="sortBy === 'name' && sortOrder === 'ASC'"></span>
+                    <span nz-icon nzType="caret-down" [class.active-sort]="sortBy === 'name' && sortOrder === 'DESC'"></span>
+                  </span>
+                </span>
+              </th>
+              <th>Slug</th>
+              <th>Route Path</th>
+              <th>Description</th>
+              <th style="width: 110px;" class="text-center">Display Order</th>
+              <th style="width: 110px;" class="text-center">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let data of forms">
+              <!-- Edit Action -->
+              <td class="text-center">
+                <button
+                  type="button"
+                  class="table-edit-btn"
+                  (click)="openEditDrawer(data)"
+                  nz-tooltip
+                  nzTooltipTitle="Edit Form"
+                >
+                  <span nz-icon nzType="edit" nzTheme="outline"></span>
+                </button>
+              </td>
+
+              <!-- Name -->
+              <td class="form-name-cell">{{ data.name }}</td>
+
+              <!-- Slug -->
+              <td>
+                <span *ngIf="data.slug" class="slug-badge"><code>{{ data.slug }}</code></span>
+                <span *ngIf="!data.slug" class="muted-text">—</span>
+              </td>
+
+              <!-- Route Path -->
+              <td>
+                <span *ngIf="data.routePath" class="route-badge">{{ data.routePath }}</span>
+                <span *ngIf="!data.routePath" class="muted-text">—</span>
+              </td>
+
+              <!-- Description -->
+              <td nz-tooltip [nzTooltipTitle]="data.description">
+                <span class="truncated-text" style="max-width: 220px; display: inline-block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                  {{ data.description || '—' }}
+                </span>
+              </td>
+
+              <!-- Display Order -->
+              <td class="text-center font-medium">{{ data.displayOrder || '—' }}</td>
+
+              <!-- Active Status Switch -->
+              <td class="text-center">
+                <div class="status-switch-wrapper">
+                  <nz-switch
+                    [ngModel]="data.isActive"
+                    (ngModelChange)="toggleStatus(data, $event)"
+                    [nzLoading]="updatingStatusId === data.id"
+                    nzCheckedChildren="Active"
+                    nzUnCheckedChildren="Inactive"
+                  ></nz-switch>
+                </div>
+              </td>
+            </tr>
+
+            <!-- Empty Table Row -->
+            <tr *ngIf="forms.length === 0 && !loading">
+              <td colspan="7" class="text-center empty-table-cell">
+                <nz-empty nzNotFoundImage="simple"></nz-empty>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination Footer -->
+      <div class="table-pagination-footer" *ngIf="totalCount > 0">
+        <div class="pagination-info">
+          Showing {{ showingStart() }} to {{ showingEnd() }} of {{ totalCount }} forms
+        </div>
+        <div class="pagination-controls">
+          <button
+            type="button"
+            class="btn-pagination"
+            [disabled]="pageIndex === 1"
+            (click)="prevPage()"
+          >
+            Previous
+          </button>
+          <span class="pagination-current-page">
+            Page {{ pageIndex }} of {{ totalPages() }}
+          </span>
+          <button
+            type="button"
+            class="btn-pagination"
+            [disabled]="pageIndex === totalPages()"
+            (click)="nextPage()"
+          >
+            Next
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add/Edit Form Drawer -->
+<nz-drawer
+  *ngIf="drawerVisible"
+  [nzVisible]="drawerVisible"
+  nzPlacement="right"
+  [nzWidth]="480"
+  [nzTitle]="selectedForm ? 'Edit Form' : 'Add New Form'"
+  [nzClosable]="true"
+  (nzOnClose)="closeDrawer()"
+  class="form-drawer"
+>
+  <ng-container *nzDrawerContent>
+    <app-add-form
+      [formToEdit]="selectedForm"
+      [nextDisplayOrder]="nextDisplayOrder"
+      (onSave)="handleSaveSuccess()"
+      (onCancel)="closeDrawer()"
+    ></app-add-form>
+  </ng-container>
+</nz-drawer>

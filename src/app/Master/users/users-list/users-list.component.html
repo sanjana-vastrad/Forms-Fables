@@ -1,0 +1,181 @@
+<div class="users-master-page">
+  <!-- Page Header -->
+  <div class="page-header-flex">
+    <div>
+      <h2 class="page-title">User Master</h2>
+    </div>
+    <div class="header-actions">
+      <div class="search-input-wrapper">
+        <input
+          type="text"
+          [(ngModel)]="searchQuery"
+          (ngModelChange)="onSearch()"
+          placeholder="Search users..."
+          class="premium-input table-search-input"
+        />
+        <span nz-icon nzType="search" nzTheme="outline" class="search-input-icon"></span>
+      </div>
+      <button class="btn-primary" (click)="openAddDrawer()">
+        <span nz-icon nzType="plus" nzTheme="outline"></span>
+        Add New User
+      </button>
+    </div>
+  </div>
+
+  <!-- User List Table Container -->
+  <div class="table-card-wrapper">
+    <div class="premium-table-container">
+      <div class="table-scroll-wrapper">
+        <table class="premium-table" style="min-width: 850px;">
+          <thead>
+            <tr>
+              <th style="width: 80px;" class="text-center">Action</th>
+              <th style="width: 70px;" class="text-center">Photo</th>
+              <th class="sortable-header" (click)="toggleSort('name')">
+                <span class="header-label-flex">
+                  User Name
+                  <span class="sort-icon-container">
+                    <span nz-icon nzType="caret-up" [class.active-sort]="sortBy === 'name' && sortOrder === 'ASC'"></span>
+                    <span nz-icon nzType="caret-down" [class.active-sort]="sortBy === 'name' && sortOrder === 'DESC'"></span>
+                  </span>
+                </span>
+              </th>
+              <th>Email</th>
+              <th>Mobile No</th>
+              <th>Role</th>
+              <th style="width: 110px;" class="text-center">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Table API Pending Loader Row -->
+            <tr *ngIf="loading">
+              <td colspan="7" class="text-center" style="padding: 48px 16px; background-color: #FFFFFF;">
+                <nz-spin nzSimple nzSize="large" nzTip="Loading records..."></nz-spin>
+              </td>
+            </tr>
+
+            <!-- Table Data Rows -->
+            <ng-container *ngIf="!loading">
+              <tr *ngFor="let data of users">
+                <!-- Edit Action -->
+                <td class="text-center">
+                  <button
+                    type="button"
+                    class="table-edit-btn"
+                    (click)="openEditDrawer(data)"
+                    nz-tooltip
+                    nzTooltipTitle="Edit User"
+                  >
+                    <span nz-icon nzType="edit" nzTheme="outline"></span>
+                  </button>
+                </td>
+
+                <!-- Photo Thumbnail -->
+                <td class="text-center">
+                  <nz-avatar
+                    *ngIf="data.profilePhoto"
+                    [nzSrc]="getAbsoluteImageUrl(data.profilePhoto)"
+                    [nzSize]="36"
+                    nzShape="circle"
+                  ></nz-avatar>
+                  <nz-avatar
+                    *ngIf="!data.profilePhoto"
+                    nzIcon="user"
+                    [nzSize]="36"
+                    nzShape="circle"
+                    style="background-color: #722F37;"
+                  ></nz-avatar>
+                </td>
+
+                <!-- User Name -->
+                <td class="user-name-cell">{{ data.name }}</td>
+
+                <!-- Email -->
+                <td>{{ data.email }}</td>
+
+                <!-- Mobile No -->
+                <td>{{ data.mobileno }}</td>
+
+                <!-- Role -->
+                <td>
+                  <span class="role-badge-cell">{{ data.roleName || '—' }}</span>
+                </td>
+
+                <!-- Active Status Switch -->
+                <td class="text-center">
+                  <div class="status-switch-wrapper">
+                    <nz-switch
+                      [ngModel]="data.isActive"
+                      (ngModelChange)="toggleStatus(data, $event)"
+                      [nzLoading]="updatingStatusId === data.id"
+                      nzCheckedChildren="Active"
+                      nzUnCheckedChildren="Inactive"
+                    ></nz-switch>
+                  </div>
+                </td>
+              </tr>
+            </ng-container>
+
+            <!-- Empty Table Row -->
+            <tr *ngIf="users.length === 0 && !loading">
+              <td colspan="7" class="text-center empty-table-cell">
+                <nz-empty nzNotFoundImage="simple"></nz-empty>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination Footer -->
+      <div class="table-pagination-footer" *ngIf="totalCount > 0">
+        <div class="pagination-info">
+          Showing {{ showingStart() }} to {{ showingEnd() }} of {{ totalCount }} users
+        </div>
+        <div class="pagination-controls">
+          <button
+            type="button"
+            class="btn-pagination"
+            [disabled]="pageIndex === 1 || loading"
+            (click)="prevPage()"
+          >
+            <span *ngIf="loading && pageDirection === 'prev'" nz-icon nzType="loading" nzTheme="outline" style="margin-right: 6px;"></span>
+            Previous
+          </button>
+          <span class="pagination-current-page">
+            Page {{ pageIndex }} of {{ totalPages() }}
+            <span *ngIf="loading && !pageDirection" nz-icon nzType="loading" nzTheme="outline" style="margin-left: 6px; color: #722F37;"></span>
+          </span>
+          <button
+            type="button"
+            class="btn-pagination"
+            [disabled]="pageIndex === totalPages() || loading"
+            (click)="nextPage()"
+          >
+            Next
+            <span *ngIf="loading && pageDirection === 'next'" nz-icon nzType="loading" nzTheme="outline" style="margin-left: 6px;"></span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add/Edit User Drawer -->
+<nz-drawer
+  *ngIf="drawerVisible"
+  [nzVisible]="drawerVisible"
+  nzPlacement="right"
+  [nzWidth]="440"
+  [nzTitle]="selectedUser ? 'Edit User' : 'Add New User'"
+  [nzClosable]="true"
+  (nzOnClose)="closeDrawer()"
+  class="user-drawer"
+>
+  <ng-container *nzDrawerContent>
+    <app-add-user
+      [userToEdit]="selectedUser"
+      (onSave)="handleSaveSuccess()"
+      (onCancel)="closeDrawer()"
+    ></app-add-user>
+  </ng-container>
+</nz-drawer>

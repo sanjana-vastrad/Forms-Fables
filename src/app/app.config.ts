@@ -7,6 +7,7 @@ import { en_US, provideNzI18n } from 'ng-zorro-antd/i18n';
 import { registerLocaleData } from '@angular/common';
 import en from '@angular/common/locales/en';
 import { FormsModule } from '@angular/forms';
+import { BidiModule } from '@angular/cdk/bidi';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideHttpClient, withFetch } from '@angular/common/http';
 import { provideNzIcons } from 'ng-zorro-antd/icon';
@@ -94,7 +95,7 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideClientHydration(withEventReplay()),
     provideNzI18n(en_US),
-    importProvidersFrom(FormsModule),
+    importProvidersFrom(FormsModule, BidiModule),
     provideAnimationsAsync(),
     provideHttpClient(withFetch()),
     provideNzIcons(icons)

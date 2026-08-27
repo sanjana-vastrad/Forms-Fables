@@ -290,18 +290,22 @@ export class ApiServiceService {
     );
   }
 
-  private getAuthOptions() {
+  getAuthToken(): string {
     let token = '';
     if (typeof window !== 'undefined' && window.localStorage) {
       token = localStorage.getItem('token') || '';
     }
-    // Fallback to cookie if localStorage is empty
     if (!token && this.cookie) {
       token = this.cookie.get('token') || '';
       if (token && typeof window !== 'undefined' && window.localStorage) {
         localStorage.setItem('token', token);
       }
     }
+    return token;
+  }
+
+  private getAuthOptions() {
+    const token = this.getAuthToken();
     return {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
@@ -318,12 +322,9 @@ export class ApiServiceService {
     sortBy: string = 'name',
     sortOrder: string = 'DESC'
   ): Observable<any> {
-    let token = '';
-    if (typeof window !== 'undefined' && window.localStorage) {
-      token = localStorage.getItem('token') || '';
-    }
-    if (!token && this.cookie) {
-      token = this.cookie.get('token') || '';
+    const token = this.getAuthToken();
+    if (!token) {
+      return of({ success: false, data: { items: [], total: 0 }, message: 'Authentication token missing.' });
     }
 
     let params = new HttpParams()
@@ -405,7 +406,7 @@ export class ApiServiceService {
     return this.httpClient.delete<any>(environment.authUrl + `api/v1/faqs/${id}`, this.getAuthOptions());
   }
 
-  uploadImage(file: File, folderName: string = 'banner'): Observable<any> {
+  uploadImage(file: File, folderName: string = 'userProfilePhoto'): Observable<any> {
     const formData = new FormData();
     formData.append('image', file);
 
@@ -426,6 +427,275 @@ export class ApiServiceService {
       formData,
       { headers }
     );
+  }
+
+  fetchImageBlob(imageUrl: string): Observable<Blob> {
+    let fullUrl = imageUrl;
+    if (!fullUrl.startsWith('http://') && !fullUrl.startsWith('https://') && !fullUrl.startsWith('data:') && !fullUrl.startsWith('blob:')) {
+      const baseUrl = (environment.authUrl || '').trim().replace(/\/+$/, '');
+      const relativePath = imageUrl.replace(/^\/+/, '');
+      fullUrl = `${baseUrl}/${relativePath}`;
+    }
+
+    let token = '';
+    if (typeof window !== 'undefined' && window.localStorage) {
+      token = localStorage.getItem('token') || '';
+    }
+    if (!token && this.cookie) {
+      token = this.cookie.get('token') || '';
+    }
+
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
+
+    return this.httpClient.get(fullUrl, {
+      headers,
+      responseType: 'blob'
+    });
+  }
+
+  // ===== Form Master V1 APIs =====
+  getV1Forms(
+    page: number = 1,
+    limit: number = 10,
+    search: string = '',
+    sortBy: string = 'name',
+    sortOrder: string = 'DESC'
+  ): Observable<any> {
+    const token = this.getAuthToken();
+    if (!token) {
+      return of({ success: false, data: { items: [], total: 0 }, message: 'Authentication token missing.' });
+    }
+
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('limit', limit.toString())
+      .set('sortBy', sortBy)
+      .set('sortOrder', sortOrder)
+      .set('token', token);
+
+    if (search) {
+      params = params.set('search', search);
+    }
+
+    const authOptions = this.getAuthOptions();
+    const requestOptions = {
+      headers: authOptions.headers,
+      params: params
+    };
+
+    return this.httpClient.get<any>(environment.authUrl + 'api/v1/forms', requestOptions);
+  }
+
+  getV1FormById(id: string | number): Observable<any> {
+    return this.httpClient.get<any>(environment.authUrl + `api/v1/forms/${id}`, this.getAuthOptions());
+  }
+
+  createV1Form(formData: {
+    name: string;
+    slug?: string;
+    routePath?: string;
+    description?: string;
+    displayOrder?: number;
+    isActive?: boolean;
+  }): Observable<any> {
+    return this.httpClient.post<any>(environment.authUrl + 'api/v1/forms', formData, this.getAuthOptions());
+  }
+
+  updateV1Form(
+    id: string | number,
+    formData: {
+      name?: string;
+      slug?: string;
+      routePath?: string;
+      description?: string;
+      displayOrder?: number;
+      isActive?: boolean;
+    }
+  ): Observable<any> {
+    return this.httpClient.put<any>(environment.authUrl + `api/v1/forms/${id}`, formData, this.getAuthOptions());
+  }
+
+  deactivateV1Form(id: string | number): Observable<any> {
+    return this.httpClient.patch<any>(environment.authUrl + `api/v1/forms/${id}/deactivate`, {}, this.getAuthOptions());
+  }
+
+  // ===== Role Master V1 APIs =====
+  getV1Roles(
+    page: number = 1,
+    limit: number = 10,
+    search: string = '',
+    sortBy: string = 'name',
+    sortOrder: string = 'DESC'
+  ): Observable<any> {
+    const token = this.getAuthToken();
+    if (!token) {
+      return of({ success: false, data: { items: [], total: 0 }, message: 'Authentication token missing.' });
+    }
+
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('limit', limit.toString())
+      .set('pageSize', limit.toString())
+      .set('pageIndex', page.toString())
+      .set('sortBy', sortBy)
+      .set('sortOrder', sortOrder)
+      .set('token', token);
+
+    if (search) {
+      params = params.set('search', search);
+    }
+
+    const authOptions = this.getAuthOptions();
+    const requestOptions = {
+      headers: authOptions.headers,
+      params: params
+    };
+
+    return this.httpClient.get<any>(environment.authUrl + 'api/v1/roles', requestOptions);
+  }
+
+  getV1RoleById(id: string | number): Observable<any> {
+    return this.httpClient.get<any>(environment.authUrl + `api/v1/roles/${id}`, this.getAuthOptions());
+  }
+
+  createV1Role(roleData: {
+    name: string;
+    parentId?: number | string | null;
+    parentRoleName?: string;
+    description?: string;
+    isActive?: boolean;
+  }): Observable<any> {
+    return this.httpClient.post<any>(environment.authUrl + 'api/v1/roles', roleData, this.getAuthOptions());
+  }
+
+  updateV1Role(
+    id: string | number,
+    roleData: {
+      name?: string;
+      parentId?: number | string | null;
+      parentRoleName?: string;
+      description?: string;
+      isActive?: boolean;
+    }
+  ): Observable<any> {
+    return this.httpClient.put<any>(environment.authUrl + `api/v1/roles/${id}`, roleData, this.getAuthOptions());
+  }
+
+  activateV1Role(id: string | number): Observable<any> {
+    return this.httpClient.patch<any>(environment.authUrl + `api/v1/roles/${id}/activate`, {}, this.getAuthOptions());
+  }
+
+  deactivateV1Role(id: string | number): Observable<any> {
+    return this.httpClient.patch<any>(environment.authUrl + `api/v1/roles/${id}/deactivate`, {}, this.getAuthOptions());
+  }
+
+  getV1RoleFormMappingsByRoleId(roleId: string | number): Observable<any> {
+    return this.httpClient.get<any>(
+      environment.authUrl + `api/v1/role-form-mappings/assign/${roleId}`,
+      this.getAuthOptions()
+    );
+  }
+
+  saveV1RoleFormMappings(roleId: string | number, payload: any): Observable<any> {
+    return this.httpClient.post<any>(
+      environment.authUrl + `api/v1/role-form-mappings/assign/${roleId}`,
+      payload,
+      this.getAuthOptions()
+    );
+  }
+
+  bulkSaveRoleFormMappings(payload: {
+    roleId: number | string;
+    items: Array<{
+      formId: number | string;
+      isAllowed: number;
+      isShowInMenu: number;
+      seqNo: number;
+    }>;
+  }): Observable<any> {
+    return this.httpClient.post<any>(
+      environment.authUrl + 'api/v1/role-form-mappings/bulk',
+      payload,
+      this.getAuthOptions()
+    );
+  }
+
+  // ===== User Master V1 APIs =====
+  getV1Users(
+    page: number = 1,
+    limit: number = 10,
+    search: string = '',
+    sortBy: string = 'name',
+    sortOrder: string = 'DESC'
+  ): Observable<any> {
+    const token = this.getAuthToken();
+    if (!token) {
+      return of({ success: false, data: { items: [], total: 0 }, message: 'Authentication token missing.' });
+    }
+
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('limit', limit.toString())
+      .set('pageSize', limit.toString())
+      .set('pageIndex', page.toString())
+      .set('sortBy', sortBy)
+      .set('sortOrder', sortOrder)
+      .set('token', token);
+
+    if (search) {
+      params = params.set('search', search);
+    }
+
+    const authOptions = this.getAuthOptions();
+    const requestOptions = {
+      headers: authOptions.headers,
+      params: params
+    };
+
+    return this.httpClient.get<any>(environment.authUrl + 'api/v1/users', requestOptions);
+  }
+
+  getV1UserById(id: string | number): Observable<any> {
+    return this.httpClient.get<any>(environment.authUrl + `api/v1/users/${id}`, this.getAuthOptions());
+  }
+
+  createV1User(userData: {
+    name: string;
+    email: string;
+    password?: string;
+    roleId?: number | string | null;
+    mobileno?: string;
+    profilePhoto?: string;
+    isActive?: boolean;
+    [key: string]: any;
+  }): Observable<any> {
+    return this.httpClient.post<any>(environment.authUrl + 'api/v1/users', userData, this.getAuthOptions());
+  }
+
+  updateV1User(
+    id: string | number,
+    userData: {
+      name?: string;
+      email?: string;
+      password?: string;
+      roleId?: number | string | null;
+      mobileno?: string;
+      profilePhoto?: string;
+      isActive?: boolean;
+      [key: string]: any;
+    }
+  ): Observable<any> {
+    return this.httpClient.put<any>(environment.authUrl + `api/v1/users/${id}`, userData, this.getAuthOptions());
+  }
+
+  activateV1User(id: string | number): Observable<any> {
+    return this.httpClient.patch<any>(environment.authUrl + `api/v1/users/${id}/activate`, {}, this.getAuthOptions());
+  }
+
+  deactivateV1User(id: string | number): Observable<any> {
+    return this.httpClient.patch<any>(environment.authUrl + `api/v1/users/${id}/deactivate`, {}, this.getAuthOptions());
   }
 
 }

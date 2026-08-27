@@ -1,0 +1,61 @@
+<form [formGroup]="roleForm" (ngSubmit)="submitForm()" class="add-role-container">
+  <div class="form-body">
+    <!-- Parent Role Field -->
+    <div class="form-field">
+      <label class="form-label"><span class="required-asterisk">*</span> Parent Role</label>
+      <nz-select
+        formControlName="parentRoleId"
+        nzShowSearch
+        nzAllowClear
+        nzPlaceHolder="None"
+        class="premium-select"
+      >
+        <nz-option [nzValue]="0" nzLabel="None"></nz-option>
+        <nz-option
+          *ngFor="let role of availableParentRoles"
+          [nzValue]="role.id"
+          [nzLabel]="role.name"
+        ></nz-option>
+      </nz-select>
+    </div>
+
+    <!-- Role Name Field -->
+    <div class="form-field">
+      <label class="form-label"><span class="required-asterisk">*</span> Role Name</label>
+      <input
+        type="text"
+        formControlName="name"
+        placeholder="Enter Role Name"
+        class="premium-input"
+      />
+      <div class="form-error-msg" *ngIf="roleForm.get('name')?.dirty && roleForm.get('name')?.hasError('required')">
+        Role name is required.
+      </div>
+      <div class="form-error-msg" *ngIf="roleForm.get('name')?.dirty && roleForm.get('name')?.hasError('maxlength')">
+        Max length is 100 characters.
+      </div>
+    </div>
+
+    <!-- Active Status Field with Switch -->
+    <div class="form-field">
+      <label class="form-label">Status</label>
+      <div class="status-switch-wrapper" style="padding-top: 4px;">
+        <nz-switch 
+          formControlName="isActive"
+          nzCheckedChildren="Active" 
+          nzUnCheckedChildren="Inactive">
+        </nz-switch>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer Action Buttons -->
+  <div class="drawer-footer">
+    <button type="button" class="btn-secondary" (click)="handleCancel()" [disabled]="loading">
+      Cancel
+    </button>
+    <button type="submit" class="btn-primary" [disabled]="loading">
+      {{ loading ? 'Saving...' : 'Save' }}
+    </button>
+  </div>
+</form>

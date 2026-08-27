@@ -1,0 +1,99 @@
+<form [formGroup]="formGroup" (ngSubmit)="submitForm()" class="add-form-container">
+  <div class="form-body">
+    <!-- Form Name Field -->
+    <div class="form-field">
+      <label class="form-label"><span class="required-asterisk">*</span> Form Name</label>
+      <input
+        type="text"
+        formControlName="name"
+        (ngModelChange)="onNameChange($event)"
+        placeholder="Enter Form Name"
+        class="premium-input"
+      />
+      <div class="form-error-msg" *ngIf="formGroup.get('name')?.dirty && formGroup.get('name')?.hasError('required')">
+        Form name is required.
+      </div>
+      <div class="form-error-msg" *ngIf="formGroup.get('name')?.dirty && formGroup.get('name')?.hasError('maxlength')">
+        Max length is 150 characters.
+      </div>
+    </div>
+
+    <!-- Slug Field -->
+    <div class="form-field">
+      <label class="form-label">Slug</label>
+      <input
+        type="text"
+        formControlName="slug"
+        placeholder="e.g. contact-us-form"
+        class="premium-input"
+      />
+      <div class="form-error-msg" *ngIf="formGroup.get('slug')?.dirty && formGroup.get('slug')?.hasError('maxlength')">
+        Max length is 150 characters.
+      </div>
+    </div>
+
+    <!-- Route Path Field -->
+    <div class="form-field">
+      <label class="form-label">Route Path</label>
+      <input
+        type="text"
+        formControlName="routePath"
+        placeholder="e.g. /forms/contact-us"
+        class="premium-input"
+      />
+      <div class="form-error-msg" *ngIf="formGroup.get('routePath')?.dirty && formGroup.get('routePath')?.hasError('maxlength')">
+        Max length is 250 characters.
+      </div>
+    </div>
+
+    <!-- Row for Display Order & Active Status Switch -->
+    <div style="display: flex; gap: 20px; align-items: flex-start; margin-top: 4px;">
+      <!-- Display Order Field -->
+      <div class="form-field" style="flex: 1;">
+        <label class="form-label">Display Order</label>
+        <input
+          type="number"
+          formControlName="displayOrder"
+          class="premium-input"
+          placeholder="e.g. 1"
+        />
+        <div class="form-error-msg" *ngIf="formGroup.get('displayOrder')?.dirty && formGroup.get('displayOrder')?.hasError('min')">
+          Display order must be 0 or greater.
+        </div>
+      </div>
+
+      <!-- Active Status Field with Switch -->
+      <div class="form-field" style="flex: 1;">
+        <label class="form-label">Status</label>
+        <div class="status-switch-wrapper" style="padding-top: 6px;">
+          <nz-switch 
+            formControlName="isActive"
+            nzCheckedChildren="Active" 
+            nzUnCheckedChildren="Inactive">
+          </nz-switch>
+        </div>
+      </div>
+    </div>
+
+    <!-- Description Field -->
+    <div class="form-field">
+      <label class="form-label">Description</label>
+      <textarea
+        formControlName="description"
+        rows="3"
+        placeholder="Enter optional description..."
+        class="premium-textarea"
+      ></textarea>
+    </div>
+  </div>
+
+  <!-- Footer Action Buttons -->
+  <div class="drawer-footer">
+    <button type="button" class="btn-secondary" (click)="handleCancel()" [disabled]="loading">
+      Cancel
+    </button>
+    <button type="submit" class="btn-primary" [disabled]="loading">
+      {{ loading ? 'Saving...' : 'Save' }}
+    </button>
+  </div>
+</form>

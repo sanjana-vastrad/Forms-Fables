@@ -1,0 +1,209 @@
+<form [formGroup]="userForm" (ngSubmit)="submitForm()" class="add-user-container" autocomplete="off">
+  <div class="form-body">
+
+    <!-- Role Field -->
+    <div class="form-field">
+      <label class="form-label"><span class="required-asterisk">*</span> Role</label>
+      <nz-select
+        formControlName="roleId"
+        nzShowSearch
+        nzAllowClear
+        nzPlaceHolder="Select Role"
+        class="premium-select"
+      >
+        <nz-option
+          *ngFor="let role of rolesList"
+          [nzValue]="role.id"
+          [nzLabel]="role.name"
+        ></nz-option>
+      </nz-select>
+      <div class="form-error-msg" *ngIf="userForm.get('roleId')?.dirty && userForm.get('roleId')?.hasError('required')">
+        Role is required.
+      </div>
+    </div>
+
+    <!-- User Name Field -->
+    <div class="form-field">
+      <label class="form-label"><span class="required-asterisk">*</span> User Name</label>
+      <div class="input-with-validation-icon">
+        <input
+          type="text"
+          formControlName="name"
+          placeholder="admin@gmail.com"
+          class="premium-input"
+          autocomplete="off"
+          [class.input-valid]="userForm.get('name')?.valid && userForm.get('name')?.dirty"
+        />
+        <span
+          *ngIf="userForm.get('name')?.valid && userForm.get('name')?.dirty"
+          class="validation-icon success-icon"
+          nz-icon nzType="check-circle" nzTheme="fill"
+        ></span>
+      </div>
+      <div class="form-error-msg" *ngIf="userForm.get('name')?.dirty && userForm.get('name')?.hasError('required')">
+        User name is required.
+      </div>
+    </div>
+
+    <!-- Email Field -->
+    <div class="form-field">
+      <label class="form-label"><span class="required-asterisk">*</span> Email</label>
+      <div class="input-with-validation-icon">
+        <input
+          type="email"
+          formControlName="email"
+          placeholder="Enter Email"
+          class="premium-input"
+          autocomplete="off"
+          [class.input-invalid]="userForm.get('email')?.dirty && userForm.get('email')?.invalid"
+        />
+        <span
+          *ngIf="userForm.get('email')?.dirty && userForm.get('email')?.invalid"
+          class="validation-icon error-icon"
+          nz-icon nzType="close-circle" nzTheme="fill"
+        ></span>
+        <span
+          *ngIf="userForm.get('email')?.valid && userForm.get('email')?.dirty"
+          class="validation-icon success-icon"
+          nz-icon nzType="check-circle" nzTheme="fill"
+        ></span>
+      </div>
+      <div class="form-error-msg" *ngIf="userForm.get('email')?.dirty && userForm.get('email')?.invalid">
+        Enter Valid Email
+      </div>
+    </div>
+
+    <!-- Mobile No Field -->
+    <div class="form-field">
+      <label class="form-label"><span class="required-asterisk">*</span> Mobile No</label>
+      <input
+        type="text"
+        formControlName="mobileno"
+        placeholder="Enter Mobile No"
+        class="premium-input"
+        autocomplete="off"
+      />
+      <div class="form-error-msg" *ngIf="userForm.get('mobileno')?.dirty && userForm.get('mobileno')?.hasError('required')">
+        Mobile No is required.
+      </div>
+      <div class="form-error-msg" *ngIf="userForm.get('mobileno')?.dirty && userForm.get('mobileno')?.hasError('pattern')">
+        Enter valid 10-digit mobile number.
+      </div>
+    </div>
+
+    <!-- Password Field with Tooltip -->
+    <div class="form-field" *ngIf="!userToEdit">
+      <label class="form-label">
+        <span class="required-asterisk" *ngIf="!userToEdit">*</span> Password
+        <span
+          nz-icon
+          nzType="info-circle"
+          nzTheme="outline"
+          nz-tooltip
+          [nzTooltipTitle]="passwordTooltipTitle"
+          nzTooltipPlacement="right"
+          style="margin-left: 4px; color: #1890ff; cursor: pointer;"
+        ></span>
+      </label>
+      <div class="input-with-validation-icon password-input-wrapper">
+        <span class="lock-prefix-icon" nz-icon nzType="lock" nzTheme="outline"></span>
+        <input
+          [type]="passwordVisible ? 'text' : 'password'"
+          formControlName="password"
+          placeholder="••••••••"
+          class="premium-input password-input"
+          autocomplete="new-password"
+          [class.input-valid]="userForm.get('password')?.valid && userForm.get('password')?.dirty"
+        />
+        <div class="password-suffix-icons">
+          <span
+            class="eye-toggle-icon"
+            nz-icon
+            [nzType]="passwordVisible ? 'eye-invisible' : 'eye'"
+            nzTheme="outline"
+            (click)="togglePasswordVisibility()"
+          ></span>
+          <span
+            *ngIf="userForm.get('password')?.valid && userForm.get('password')?.dirty"
+            class="validation-icon success-icon"
+            nz-icon nzType="check-circle" nzTheme="fill"
+          ></span>
+        </div>
+      </div>
+      <div class="form-error-msg" *ngIf="userForm.get('password')?.dirty && userForm.get('password')?.hasError('required')">
+        Password is required.
+      </div>
+      <div class="form-error-msg" *ngIf="userForm.get('password')?.dirty && userForm.get('password')?.hasError('pattern')">
+        Password must be at least 8 characters, with 1 uppercase, 1 lowercase, 1 number, and 1 special character.
+      </div>
+    </div>
+
+    <!-- Active Status Field (Placed ABOVE Profile Photo) -->
+    <div class="form-field">
+      <label class="form-label">Status</label>
+      <div class="status-switch-wrapper" style="padding-top: 4px;">
+        <nz-switch 
+          formControlName="isActive"
+          nzCheckedChildren="Active" 
+          nzUnCheckedChildren="Inactive">
+        </nz-switch>
+      </div>
+    </div>
+
+    <!-- Profile Photo Upload & Preview Section (Banner Master Design, Placed BELOW Status) -->
+    <div class="form-field">
+      <label class="form-label">Profile Photo</label>
+
+      <div nz-row [nzGutter]="12" style="align-items: center;">
+        <!-- Compact Upload Box (10 span) -->
+        <div nz-col [nzSpan]="10">
+          <div class="image-upload-box compact-upload-box" (click)="fileInput.click()">
+            <input #fileInput type="file" accept="image/*" (change)="onFileSelected($event)" style="display: none;" />
+            <span nz-icon [nzType]="profilePhotoUrl ? 'check-circle' : 'plus'" nzTheme="outline" class="upload-icon"></span>
+            <span class="upload-text">{{ profilePhotoUrl ? 'Photo Selected' : 'Upload Photo' }}</span>
+            <span class="upload-subtext">JPG, PNG</span>
+          </div>
+        </div>
+
+        <!-- Preview Card / Placeholder (14 span) -->
+        <div nz-col [nzSpan]="14">
+          <!-- Photo Preview Card -->
+          <div class="uploaded-image-card" *ngIf="profilePhotoUrl">
+            <img [src]="getAbsoluteImageUrl(profilePhotoUrl)" alt="Profile Preview" class="uploaded-preview-img" />
+            <div class="uploaded-card-actions">
+              <button type="button" class="change-image-btn" (click)="fileInput.click()" nz-tooltip nzTooltipTitle="Change Photo">
+                <span nz-icon nzType="edit" nzTheme="outline"></span>
+                Change
+              </button>
+              <button type="button" class="remove-image-btn" (click)="removeProfilePhoto()" nz-tooltip nzTooltipTitle="Remove Photo">
+                <span nz-icon nzType="delete" nzTheme="outline"></span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Empty Preview Placeholder -->
+          <div class="empty-preview-placeholder" *ngIf="!profilePhotoUrl">
+            <span class="placeholder-text">No photo selected</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Upload Progress Bar (when saving/uploading) -->
+      <div class="upload-progress-wrapper" *ngIf="uploadingImage">
+        <nz-progress [nzPercent]="uploadProgress" [nzStatus]="'active'" [nzStrokeColor]="{ '0%': '#9B4A54', '100%': '#722F37' }" nzSize="small"></nz-progress>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Footer Action Buttons -->
+  <div class="drawer-footer">
+    <button type="button" class="btn-secondary" (click)="handleCancel()" [disabled]="loading || uploadingImage">
+      Cancel
+    </button>
+    <button type="submit" class="btn-primary" [disabled]="loading || uploadingImage">
+      <span *ngIf="loading || uploadingImage" nz-icon nzType="loading" nzTheme="outline" style="margin-right: 6px;"></span>
+      {{ uploadingImage ? 'Uploading Image...' : (loading ? 'Saving...' : (userToEdit ? 'Update' : 'Save')) }}
+    </button>
+  </div>
+</form>

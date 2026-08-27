@@ -131,6 +131,7 @@ export class BannerService {
 
   uploadImage(file: File, folderName: string = 'banner'): Observable<any> {
     const formData = new FormData();
+    formData.append('file', file);
     formData.append('image', file);
 
     let token = '';
@@ -146,7 +147,7 @@ export class BannerService {
     });
 
     return this.httpClient.post<any>(
-      environment.authUrl + 'api/v1/banners/upload',
+      environment.authUrl + `api/v1/upload/${folderName}`,
       formData,
       { headers }
     );
@@ -154,6 +155,7 @@ export class BannerService {
 
   uploadImageWithProgress(file: File, folderName: string = 'banner'): Observable<HttpEvent<any>> {
     const formData = new FormData();
+    formData.append('file', file);
     formData.append('image', file);
 
     let token = '';
@@ -169,7 +171,7 @@ export class BannerService {
     });
 
     return this.httpClient.post<any>(
-      environment.authUrl + 'api/v1/banners/upload',
+      environment.authUrl + `api/v1/upload/${folderName}`,
       formData,
       {
         headers,

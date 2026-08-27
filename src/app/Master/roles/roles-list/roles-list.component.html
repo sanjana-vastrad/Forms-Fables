@@ -1,0 +1,268 @@
+<div class="roles-master-page">
+  <!-- Page Header -->
+  <div class="page-header-flex">
+    <div>
+      <h2 class="page-title">Role Master</h2>
+    </div>
+    <div class="header-actions">
+      <div class="search-input-wrapper">
+        <input
+          type="text"
+          [(ngModel)]="searchQuery"
+          (ngModelChange)="onSearch()"
+          placeholder="Search roles..."
+          class="premium-input table-search-input"
+        />
+        <span nz-icon nzType="search" nzTheme="outline" class="search-input-icon"></span>
+      </div>
+      <button class="btn-primary" (click)="openAddDrawer()">
+        <span nz-icon nzType="plus" nzTheme="outline"></span>
+        Add New Role
+      </button>
+    </div>
+  </div>
+
+  <!-- Role List Table Container -->
+  <div class="table-card-wrapper">
+    <div class="premium-table-container">
+      <div class="table-scroll-wrapper">
+        <table class="premium-table" style="min-width: 780px;">
+          <thead>
+            <tr>
+              <th style="width: 80px;" class="text-center">Action</th>
+              <th style="width: 80px;" class="text-center">Forms</th>
+              <th class="sortable-header" (click)="toggleSort('name')">
+                <span class="header-label-flex">
+                  Role Name
+                  <span class="sort-icon-container">
+                    <span nz-icon nzType="caret-up" [class.active-sort]="sortBy === 'name' && sortOrder === 'ASC'"></span>
+                    <span nz-icon nzType="caret-down" [class.active-sort]="sortBy === 'name' && sortOrder === 'DESC'"></span>
+                  </span>
+                </span>
+              </th>
+              <th>Parent Role</th>
+              <th style="width: 110px;" class="text-center">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Table API Pending Loader Row -->
+            <tr *ngIf="loading">
+              <td colspan="5" class="text-center" style="padding: 48px 16px; background-color: #FFFFFF;">
+                <nz-spin nzSimple nzSize="large" nzTip="Loading records..."></nz-spin>
+              </td>
+            </tr>
+
+            <!-- Table Data Rows -->
+            <ng-container *ngIf="!loading">
+              <tr *ngFor="let data of roles">
+                <!-- Edit Action -->
+                <td class="text-center">
+                  <button
+                    type="button"
+                    class="table-edit-btn"
+                    (click)="openEditDrawer(data)"
+                    nz-tooltip
+                    nzTooltipTitle="Edit Role"
+                  >
+                    <span nz-icon nzType="edit" nzTheme="outline"></span>
+                  </button>
+                </td>
+
+                <!-- Forms Action (Form Mapping Icon) -->
+                <td class="text-center">
+                  <button
+                    type="button"
+                    class="forms-edit-btn"
+                    (click)="openFormsDrawer(data)"
+                    nz-tooltip
+                    nzTooltipTitle="Assign Forms"
+                  >
+                    <span nz-icon nzType="form" nzTheme="outline"></span>
+                  </button>
+                </td>
+
+                <!-- Role Name -->
+                <td class="role-name-cell">{{ data.name }}</td>
+
+                <!-- Parent Role -->
+                <td>
+                  <span class="parent-role-cell">{{ data.parentRoleName || 'None' }}</span>
+                </td>
+
+                <!-- Active Status Switch -->
+                <td class="text-center">
+                  <div class="status-switch-wrapper">
+                    <nz-switch
+                      [ngModel]="data.isActive"
+                      (ngModelChange)="toggleStatus(data, $event)"
+                      [nzLoading]="updatingStatusId === data.id"
+                      nzCheckedChildren="Active"
+                      nzUnCheckedChildren="Inactive"
+                    ></nz-switch>
+                  </div>
+                </td>
+              </tr>
+            </ng-container>
+
+            <!-- Empty Table Row -->
+            <tr *ngIf="roles.length === 0 && !loading">
+              <td colspan="5" class="text-center empty-table-cell">
+                <nz-empty nzNotFoundImage="simple"></nz-empty>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination Footer -->
+      <div class="table-pagination-footer" *ngIf="totalCount > 0">
+        <div class="pagination-info">
+          Showing {{ showingStart() }} to {{ showingEnd() }} of {{ totalCount }} roles
+        </div>
+        <div class="pagination-controls">
+          <button
+            type="button"
+            class="btn-pagination"
+            [disabled]="pageIndex === 1 || loading"
+            (click)="prevPage()"
+          >
+            <span *ngIf="loading && pageDirection === 'prev'" nz-icon nzType="loading" nzTheme="outline" style="margin-right: 6px;"></span>
+            Previous
+          </button>
+          <span class="pagination-current-page">
+            Page {{ pageIndex }} of {{ totalPages() }}
+            <span *ngIf="loading && !pageDirection" nz-icon nzType="loading" nzTheme="outline" style="margin-left: 6px; color: #722F37;"></span>
+          </span>
+          <button
+            type="button"
+            class="btn-pagination"
+            [disabled]="pageIndex === totalPages() || loading"
+            (click)="nextPage()"
+          >
+            Next
+            <span *ngIf="loading && pageDirection === 'next'" nz-icon nzType="loading" nzTheme="outline" style="margin-left: 6px;"></span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add/Edit Role Drawer -->
+<nz-drawer
+  *ngIf="drawerVisible"
+  [nzVisible]="drawerVisible"
+  nzPlacement="right"
+  [nzWidth]="420"
+  [nzTitle]="selectedRole ? 'Edit Role' : 'Add New Role'"
+  [nzClosable]="true"
+  (nzOnClose)="closeDrawer()"
+  class="role-drawer"
+>
+  <ng-container *nzDrawerContent>
+    <app-add-role
+      [roleToEdit]="selectedRole"
+      [rolesList]="roles"
+      (onSave)="handleSaveSuccess()"
+      (onCancel)="closeDrawer()"
+    ></app-add-role>
+  </ng-container>
+</nz-drawer>
+
+<!-- Assign Forms Drawer -->
+<nz-drawer
+  *ngIf="formsDrawerVisible"
+  [nzVisible]="formsDrawerVisible"
+  nzPlacement="right"
+  [nzWidth]="850"
+  [nzTitle]="'Assign form to ' + (selectedRoleForForms?.name || 'Role')"
+  [nzClosable]="true"
+  (nzOnClose)="closeFormsDrawer()"
+  [nzFooter]="formsFooterTpl"
+  class="forms-assign-drawer"
+>
+  <ng-container *nzDrawerContent>
+    <!-- Drawer Loader -->
+    <div *ngIf="formsLoading" class="text-center" style="padding: 60px 16px;">
+      <nz-spin nzSimple nzSize="large" nzTip="Loading assigned forms..."></nz-spin>
+    </div>
+
+    <ng-container *ngIf="!formsLoading">
+      <!-- Header Search Bar -->
+      <div class="forms-drawer-top-bar">
+        <div class="forms-search-wrapper">
+          <input
+            type="text"
+            [(ngModel)]="formsSearchQuery"
+            placeholder="Search Record"
+            class="forms-drawer-search-input"
+          />
+          <button type="button" class="forms-drawer-search-btn">
+            <span nz-icon nzType="search" nzTheme="outline"></span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Forms Assignment Table -->
+      <div class="forms-assign-table-container">
+        <table class="forms-assign-table">
+          <thead>
+            <tr>
+              <th style="width: 110px;" class="text-center">Is Allowed</th>
+              <th style="width: 140px;" class="text-center">Is Show In Menu</th>
+              <th>Form Name</th>
+              <th>Link</th>
+              <th style="width: 100px;">Seq. No.</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of filteredFormsList()">
+              <!-- Is Allowed Switch -->
+              <td class="text-center">
+                <nz-switch [(ngModel)]="item.isAllowed" nzSize="small"></nz-switch>
+              </td>
+
+              <!-- Is Show In Menu Switch -->
+              <td class="text-center">
+                <nz-switch [(ngModel)]="item.isShowInMenu" nzSize="small"></nz-switch>
+              </td>
+
+              <!-- Form Name -->
+              <td class="form-name-cell">{{ item.formName }}</td>
+
+              <!-- Link -->
+              <td class="form-link-cell">{{ item.link }}</td>
+
+              <!-- Seq No Input -->
+              <td>
+                <input
+                  type="number"
+                  [(ngModel)]="item.seqNo"
+                  class="forms-seq-input"
+                />
+              </td>
+            </tr>
+
+            <!-- Empty Search Results -->
+            <tr *ngIf="filteredFormsList().length === 0">
+              <td colspan="5" class="text-center empty-forms-cell">
+                No matching records found.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </ng-container>
+  </ng-container>
+</nz-drawer>
+
+<!-- Forms Drawer Footer Template -->
+<ng-template #formsFooterTpl>
+  <div class="forms-drawer-footer">
+    <button type="button" class="btn-drawer-cancel" (click)="closeFormsDrawer()" [disabled]="formsSaving">Cancel</button>
+    <button type="button" class="btn-drawer-save" (click)="saveFormsAssignment()" [disabled]="formsSaving || formsLoading">
+      <span *ngIf="formsSaving" nz-icon nzType="loading" nzTheme="outline" style="margin-right: 6px;"></span>
+      Save & Close
+    </button>
+  </div>
+</ng-template>
