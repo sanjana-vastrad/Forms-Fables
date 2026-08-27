@@ -26,6 +26,15 @@
           <li nz-menu-item nzMatchRouter routerLink="/master/city">
             <span>City</span>
           </li>
+          <li nz-menu-item nzMatchRouter routerLink="/master/design-idea-category">
+            <span>Design Idea Category</span>
+          </li>
+          <li nz-menu-item nzMatchRouter routerLink="/master/project-category">
+            <span>Project Category</span>
+          </li>
+          <li nz-menu-item nzMatchRouter routerLink="/master/services">
+            <span>Services</span>
+          </li>
           <li nz-menu-item nzMatchRouter routerLink="/master/banner">
             <span>Banner</span>
           </li>
@@ -91,13 +100,7 @@
         </div>
       </div>
       <div class="header-right">
-        <!-- Notification Bell -->
-        <div class="header-notification">
-          <span nz-icon nzType="bell" nzTheme="outline" class="notification-icon"></span>
-          <span class="notification-badge"></span>
-        </div>
 
-        <div class="header-sep"></div>
 
         <!-- User Profile Dropdown -->
         <div class="header-profile" nz-dropdown [nzDropdownMenu]="headerProfileMenu" nzTrigger="click"

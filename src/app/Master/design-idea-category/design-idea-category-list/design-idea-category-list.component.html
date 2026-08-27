@@ -1,0 +1,111 @@
+<div class="faq-master-page">
+  <!-- Page Header -->
+  <div class="page-header-flex">
+    <div>
+      <h2 class="page-title">Design Idea Category Master</h2>
+    </div>
+    <div class="header-actions">
+      <div class="search-input-wrapper">
+        <input type="text" [(ngModel)]="searchQuery" (ngModelChange)="onSearch()" placeholder="Search Categories..."
+          class="premium-input table-search-input" />
+        <span nz-icon nzType="search" nzTheme="outline" class="search-input-icon"></span>
+      </div>
+      <button class="btn-primary" (click)="openAddDrawer()">
+        <span nz-icon nzType="plus" nzTheme="outline"></span>
+        Add New Category
+      </button>
+    </div>
+  </div>
+
+  <!-- Categories List Table -->
+  <div class="table-card-wrapper">
+    <div class="premium-table-container">
+      <table class="premium-table">
+        <thead>
+          <tr>
+            <th style="width: 120px;">Action</th>
+            <th class="sortable-header" (click)="toggleSort('displayOrder')" style="width: 150px;">
+              <span class="header-label-flex">
+                Sequence No
+                <span class="sort-icon-container">
+                  <span nz-icon nzType="caret-up"
+                    [class.active-sort]="sortBy === 'displayOrder' && sortOrder === 'ASC'"></span>
+                  <span nz-icon nzType="caret-down"
+                    [class.active-sort]="sortBy === 'displayOrder' && sortOrder === 'DESC'"></span>
+                </span>
+              </span>
+            </th>
+            <th class="sortable-header" (click)="toggleSort('name')">
+              <span class="header-label-flex">
+                Name
+                <span class="sort-icon-container">
+                  <span nz-icon nzType="caret-up"
+                    [class.active-sort]="sortBy === 'name' && sortOrder === 'ASC'"></span>
+                  <span nz-icon nzType="caret-down"
+                    [class.active-sort]="sortBy === 'name' && sortOrder === 'DESC'"></span>
+                </span>
+              </span>
+            </th>
+            <th style="width: 120px;" class="text-center">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let data of categories; let i = index">
+            <td>
+              <div class="action-buttons-flex">
+                <button type="button" class="table-edit-btn" (click)="openEditDrawer(data)" title="Edit Category">
+                  <span nz-icon nzType="edit" nzTheme="outline"></span>
+                </button>
+              </div>
+            </td>
+            <td>
+              <div class="reorder-actions">
+                <span class="order-number">{{ data.displayOrder }}</span>
+              </div>
+            </td>
+            <td class="faq-question-cell" nz-tooltip [nzTooltipTitle]="data.name">
+              <span class="truncated-text" style="max-width: 250px; display: inline-block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ data.name }}</span>
+            </td>
+            <td class="text-center">
+              <nz-switch [(ngModel)]="data.isActive" (ngModelChange)="onStatusChange(data, $event)"
+                [nzLoading]="data.statusLoading" nzCheckedChildren="On" nzUnCheckedChildren="Off">
+              </nz-switch>
+            </td>
+          </tr>
+          <tr *ngIf="categories.length === 0">
+            <td colspan="4" class="text-center empty-table-cell">
+              <nz-empty nzNotFoundImage="simple"></nz-empty>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Pagination Footer -->
+      <div class="table-pagination-footer" *ngIf="totalCount > 0">
+        <div class="pagination-info">
+          Showing {{ showingStart() }} to {{ showingEnd() }} of {{ totalCount }} Categories
+        </div>
+        <div class="pagination-controls">
+          <button type="button" class="btn-pagination" [disabled]="pageIndex === 1" (click)="prevPage()">
+            Previous
+          </button>
+          <span class="pagination-current-page">
+            Page {{ pageIndex }} of {{ totalPages() }}
+          </span>
+          <button type="button" class="btn-pagination" [disabled]="pageIndex === totalPages()" (click)="nextPage()">
+            Next
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add/Edit Drawer -->
+<nz-drawer *ngIf="drawerVisible" [nzVisible]="drawerVisible" nzPlacement="right" [nzWidth]="420"
+  [nzTitle]="selectedCategory ? 'Edit Category' : 'Add New Category'" [nzClosable]="true" (nzOnClose)="closeDrawer()"
+  class="faq-drawer">
+  <ng-container *nzDrawerContent>
+    <app-add-design-idea-category [categoryToEdit]="selectedCategory" [nextDisplayOrder]="nextDisplayOrder" (onSave)="handleSaveSuccess()" (onCancel)="closeDrawer()"></app-add-design-idea-category>
+  </ng-container>
+</nz-drawer>

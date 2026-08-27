@@ -1,0 +1,53 @@
+<form [formGroup]="categoryForm" (ngSubmit)="submitForm()" class="add-faq-form">
+  <div class="form-body">
+    <!-- Name Field -->
+    <div class="form-field">
+      <label class="form-label"><span class="required-asterisk">*</span> Name</label>
+      <input type="text"
+        formControlName="name"
+        placeholder="Enter Category Name"
+        class="premium-input"
+      />
+      <div class="form-error-msg" *ngIf="categoryForm.get('name')?.dirty && categoryForm.get('name')?.hasError('required')">
+        Name is required.
+      </div>
+    </div>
+
+    <div style="display: flex; gap: 20px; margin-top: 8px;">
+      <!-- Active Status Field -->
+      <div class="form-field" style="flex: 1;">
+        <label class="form-label">Status</label>
+        <div class="status-switch-wrapper">
+          <nz-switch 
+            formControlName="isActive"
+            nzCheckedChildren="Active" 
+            nzUnCheckedChildren="Inactive">
+          </nz-switch>
+        </div>
+      </div>
+
+      <!-- Sequence No Field -->
+      <div class="form-field" style="flex: 1;">
+        <label class="form-label"><span class="required-asterisk">*</span> Sequence No</label>
+        <input
+          type="number"
+          formControlName="displayOrder"
+          class="premium-input"
+        />
+        <div class="form-error-msg" *ngIf="categoryForm.get('displayOrder')?.dirty && categoryForm.get('displayOrder')?.hasError('required')">
+          Sequence No is required.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer buttons -->
+  <div class="drawer-footer">
+    <button type="button" class="btn-secondary" (click)="handleCancel()" [disabled]="loading">
+      Cancel
+    </button>
+    <button type="submit" class="btn-primary" [disabled]="loading">
+      {{ loading ? 'Saving...' : 'Save' }}
+    </button>
+  </div>
+</form>

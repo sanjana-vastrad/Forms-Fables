@@ -1,0 +1,2 @@
+/* Reuse FAQ styles by importing them */
+@import '../../faqs/add-faq/add-faq.component.css';

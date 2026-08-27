@@ -1,0 +1,53 @@
+@import '../../banner/add-banner/add-banner.component.css';
+@import '../../faqs/add-faq/add-faq.component.css';
+
+/* Override the default faq form height if it restricts content */
+.add-service-form {
+  position: relative;
+}
+
+/* ===== Full Description Rich Text Editor (Kolkov Angular Editor) ===== */
+::ng-deep .add-service-form angular-editor {
+  display: block;
+  --ae-toolbar-bg-color: #FAFAFA;
+  --ae-toolbar-padding: 8px;
+  --ae-toolbar-border-radius: 1px solid #E5E2DE;
+  --ae-button-bg-color: #FFFFFF;
+  --ae-button-border: 1px solid #E5E2DE;
+  --ae-button-radius: 6px;
+  --ae-button-hover-bg-color: rgba(114, 47, 55, 0.08);
+  --ae-button-active-bg-color: rgba(114, 47, 55, 0.16);
+  --ae-button-active-hover-bg-color: rgba(114, 47, 55, 0.22);
+  --ae-text-area-border: 1px solid #E5E2DE;
+  --ae-text-area-border-radius: 0 0 6px 6px;
+  --ae-gap: 0px;
+  --ae-focus-outline-color: none;
+}
+
+::ng-deep .add-service-form angular-editor .angular-editor-toolbar {
+  border-bottom: none !important;
+  border-radius: 6px 6px 0 0 !important;
+}
+
+::ng-deep .add-service-form angular-editor .angular-editor-button {
+  transition: background-color 0.2s ease !important;
+}
+
+::ng-deep .add-service-form angular-editor .angular-editor-wrapper .angular-editor-textarea {
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  padding: 12px 14px;
+  background-color: #FFFFFF;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+::ng-deep .add-service-form angular-editor .angular-editor-wrapper .angular-editor-textarea:focus {
+  border-color: #722F37 !important;
+  box-shadow: 0 0 0 3px rgba(114, 47, 55, 0.08);
+}
+
+::ng-deep .add-service-form angular-editor .angular-editor-placeholder {
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  color: #999999;
+}
