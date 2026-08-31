@@ -1,0 +1,168 @@
+@import '../../banner/add-banner/add-banner.component.css';
+@import '../../faqs/add-faq/add-faq.component.css';
+
+/* Override the default faq form height if it restricts content */
+.add-faq-form {
+  position: relative;
+}
+
+/* ===== Full Description Rich Text Editor (Kolkov Angular Editor) ===== */
+::ng-deep .add-faq-form angular-editor {
+  display: block;
+  --ae-toolbar-bg-color: #FAFAFA;
+  --ae-toolbar-padding: 8px;
+  --ae-toolbar-border-radius: 1px solid #E5E2DE;
+  --ae-button-bg-color: #FFFFFF;
+  --ae-button-border: 1px solid #E5E2DE;
+  --ae-button-radius: 6px;
+  --ae-button-hover-bg-color: rgba(114, 47, 55, 0.08);
+  --ae-button-active-bg-color: rgba(114, 47, 55, 0.16);
+  --ae-button-active-hover-bg-color: rgba(114, 47, 55, 0.22);
+  --ae-text-area-border: 1px solid #E5E2DE;
+  --ae-text-area-border-radius: 0 0 6px 6px;
+  --ae-gap: 0px;
+  --ae-focus-outline-color: none;
+}
+
+::ng-deep .add-faq-form angular-editor .angular-editor-toolbar {
+  border-bottom: none !important;
+  border-radius: 6px 6px 0 0 !important;
+}
+
+::ng-deep .add-faq-form angular-editor .angular-editor-button {
+  transition: background-color 0.2s ease !important;
+}
+
+::ng-deep .add-faq-form angular-editor .angular-editor-wrapper .angular-editor-textarea {
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  padding: 12px 14px;
+  background-color: #FFFFFF;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+::ng-deep .add-faq-form angular-editor .angular-editor-wrapper .angular-editor-textarea:focus {
+  border-color: #722F37 !important;
+  box-shadow: 0 0 0 3px rgba(114, 47, 55, 0.08);
+}
+
+::ng-deep .add-faq-form angular-editor .angular-editor-placeholder {
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  color: #999999;
+}
+
+/* ===== Added Section Cards (Horizontal Layout) ===== */
+.section-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+}
+
+.section-card:hover {
+  box-shadow: 0 4px 6px rgba(0,0,0,0.04);
+  transform: translateY(-1px);
+}
+
+.section-card-drag {
+  color: #cbd5e1;
+  font-size: 18px;
+  margin-right: 12px;
+  display: flex;
+  cursor: grab;
+}
+
+.section-card-index {
+  background: #f1f5f9;
+  color: #0f172a;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 14px;
+  margin-right: 16px;
+  flex-shrink: 0;
+}
+
+.section-card-title {
+  flex: 1;
+  font-weight: 500;
+  color: #1e293b;
+  font-size: 15px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-right: 16px;
+}
+
+.section-card-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 500;
+  margin-right: 16px;
+  flex-shrink: 0;
+}
+
+/* Theme-friendly Badges (matching image exactly) */
+.section-card-badge.badge-Paragraph { background: #eff6ff; color: #3b82f6; border: 1px solid #bfdbfe; }
+.section-card-badge.badge-Checklist { background: #f0fdf4; color: #22c55e; border: 1px solid #bbf7d0; }
+.section-card-badge.badge-Quote { background: #fffbeb; color: #f59e0b; border: 1px solid #fde68a; }
+
+.section-card-actions {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.section-card-action {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  color: #94a3b8;
+  padding: 0;
+  transition: color 0.2s;
+}
+
+.section-card-action:hover {
+  color: #475569;
+}
+
+/* Custom Scroller for Sections List */
+.sections-list-scroller {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-height: 480px; /* Reduced to ensure it scrolls before drawer */
+  overflow-y: auto;
+  padding-right: 12px;
+}
+
+.sections-list-scroller::-webkit-scrollbar {
+  width: 6px;
+}
+.sections-list-scroller::-webkit-scrollbar-track {
+  background: #f5f5f5;
+  border-radius: 4px;
+}
+.sections-list-scroller::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 4px;
+}
+.sections-list-scroller::-webkit-scrollbar-thumb:hover {
+  background: #999;
+}

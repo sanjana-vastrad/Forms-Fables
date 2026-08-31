@@ -10,22 +10,31 @@ import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzPopconfirmModule } from 'ng-zorro-antd/popconfirm';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { ApiServiceService } from '../../../Service/api-service.service';
-import { AddFaqComponent } from '../../faqs/add-faq/add-faq.component';
+import { AddBlogComponent } from '../add-blog/add-blog.component';
 import { Subject, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { environment } from '../../../../environments/environment';
 
-export interface Faq {
+export interface Blog {
   id?: string | number;
-  category?: string;
-  question: string;
-  answer: string;
+  title: string;
+  authorName?: string;
+  shortDescription?: string;
+  slug?: string;
+  categoryId?: string | number;
+  categoryName?: string;
+  imageUrl?: string;
+  image_url?: string;
+  displayImageUrl?: string;
+  tags?: string[];
+  sections?: any[];
   displayOrder: number;
   isActive: boolean;
   statusLoading?: boolean;
 }
 
 @Component({
-  selector: 'app-faqs-list',
+  selector: 'app-blog-list',
   standalone: true,
   imports: [
     CommonModule,
@@ -37,16 +46,16 @@ export interface Faq {
     NzSwitchModule,
     NzPopconfirmModule,
     NzToolTipModule,
-    AddFaqComponent
+    AddBlogComponent
   ],
-  templateUrl: './faqs-list.component.html',
-  styleUrl: './faqs-list.component.css'
+  templateUrl: './blog-list.component.html',
+  styleUrl: './blog-list.component.css'
 })
-export class FaqsListComponent implements OnInit, OnDestroy {
-  faqs: Faq[] = [];
+export class BlogListComponent implements OnInit, OnDestroy {
+  blogs: Blog[] = [];
   loading = false;
   drawerVisible = false;
-  selectedFaq: Faq | null = null;
+  selectedCategory: Blog | null = null;
   nextDisplayOrder: number = 1;
 
   // Pagination & Search States
@@ -66,17 +75,16 @@ export class FaqsListComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    // Setup debounced search to ensure removing text with backspace loads correctly without race conditions
     this.searchSubscription = this.searchSubject.pipe(
       debounceTime(400),
       distinctUntilChanged()
     ).subscribe(searchTerm => {
       this.searchQuery = searchTerm;
       this.pageIndex = 1;
-      this.loadFaqs();
+      this.loadblogs();
     });
 
-    this.loadFaqs();
+    this.loadblogs();
   }
 
   ngOnDestroy(): void {
@@ -85,9 +93,9 @@ export class FaqsListComponent implements OnInit, OnDestroy {
     }
   }
 
-  loadFaqs(): void {
+  loadblogs(): void {
     this.loading = true;
-    this.apiService.getFaqs(
+    this.apiService.getBlogs(
       this.pageIndex,
       this.pageSize,
       this.searchQuery,
@@ -96,7 +104,6 @@ export class FaqsListComponent implements OnInit, OnDestroy {
     ).subscribe({
       next: (res: any) => {
         this.loading = false;
-
         let rawList: any[] = [];
         let total = 0;
 
@@ -113,38 +120,57 @@ export class FaqsListComponent implements OnInit, OnDestroy {
           } else if (Array.isArray(res.data)) {
             rawList = res.data;
             total = res.total || res.totalCount || res.data.length;
-          } else if (res.data && Array.isArray(res.data.faqs)) {
-            rawList = res.data.faqs;
-            total = res.data.total || res.data.totalCount || res.data.faqs.length;
           }
-
           if (total === 0) {
             if (res.total !== undefined) total = res.total;
             else if (res.totalCount !== undefined) total = res.totalCount;
           }
         }
-
         this.totalCount = total;
 
         if (rawList && rawList.length > 0) {
-          this.faqs = rawList.map((item: any) => ({
+          this.blogs = rawList.map((item: any) => ({
             id: item.id || item.ID || item._id,
-            category: item.category || item.Category || '',
-            question: item.question || item.Question,
-            answer: item.answer || item.Answer,
-            displayOrder: item.displayOrder || item.DisplayOrder || 0,
+            title: item.title || item.Title || item.name || '',
+            authorName: item.authorName || item.author_name || '',
+            shortDescription: item.shortDescription || item.short_description || '',
+            slug: item.slug || '',
+            imageUrl: item.imageUrl || item.image_url || '',
+            displayImageUrl: '',
+            categoryId: item.categoryId || item.category_id,
+            categoryName: item.categoryName || item.category_name || '',
+            displayOrder: item.displayOrder || item.sequenceNo || item.SequenceNo || 0,
             isActive: item.isActive !== undefined ? item.isActive : true,
+            tags: item.tags || [],
+            sections: item.sections || [],
             statusLoading: false
           }));
+
+          // Fetch image blobs securely for preview
+          this.blogs.forEach((blog: any) => {
+            if (blog.imageUrl) {
+              const fullUrl = this.getAbsoluteImageUrl(blog.imageUrl);
+              if (fullUrl.startsWith('data:') || fullUrl.startsWith('blob:')) {
+                blog.displayImageUrl = fullUrl;
+              } else {
+                this.apiService.fetchImageBlob(fullUrl).subscribe({
+                  next: (blobData: Blob) => {
+                    blog.displayImageUrl = URL.createObjectURL(blobData);
+                  },
+                  error: (err: any) => console.error('Failed to fetch blog image', err)
+                });
+              }
+            }
+          });
         } else {
-          this.faqs = [];
+          this.blogs = [];
         }
       },
       error: (err: any) => {
         this.loading = false;
-        console.error('Error fetching FAQs:', err);
-        this.message.error('Failed to load FAQs');
-        this.faqs = [];
+        console.error('Error fetching Blogs:', err);
+        this.message.error('Failed to load Blogs');
+        this.blogs = [];
         this.totalCount = 0;
       }
     });
@@ -157,14 +183,14 @@ export class FaqsListComponent implements OnInit, OnDestroy {
   prevPage(): void {
     if (this.pageIndex > 1) {
       this.pageIndex--;
-      this.loadFaqs();
+      this.loadblogs();
     }
   }
 
   nextPage(): void {
     if (this.pageIndex < this.totalPages()) {
       this.pageIndex++;
-      this.loadFaqs();
+      this.loadblogs();
     }
   }
 
@@ -173,7 +199,7 @@ export class FaqsListComponent implements OnInit, OnDestroy {
   }
 
   showingStart(): number {
-    if (this.faqs.length === 0) return 0;
+    if (this.blogs.length === 0) return 0;
     return (this.pageIndex - 1) * this.pageSize + 1;
   }
 
@@ -182,75 +208,38 @@ export class FaqsListComponent implements OnInit, OnDestroy {
   }
 
   openAddDrawer(): void {
-    this.selectedFaq = null;
+    this.selectedCategory = null;
     this.nextDisplayOrder = this.totalCount + 1;
     this.drawerVisible = true;
   }
 
-  openEditDrawer(faq: Faq): void {
-    this.selectedFaq = faq;
+  openEditDrawer(category: Blog): void {
+    this.selectedCategory = category;
     this.drawerVisible = true;
   }
 
   closeDrawer(): void {
     this.drawerVisible = false;
-    this.selectedFaq = null;
+    this.selectedCategory = null;
   }
 
   handleSaveSuccess(): void {
     this.closeDrawer();
-    this.loadFaqs();
+    this.loadblogs();
   }
 
-  onStatusChange(faq: Faq, newStatus: boolean): void {
-    faq.statusLoading = true;
-    this.apiService.toggleFaqActiveStatus(faq.id as string, newStatus).subscribe({
+  onStatusChange(category: Blog, newStatus: boolean): void {
+    category.statusLoading = true;
+    this.apiService.toggleBlogActiveStatus(category.id as string, newStatus).subscribe({
       next: () => {
-        faq.statusLoading = false;
-        this.message.success(`FAQ status updated successfully!`);
+        category.statusLoading = false;
+        this.message.success(`Category status updated successfully!`);
       },
       error: (err) => {
-        faq.statusLoading = false;
-        faq.isActive = !newStatus; // Revert change on error
-        const errMsg = err?.error?.message || err?.message || 'Failed to update FAQ status.';
+        category.statusLoading = false;
+        category.isActive = !newStatus; // Revert change on error
+        const errMsg = err?.error?.message || err?.message || "Failed to update category status.";
         this.message.error(errMsg);
-      }
-    });
-  }
-
-  moveUp(index: number): void {
-    if (index > 0) {
-      this.swapOrder(index, index - 1);
-    }
-  }
-
-  moveDown(index: number): void {
-    if (index < this.faqs.length - 1) {
-      this.swapOrder(index, index + 1);
-    }
-  }
-
-  swapOrder(index1: number, index2: number): void {
-    const tempOrder = this.faqs[index1].displayOrder;
-    this.faqs[index1].displayOrder = this.faqs[index2].displayOrder;
-    this.faqs[index2].displayOrder = tempOrder;
-
-    const tempFaq = this.faqs[index1];
-    this.faqs[index1] = this.faqs[index2];
-    this.faqs[index2] = tempFaq;
-
-    const reorderPayload = [
-      { id: this.faqs[index1].id as string, displayOrder: this.faqs[index1].displayOrder },
-      { id: this.faqs[index2].id as string, displayOrder: this.faqs[index2].displayOrder }
-    ];
-
-    this.apiService.reorderFaqs(reorderPayload).subscribe({
-      next: () => {
-        this.message.success('FAQ order updated successfully');
-      },
-      error: (err) => {
-        this.message.error('Failed to update FAQ order');
-        this.loadFaqs();
       }
     });
   }
@@ -262,19 +251,29 @@ export class FaqsListComponent implements OnInit, OnDestroy {
       this.sortBy = column;
       this.sortOrder = 'ASC';
     }
-    this.loadFaqs();
+    this.loadblogs();
   }
-  deleteFaq(id: string | number): void {
+  
+  deleteCategory(id: string | number): void {
     this.loading = true;
-    this.apiService.deleteFaq(id).subscribe({
+    this.apiService.deleteBlog(id).subscribe({
       next: () => {
-        this.message.success('FAQ deleted successfully');
-        this.loadFaqs();
+        this.message.success('Category deleted successfully');
+        this.loadblogs();
       },
       error: (err) => {
         this.loading = false;
-        this.message.error('Failed to delete FAQ');
+        this.message.error('Failed to delete category');
       }
     });
+  }
+
+  getAbsoluteImageUrl(imagePath: string): string {
+    if (!imagePath) return '';
+    if (imagePath.startsWith('http://') || imagePath.startsWith('https://') || imagePath.startsWith('data:') || imagePath.startsWith('blob:')) {
+      return imagePath;
+    }
+    const cleanPath = imagePath.startsWith('/') ? imagePath.substring(1) : imagePath;
+    return `${environment.authUrl}${cleanPath}`;
   }
 }

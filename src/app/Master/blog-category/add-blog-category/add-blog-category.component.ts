@@ -5,12 +5,11 @@ import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzSwitchModule } from 'ng-zorro-antd/switch';
-import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { ApiServiceService } from '../../../Service/api-service.service';
 
 @Component({
-  selector: 'app-add-faq',
+  selector: 'app-add-blog-category',
   standalone: true,
   imports: [
     CommonModule,
@@ -18,19 +17,18 @@ import { ApiServiceService } from '../../../Service/api-service.service';
     NzFormModule,
     NzInputModule,
     NzButtonModule,
-    NzSwitchModule,
-    NzSelectModule
+    NzSwitchModule
   ],
-  templateUrl: './add-faq.component.html',
-  styleUrl: './add-faq.component.css'
+  templateUrl: './add-blog-category.component.html',
+  styleUrl: './add-blog-category.component.css'
 })
-export class AddFaqComponent implements OnChanges {
-  @Input() faqToEdit: any = null;
+export class AddBlogCategoryComponent implements OnChanges {
+  @Input() categoryToEdit: any = null;
   @Input() nextDisplayOrder: number = 1;
   @Output() onSave = new EventEmitter<void>();
   @Output() onCancel = new EventEmitter<void>();
 
-  faqForm: FormGroup;
+  categoryForm: FormGroup;
   loading = false;
 
   constructor(
@@ -38,87 +36,79 @@ export class AddFaqComponent implements OnChanges {
     private apiService: ApiServiceService,
     private message: NzMessageService
   ) {
-    this.faqForm = this.fb.group({
-      category: [null, [Validators.required]],
+    this.categoryForm = this.fb.group({
       displayOrder: [null, [Validators.required, Validators.min(0)]],
-      question: ['', [Validators.required]],
-      answer: ['', [Validators.required]],
+      name: ['', [Validators.required]],
       isActive: [true]
     });
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['faqToEdit'] && this.faqToEdit) {
-      this.faqForm.patchValue({
-        category: this.faqToEdit.category,
-        displayOrder: this.faqToEdit.displayOrder,
-        question: this.faqToEdit.question,
-        answer: this.faqToEdit.answer,
-        isActive: this.faqToEdit.isActive !== undefined ? this.faqToEdit.isActive : true
+    if (changes['categoryToEdit'] && this.categoryToEdit) {
+      this.categoryForm.patchValue({
+        displayOrder: this.categoryToEdit.displayOrder,
+        name: this.categoryToEdit.name,
+        isActive: this.categoryToEdit.isActive !== undefined ? this.categoryToEdit.isActive : true
       });
-      this.faqForm.get('displayOrder')?.disable();
-    } else if ((changes['faqToEdit'] && !this.faqToEdit) || changes['nextDisplayOrder']) {
+      // this.categoryForm.get('displayOrder')?.disable();
+    } else if ((changes['categoryToEdit'] && !this.categoryToEdit) || changes['nextDisplayOrder']) {
       this.resetForm();
     }
   }
 
   resetForm(): void {
-    this.faqForm.reset({
-      category: null,
+    this.categoryForm.reset({
       displayOrder: this.nextDisplayOrder,
-      question: '',
-      answer: '',
+      name: '',
       isActive: true
     });
-    this.faqForm.get('displayOrder')?.disable();
+    // this.categoryForm.get('displayOrder')?.disable();
   }
 
   submitForm(): void {
-    if (this.faqForm.valid) {
+    if (this.categoryForm.valid) {
       this.loading = true;
-      const rawValue = this.faqForm.getRawValue();
+      const rawValue = this.categoryForm.getRawValue();
 
       const payload: any = {
-        category: rawValue.category,
-        question: rawValue.question.trim(),
-        answer: rawValue.answer.trim(),
+        name: rawValue.name.trim(),
         displayOrder: rawValue.displayOrder,
         isActive: rawValue.isActive
       };
 
-      if (this.faqToEdit) {
-        // Update FAQ
-        this.apiService.updateFaq(this.faqToEdit.id, payload).subscribe({
+      if (this.categoryToEdit) {
+        // Update
+        this.apiService.updateBlogCategory(this.categoryToEdit.id, payload).subscribe({
           next: () => {
             this.loading = false;
-            this.message.success('FAQ updated successfully!');
+            this.message.success('Category updated successfully!');
             this.resetForm();
             this.onSave.emit();
           },
           error: (err) => {
             this.loading = false;
-            const errMsg = err?.error?.message || err?.message || 'Failed to update FAQ.';
+            const errMsg = err?.error?.message || err?.message || 'Failed to update category.';
             this.message.error(errMsg);
           }
         });
       } else {
-        // Create FAQ
-        this.apiService.createFaq(payload).subscribe({
+        // Create
+        this.apiService.createBlogCategory(payload).subscribe({
           next: () => {
             this.loading = false;
-            this.message.success('FAQ created successfully!');
+            this.message.success('Category created successfully!');
             this.resetForm();
             this.onSave.emit();
           },
           error: (err) => {
             this.loading = false;
-            const errMsg = err?.error?.message || err?.message || 'Failed to create FAQ.';
+            const errMsg = err?.error?.message || err?.message || 'Failed to create category.';
             this.message.error(errMsg);
           }
         });
       }
     } else {
-      Object.values(this.faqForm.controls).forEach(control => {
+      Object.values(this.categoryForm.controls).forEach(control => {
         if (control.invalid) {
           control.markAsDirty();
           control.updateValueAndValidity({ onlySelf: true });

@@ -1,0 +1,283 @@
+<form [formGroup]="blogForm" (ngSubmit)="submitForm()" class="add-faq-form">
+  <div class="form-body">
+    
+    <div style="display: flex; gap: 20px;">
+      <!-- Title Field -->
+      <div class="form-field" style="flex: 1;">
+        <label class="form-label"><span class="required-asterisk">*</span> Title</label>
+        <input type="text"
+          formControlName="title"
+          placeholder="Enter Blog Title"
+          class="premium-input"
+        />
+        <div class="form-error-msg" *ngIf="blogForm.get('title')?.dirty && blogForm.get('title')?.hasError('required')">
+          Title is required.
+        </div>
+      </div>
+
+      <!-- Category Field -->
+      <div class="form-field" style="flex: 1;">
+        <label class="form-label"><span class="required-asterisk">*</span> Category</label>
+        <nz-select 
+          nzPlaceHolder="Select Category" 
+          formControlName="categoryId"
+          nzSize="large"
+          style="width: 100%; border-radius: 6px;">
+          <nz-option *ngFor="let c of categoriesList" [nzValue]="c.id" [nzLabel]="c.name"></nz-option>
+        </nz-select>
+        <div class="form-error-msg" *ngIf="blogForm.get('categoryId')?.dirty && blogForm.get('categoryId')?.hasError('required')">
+          Category is required.
+        </div>
+      </div>
+    </div>
+
+    <!-- Short Description Field -->
+    <div class="form-field">
+      <label class="form-label">Short Description</label>
+      <textarea
+        formControlName="shortDescription"
+        placeholder="Enter short description"
+        class="premium-input"
+        rows="2"
+        style="resize: vertical; min-height: 56px;"
+      ></textarea>
+    </div>
+
+
+
+    <div style="display: flex; gap: 20px;">
+      <!-- Cover Image Upload (Left Side) -->
+      <div class="form-field" style="flex: 1;">
+        <label class="form-label">Cover Image</label>
+        <div style="display: flex; gap: 16px;">
+          <div style="flex: 1;">
+            <div class="image-upload-box compact-upload-box" (click)="!uploadingCover && triggerCoverUpload()">
+              <input #coverInput type="file" accept="image/*" (change)="onCoverSelected($event)" class="hidden-file-input" />
+              <span nz-icon [nzType]="uploadingCover ? 'loading' : 'plus'" nzTheme="outline" class="upload-icon"></span>
+              <span class="upload-text">{{ uploadingCover ? 'Uploading...' : 'Upload Image' }}</span>
+            </div>
+            <div class="form-error-msg" *ngIf="coverError">
+              {{ coverError }}
+            </div>
+          </div>
+          <div style="width: 140px;">
+            <div class="uploaded-image-card" *ngIf="coverPreview" style="padding: 8px;">
+              <img [src]="coverPreview" alt="Preview" class="uploaded-preview-img" style="height: 60px; width: 100%; object-fit: cover;" crossorigin="anonymous" />
+              <div class="uploaded-card-actions" style="margin-top: 8px;">
+                <button type="button" class="remove-image-btn" (click)="coverPreview = null; coverFile = null" style="width: 100%;"><span nz-icon nzType="delete"></span></button>
+              </div>
+            </div>
+            <div class="empty-preview-placeholder" *ngIf="!coverPreview" style="padding: 16px 8px; min-height: 80px;">
+              <span class="placeholder-text" style="font-size: 11px;">No image</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tags Field (Right Side) -->
+      <div class="form-field" style="flex: 1;">
+        <label class="form-label">Design Tags</label>
+        
+        <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+          <input 
+            type="text" 
+            #designTagInput 
+            class="premium-input" 
+            placeholder="Enter design tags and press enter"
+            (keydown.enter)="addDesignTag(designTagInput, $event)" 
+            style="flex: 1; height: 38px;"
+          />
+          <button type="button" nz-button nzType="primary" (click)="addDesignTag(designTagInput)" style="background: #722F37; border-color: #722F37; height: 38px;">
+            Add
+          </button>
+        </div>
+        
+        <!-- Added Design Tags List -->
+        <div style="display: flex; flex-wrap: wrap; gap: 8px; max-height: 120px; overflow-y: auto;">
+          <div *ngFor="let tag of blogForm.get('tags')?.value; let tIndex = index" 
+               style="display: flex; justify-content: space-between; align-items: center; background: #fafafa; border: 1px solid #d9d9d9; padding: 4px 12px; border-radius: 16px;">
+            <span style="color: #333; font-size: 12px; margin-right: 8px;">{{ tag }}</span>
+            <button type="button" (click)="removeDesignTag(tIndex)" style="background: none; border: none; color: #ff4d4f; cursor: pointer; display: flex; align-items: center; padding: 0;">
+              <span nz-icon nzType="close-circle" nzTheme="outline"></span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display: flex; gap: 20px; margin-top: 16px;">
+      <!-- Author Name Field -->
+      <div class="form-field" style="flex: 1;">
+        <label class="form-label"><span class="required-asterisk">*</span> Author Name</label>
+        <input type="text"
+          formControlName="authorName"
+          placeholder="Enter Author Name"
+          class="premium-input"
+        />
+        <div class="form-error-msg" *ngIf="blogForm.get('authorName')?.dirty && blogForm.get('authorName')?.hasError('required')">
+          Author Name is required.
+        </div>
+      </div>
+
+      <!-- Sequence No Field -->
+      <div class="form-field" style="flex: 1;">
+        <label class="form-label"><span class="required-asterisk">*</span> Sequence No</label>
+        <input
+          type="number"
+          formControlName="displayOrder"
+          class="premium-input"
+        />
+        <div class="form-error-msg" *ngIf="blogForm.get('displayOrder')?.dirty && blogForm.get('displayOrder')?.hasError('required')">
+          Sequence No is required.
+        </div>
+      </div>
+
+      <!-- Active Status Field -->
+      <div class="form-field" style="flex: 1;">
+        <label class="form-label">Status</label>
+        <div class="status-switch-wrapper">
+          <nz-switch 
+            formControlName="isActive"
+            nzCheckedChildren="Active" 
+            nzUnCheckedChildren="Inactive">
+          </nz-switch>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dynamic Sections Builder (Form to List layout) -->
+    <div style="margin-top: 24px; padding-top: 24px; border-top: 1px solid #E5E2DE;">
+      <h3 style="margin: 0 0 16px 0; color: #722F37; font-size: 16px; font-weight: 600;">Blog Sections</h3>
+      
+      <div nz-row [nzGutter]="24">
+        <!-- LEFT COLUMN: BUILDER FORM -->
+        <div nz-col [nzSpan]="12">
+          <div style="background: #fafafa; border: 1px solid #e8e8e8; border-radius: 8px; padding: 16px;">
+            <h4 style="margin-top: 0; margin-bottom: 16px; font-weight: 600; color: #333;">{{ editingSectionIndex !== null ? 'Edit Section' : 'Add New Section' }}</h4>
+            
+            <div [formGroup]="sectionBuilderForm">
+              <div style="display: flex; gap: 16px; margin-bottom: 16px; align-items: flex-end;">
+                <div class="form-field" style="flex: 2; margin-bottom: 0;">
+                  <label class="form-label">Section Title</label>
+                  <input type="text" formControlName="sectionTitle" placeholder="Enter title" class="premium-input" />
+                </div>
+                <div class="form-field" style="flex: 1; margin-bottom: 0;">
+                  <label class="form-label">Type</label>
+                  <nz-select formControlName="sectionType" (ngModelChange)="onBuilderSectionTypeChange($event)" style="width: 100%;">
+                    <nz-option nzValue="Paragraph" nzLabel="Paragraph"></nz-option>
+                    <nz-option nzValue="Checklist" nzLabel="Checklist"></nz-option>
+                    <nz-option nzValue="Quote" nzLabel="Quote"></nz-option>
+                  </nz-select>
+                </div>
+                <div class="form-field" style="flex: 0 0 100px; margin-bottom: 0;">
+                  <label class="form-label">Status</label>
+                  <nz-switch formControlName="isActive" nzCheckedChildren="Active" nzUnCheckedChildren="Inactive"></nz-switch>
+                </div>
+              </div>
+
+              <!-- Content Area -->
+              <div class="form-field">
+                <label class="form-label">Content</label>
+                
+                <!-- Paragraph -->
+                <ng-container *ngIf="builderSectionType === 'Paragraph'">
+                  <angular-editor formControlName="content" [config]="editorConfig"></angular-editor>
+                </ng-container>
+                
+                <!-- Checklist & Quote -->
+                <ng-container *ngIf="builderSectionType === 'Checklist' || builderSectionType === 'Quote'">
+                  <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+                    <input 
+                      type="text" 
+                      #builderTagInput 
+                      class="premium-input" 
+                      [placeholder]="builderSectionType === 'Checklist' ? 'Type a checklist item and press enter' : 'Type a quote and press enter'"
+                      (keydown.enter)="addTagToBuilder(builderTagInput, $event)" 
+                      style="flex: 1;"
+                    />
+                    <button type="button" nz-button nzType="primary" (click)="addTagToBuilder(builderTagInput)" style="background: #722F37; border-color: #722F37;">
+                      Add
+                    </button>
+                  </div>
+                  
+                  <!-- Added Tags List -->
+                  <div style="display: flex; flex-direction: column; gap: 8px; max-height: 200px; overflow-y: auto;">
+                    <div *ngFor="let tag of sectionBuilderForm.get('content')?.value; let tIndex = index" 
+                         style="display: flex; justify-content: space-between; align-items: center; background: #fff; border: 1px solid #E5E2DE; padding: 8px 12px; border-radius: 6px;">
+                      <span style="color: #333; font-size: 14px;">{{ tag }}</span>
+                      <button type="button" (click)="removeTagFromBuilder(tIndex)" style="background: none; border: none; color: #ff4d4f; cursor: pointer; display: flex; align-items: center;">
+                        <span nz-icon nzType="close-circle" nzTheme="outline"></span>
+                      </button>
+                    </div>
+                  </div>
+                </ng-container>
+              </div>
+
+              <div style="text-align: right; margin-top: 16px;">
+                <button type="button" nz-button nzType="primary" (click)="addSectionFromBuilder()" style="background: #722F37; border-color: #722F37;">
+                  <span nz-icon [nzType]="editingSectionIndex !== null ? 'save' : 'plus'"></span> 
+                  {{ editingSectionIndex !== null ? 'Update Section' : 'Add Section to Blog' }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- RIGHT COLUMN: ADDED SECTIONS LIST -->
+        <div nz-col [nzSpan]="12">
+          <div style="background: #fff; border: 1px solid #E5E2DE; border-radius: 8px; padding: 16px; height: 100%;">
+            <h4 style="margin-top: 0; margin-bottom: 16px; font-weight: 600; color: #333;">Added Sections ({{ sections.length }})</h4>
+            
+            <div *ngIf="sections.length === 0" style="text-align: center; padding: 40px 20px; color: #999;">
+              <span nz-icon nzType="file-text" style="font-size: 32px; color: #e0e0e0; margin-bottom: 12px; display: block;"></span>
+              No sections added yet.<br/>Build a section on the left and click "Add Section".
+            </div>
+            
+            <div formArrayName="sections" class="sections-list-scroller">
+              <div *ngFor="let section of sections.controls; let i=index" [formGroupName]="i" 
+                   class="section-card type-{{ section.get('sectionType')?.value }}">
+                
+                <div class="section-card-drag">
+                  <span nz-icon nzType="holder" nzTheme="outline"></span>
+                </div>
+                
+                <div class="section-card-index">
+                  {{ i + 1 }}
+                </div>
+                
+                <div class="section-card-title" [title]="section.get('sectionTitle')?.value || 'Untitled Section'">
+                  {{ section.get('sectionTitle')?.value || 'Untitled Section' }}
+                  <span *ngIf="section.get('isActive')?.value === false" style="font-size: 11px; color: #ff4d4f; font-weight: normal; margin-left: 8px;">(Inactive)</span>
+                </div>
+                
+                <div class="section-card-badge badge-{{ section.get('sectionType')?.value }}">
+                  {{ section.get('sectionType')?.value }}
+                </div>
+                
+                <div class="section-card-actions">
+                  <button type="button" (click)="editSection(i)" class="section-card-action" title="Edit Section">
+                    <span nz-icon nzType="edit"></span>
+                  </button>
+                  <button type="button" (click)="removeSection(i)" class="section-card-action" title="Remove Section">
+                    <span nz-icon nzType="delete"></span>
+                  </button>
+                </div>
+                
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer buttons -->
+  <div class="drawer-footer">
+    <button type="button" class="btn-secondary" (click)="handleCancel()" [disabled]="loading || uploadingCover">
+      Cancel
+    </button>
+    <button type="submit" class="btn-primary" [disabled]="loading || uploadingCover">
+      {{ loading ? 'Saving...' : 'Save' }}
+    </button>
+  </div>
+</form>

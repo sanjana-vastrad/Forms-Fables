@@ -523,6 +523,104 @@ export class ApiServiceService {
     return this.httpClient.delete<any>(environment.authUrl + `api/v1/project-categories/${id}`, this.getAuthOptions());
   }
 
+  // --- Blog Category APIs ---
+  getBlogCategories(
+    page: number = 1,
+    limit: number = 10,
+    search: string = '',
+    sortBy: string = 'displayOrder',
+    sortOrder: string = 'ASC'
+  ): Observable<any> {
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('limit', limit.toString())
+      .set('sortBy', sortBy)
+      .set('sortOrder', sortOrder);
+
+    if (search) {
+      params = params.set('search', search);
+    }
+
+    const authOptions = this.getAuthOptions();
+    const requestOptions = {
+      headers: authOptions.headers,
+      params: params
+    };
+
+    return this.httpClient.get<any>(environment.authUrl + 'api/v1/blog-categories', requestOptions);
+  }
+
+  createBlogCategory(categoryData: { name: string, displayOrder?: number, isActive?: boolean }): Observable<any> {
+    return this.httpClient.post<any>(environment.authUrl + 'api/v1/blog-categories', categoryData, this.getAuthOptions());
+  }
+
+  updateBlogCategory(id: string | number, categoryData: { name?: string, displayOrder?: number, isActive?: boolean }): Observable<any> {
+    return this.httpClient.put<any>(environment.authUrl + `api/v1/blog-categories/${id}`, categoryData, this.getAuthOptions());
+  }
+
+  reorderBlogCategories(items: { id: string | number, displayOrder: number }[]): Observable<any> {
+    return this.httpClient.patch<any>(environment.authUrl + `api/v1/blog-categories/reorder`, { items }, this.getAuthOptions());
+  }
+
+  toggleBlogCategoryActiveStatus(id: string | number, isActive: boolean): Observable<any> {
+    return this.httpClient.put<any>(environment.authUrl + `api/v1/blog-categories/${id}`, { isActive }, this.getAuthOptions());
+  }
+
+  deleteBlogCategory(id: string | number): Observable<any> {
+    return this.httpClient.delete<any>(environment.authUrl + `api/v1/blog-categories/${id}`, this.getAuthOptions());
+  }
+
+  // --- Blog APIs ---
+  getBlogs(
+    page: number = 1,
+    limit: number = 10,
+    search: string = '',
+    sortBy: string = 'displayOrder',
+    sortOrder: string = 'ASC'
+  ): Observable<any> {
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('limit', limit.toString())
+      .set('sortBy', sortBy)
+      .set('sortOrder', sortOrder);
+
+    if (search) {
+      params = params.set('search', search);
+    }
+
+    const authOptions = this.getAuthOptions();
+    const requestOptions = {
+      headers: authOptions.headers,
+      params: params
+    };
+
+    return this.httpClient.get<any>(environment.authUrl + 'api/v1/blogs', requestOptions);
+  }
+
+  getBlogByIdOrSlug(idOrSlug: string | number): Observable<any> {
+    return this.httpClient.get<any>(environment.authUrl + `api/v1/blogs/${idOrSlug}`, this.getAuthOptions());
+  }
+
+  createBlog(blogData: any): Observable<any> {
+    return this.httpClient.post<any>(environment.authUrl + 'api/v1/blogs', blogData, this.getAuthOptions());
+  }
+
+  updateBlog(id: string | number, blogData: any): Observable<any> {
+    return this.httpClient.put<any>(environment.authUrl + `api/v1/blogs/${id}`, blogData, this.getAuthOptions());
+  }
+
+  reorderBlogs(items: { id: string | number, displayOrder: number }[]): Observable<any> {
+    return this.httpClient.patch<any>(environment.authUrl + `api/v1/blogs/reorder`, { items }, this.getAuthOptions());
+  }
+
+  toggleBlogActiveStatus(id: string | number, isActive: boolean): Observable<any> {
+    return this.httpClient.put<any>(environment.authUrl + `api/v1/blogs/${id}`, { isActive }, this.getAuthOptions());
+  }
+
+  deleteBlog(id: string | number): Observable<any> {
+    return this.httpClient.delete<any>(environment.authUrl + `api/v1/blogs/${id}`, this.getAuthOptions());
+  }
+
   // --- Services API ---
   getServices(): Observable<any> {
     return this.httpClient.get<any>(environment.authUrl + 'api/v1/services', this.getAuthOptions());
@@ -810,6 +908,104 @@ export class ApiServiceService {
 
   deactivateV1User(id: string | number): Observable<any> {
     return this.httpClient.patch<any>(environment.authUrl + `api/v1/users/${id}/deactivate`, {}, this.getAuthOptions());
+  }
+
+  // --- Portfolio Projects APIs ---
+  getPortfolioProjects(
+    page: number = 1,
+    limit: number = 10,
+    search: string = '',
+    sortBy: string = 'displayOrder',
+    sortOrder: string = 'ASC'
+  ): Observable<any> {
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('limit', limit.toString())
+      .set('sortBy', sortBy)
+      .set('sortOrder', sortOrder);
+
+    if (search) {
+      params = params.set('search', search);
+    }
+
+    const authOptions = this.getAuthOptions();
+    const requestOptions = {
+      headers: authOptions.headers,
+      params: params
+    };
+
+    return this.httpClient.get<any>(environment.authUrl + 'api/v1/portfolio-projects', requestOptions);
+  }
+
+  getPortfolioProjectByIdOrSlug(idOrSlug: string | number): Observable<any> {
+    return this.httpClient.get<any>(environment.authUrl + `api/v1/portfolio-projects/${idOrSlug}`, this.getAuthOptions());
+  }
+
+  createPortfolioProject(projectData: any): Observable<any> {
+    return this.httpClient.post<any>(environment.authUrl + 'api/v1/portfolio-projects', projectData, this.getAuthOptions());
+  }
+
+  updatePortfolioProject(id: string | number, projectData: any): Observable<any> {
+    return this.httpClient.put<any>(environment.authUrl + `api/v1/portfolio-projects/${id}`, projectData, this.getAuthOptions());
+  }
+
+  reorderPortfolioProjects(items: { id: string | number, displayOrder: number }[]): Observable<any> {
+    return this.httpClient.patch<any>(environment.authUrl + `api/v1/portfolio-projects/reorder`, { items }, this.getAuthOptions());
+  }
+
+  togglePortfolioProjectActiveStatus(id: string | number, isActive: boolean): Observable<any> {
+    return this.httpClient.put<any>(environment.authUrl + `api/v1/portfolio-projects/${id}`, { isActive }, this.getAuthOptions());
+  }
+
+  deletePortfolioProject(id: string | number): Observable<any> {
+    return this.httpClient.delete<any>(environment.authUrl + `api/v1/portfolio-projects/${id}`, this.getAuthOptions());
+  }
+
+  // --- Home Type APIs ---
+  getHomeTypes(
+    page: number = 1,
+    limit: number = 10,
+    search: string = '',
+    sortBy: string = 'displayOrder',
+    sortOrder: string = 'ASC'
+  ): Observable<any> {
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('limit', limit.toString())
+      .set('sortBy', sortBy)
+      .set('sortOrder', sortOrder);
+
+    if (search) {
+      params = params.set('search', search);
+    }
+
+    const authOptions = this.getAuthOptions();
+    const requestOptions = {
+      headers: authOptions.headers,
+      params: params
+    };
+
+    return this.httpClient.get<any>(environment.authUrl + 'api/v1/home-types', requestOptions);
+  }
+
+  createHomeType(data: { homeType: string, sequenceNo?: number, isActive?: boolean }): Observable<any> {
+    return this.httpClient.post<any>(environment.authUrl + 'api/v1/home-types', data, this.getAuthOptions());
+  }
+
+  updateHomeType(id: string | number, data: { homeType?: string, sequenceNo?: number, isActive?: boolean }): Observable<any> {
+    return this.httpClient.put<any>(environment.authUrl + `api/v1/home-types/${id}`, data, this.getAuthOptions());
+  }
+
+  toggleHomeTypeActiveStatus(id: string | number, isActive: boolean): Observable<any> {
+    return this.httpClient.put<any>(environment.authUrl + `api/v1/home-types/${id}`, { isActive }, this.getAuthOptions());
+  }
+
+  deactivateHomeType(id: string | number): Observable<any> {
+    return this.httpClient.patch<any>(environment.authUrl + `api/v1/home-types/${id}/deactivate`, {}, this.getAuthOptions());
+  }
+
+  deleteHomeType(id: string | number): Observable<any> {
+    return this.httpClient.delete<any>(environment.authUrl + `api/v1/home-types/${id}`, this.getAuthOptions());
   }
 
 }
