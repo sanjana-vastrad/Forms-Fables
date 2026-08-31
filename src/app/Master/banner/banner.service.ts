@@ -198,7 +198,8 @@ export class BannerService {
     }
 
     const headers = new HttpHeaders({
-      'Authorization': `Bearer ${token}`
+      'Authorization': `Bearer ${token}`,
+      'X-Tunnel-Skip-AntiPhishing-Page': 'true'
     });
 
     return this.httpClient.get(fullUrl, {

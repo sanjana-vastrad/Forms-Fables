@@ -1,0 +1,237 @@
+<div class="city-master-page">
+  <!-- Page Header -->
+  <div class="page-header-flex">
+    <div>
+      <h2 class="page-title">Consultation Leads Report</h2>
+    </div>
+    <div class="header-actions">
+      <!-- Search Input -->
+      <div class="search-input-wrapper">
+        <input
+          type="text"
+          [(ngModel)]="searchQuery"
+          (ngModelChange)="onSearch()"
+          placeholder="Search name, email, phone..."
+          class="premium-input table-search-input"
+        />
+        <span nz-icon nzType="search" nzTheme="outline" class="search-input-icon"></span>
+      </div>
+
+      <!-- Export CSV Button -->
+      <button class="btn-primary" (click)="exportCSV()" title="Export CSV Report">
+        <span nz-icon nzType="download" nzTheme="outline"></span>
+        Export CSV
+      </button>
+    </div>
+  </div>
+
+  <!-- Table Card Wrapper -->
+  <div class="table-card-wrapper">
+    <div class="premium-table-container">
+      <!-- Scrollable Table Wrapper -->
+      <div class="table-scroll-wrapper">
+        <table class="premium-table">
+          <thead>
+            <tr>
+              <th style="width: 50px;" class="text-center"></th>
+              <th style="width: 160px;">Date & Time</th>
+              <th style="width: 170px;">Contact Person</th>
+              <th style="width: 200px;">Email</th>
+              <th style="width: 140px;">Phone Number</th>
+              <th style="width: 130px;">City</th>
+              <th style="width: 120px;">Home Type</th>
+              <th style="width: 200px;">What to Design</th>
+              <th style="width: 150px;">Approx. Budget</th>
+              <th style="width: 130px;">Preferred Date</th>
+              <th>Project Details</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Loading state -->
+            <tr *ngIf="loading && leads.length === 0">
+              <td colspan="11" class="text-center empty-table-cell">
+                <span nz-icon nzType="loading" style="font-size: 20px; color: #722F37;"></span>
+                <div style="margin-top: 6px;">Loading Consultation Report...</div>
+              </td>
+            </tr>
+
+            <!-- Data Rows -->
+            <tr *ngFor="let data of leads">
+              <!-- View Details Action -->
+              <td class="text-center">
+                <button
+                  type="button"
+                  class="table-edit-btn"
+                  (click)="openDetailDrawer(data)"
+                  title="View Full Lead Details"
+                >
+                  <span nz-icon nzType="eye" nzTheme="outline"></span>
+                </button>
+              </td>
+
+              <!-- Date -->
+              <td class="date-cell">
+                {{ formatDate(data.createdAt) }}
+              </td>
+
+              <!-- Contact Person (Name) -->
+              <td class="contact-name-cell">
+                <div class="user-name-text">{{ data.name }}</div>
+              </td>
+
+              <!-- Email -->
+              <td class="state-cell">
+                {{ data.email || '-' }}
+              </td>
+
+              <!-- Phone Number -->
+              <td class="state-cell">
+                {{ data.phone || '-' }}
+              </td>
+
+              <!-- City -->
+              <td class="city-name-cell">
+                {{ data.city }}
+              </td>
+
+              <!-- Home Type -->
+              <td class="state-cell">
+                <nz-tag [nzColor]="'blue'">{{ data.homeType }}</nz-tag>
+              </td>
+
+              <!-- Design Service / What to Design -->
+              <td class="subject-cell">
+                <nz-tag [nzColor]="'purple'">{{ data.designService }}</nz-tag>
+              </td>
+
+              <!-- Approximate Budget -->
+              <td class="state-cell font-semibold">
+                {{ data.approximateBudget }}
+              </td>
+
+              <!-- Preferred Date -->
+              <td class="date-cell">
+                {{ data.preferredDate }}
+              </td>
+
+              <!-- Project Details -->
+              <td class="state-cell">
+                <div class="testimonial-message-clamp" [title]="data.projectDetails !== '-' ? data.projectDetails : ''">
+                  {{ data.projectDetails || '-' }}
+                </div>
+              </td>
+            </tr>
+
+            <!-- Empty state -->
+            <tr *ngIf="!loading && leads.length === 0">
+              <td colspan="11" class="text-center empty-table-cell">
+                <nz-empty nzNotFoundImage="simple" nzNotFoundContent="No consultation lead submissions found"></nz-empty>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination Footer -->
+      <div class="table-pagination-footer" *ngIf="totalCount > 0">
+        <div class="pagination-info">
+          Showing {{ showingStart() }} to {{ showingEnd() }} of {{ totalCount }} consultation leads
+        </div>
+        <div class="pagination-controls">
+          <button
+            type="button"
+            class="btn-pagination"
+            [disabled]="pageIndex === 1"
+            (click)="prevPage()"
+          >
+            Previous
+          </button>
+          <span class="pagination-current-page">
+            Page {{ pageIndex }} of {{ totalPages() }}
+          </span>
+          <button
+            type="button"
+            class="btn-pagination"
+            [disabled]="pageIndex === totalPages()"
+            (click)="nextPage()"
+          >
+            Next
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Consultation Detail View Drawer -->
+<nz-drawer
+  *ngIf="drawerVisible"
+  [nzVisible]="drawerVisible"
+  nzPlacement="right"
+  [nzWidth]="520"
+  nzTitle="Consultation Lead Details"
+  [nzClosable]="true"
+  (nzOnClose)="closeDrawer()"
+  class="city-drawer"
+>
+  <ng-container *nzDrawerContent>
+    <div class="drawer-detail-table-wrapper" *ngIf="selectedLead">
+      <table class="detail-key-value-table">
+        <tbody>
+          <tr>
+            <th style="width: 150px;">Date & Time</th>
+            <td>{{ formatDate(selectedLead.createdAt) }}</td>
+          </tr>
+          <tr>
+            <th>Name</th>
+            <td><strong>{{ selectedLead.name }}</strong></td>
+          </tr>
+          <tr>
+            <th>Email</th>
+            <td>{{ selectedLead.email || '-' }}</td>
+          </tr>
+          <tr>
+            <th>Phone / Mobile</th>
+            <td>{{ selectedLead.phone || '-' }}</td>
+          </tr>
+          <tr>
+            <th>City</th>
+            <td>{{ selectedLead.city || '-' }}</td>
+          </tr>
+          <tr>
+            <th>Home Type</th>
+            <td>
+              <nz-tag [nzColor]="'blue'">{{ selectedLead.homeType }}</nz-tag>
+            </td>
+          </tr>
+          <tr>
+            <th>What to Design</th>
+            <td>
+              <nz-tag [nzColor]="'purple'">{{ selectedLead.designService }}</nz-tag>
+            </td>
+          </tr>
+          <tr>
+            <th>Approximate Budget</th>
+            <td><strong>{{ selectedLead.approximateBudget }}</strong></td>
+          </tr>
+          <tr>
+            <th>Preferred Date</th>
+            <td>{{ selectedLead.preferredDate }}</td>
+          </tr>
+          <tr>
+            <th>Project Details</th>
+            <td class="drawer-message-cell">
+              {{ selectedLead.projectDetails || '-' }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="drawer-footer" style="margin-top: 24px;">
+        <button type="button" class="btn-secondary" style="width: 100%;" (click)="closeDrawer()">
+          Close
+        </button>
+      </div>
+    </div>
+  </ng-container>
+</nz-drawer>

@@ -1,0 +1,10 @@
+{
+  "/uploads": {
+    "target": "https://98769p8r-3000.inc1.devtunnels.ms",
+    "secure": false,
+    "changeOrigin": true,
+    "headers": {
+      "X-Tunnel-Skip-AntiPhishing-Page": "true"
+    }
+  }
+}

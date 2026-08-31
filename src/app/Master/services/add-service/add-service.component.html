@@ -503,6 +503,7 @@
   <div class="drawer-footer" style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px; padding-top: 16px; border-top: 1px solid #E5E2DE;">
     <button type="button" class="btn-secondary" (click)="handleCancel()" [disabled]="loading">Cancel</button>
     <button type="button" class="btn-primary" (click)="submitForm()" [disabled]="loading">
+      <span *ngIf="loading" nz-icon nzType="loading" nzTheme="outline" style="margin-right: 6px;"></span>
       {{ loading ? 'Saving...' : 'Submit & Save All' }}
     </button>
   </div>

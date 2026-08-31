@@ -1,0 +1,78 @@
+<form [formGroup]="routingRuleForm" (ngSubmit)="submitForm()" class="add-routing-rule-form">
+  <div class="form-body">
+    <!-- City Dropdown -->
+    <div class="form-field">
+      <label class="form-label"><span class="required-asterisk">*</span> City</label>
+      <nz-select
+        formControlName="cityId"
+        nzPlaceHolder="Select City"
+        class="premium-select"
+      >
+        <nz-option *ngFor="let city of citiesList" [nzValue]="city.id" [nzLabel]="city.name"></nz-option>
+      </nz-select>
+      <div class="form-error-msg" *ngIf="routingRuleForm.get('cityId')?.dirty && routingRuleForm.get('cityId')?.hasError('required')">
+        City is required.
+      </div>
+    </div>
+
+    <!-- Assigned User Dropdown -->
+    <div class="form-field">
+      <label class="form-label"><span class="required-asterisk">*</span> Assigned User</label>
+      <nz-select
+        formControlName="assignedUserId"
+        nzPlaceHolder="Select Assigned User"
+        class="premium-select"
+      >
+        <nz-option
+          *ngFor="let user of usersList"
+          [nzValue]="user.id"
+          [nzLabel]="user.name + (user.email ? ' (' + user.email + ')' : '')"
+        ></nz-option>
+      </nz-select>
+      <div class="form-error-msg" *ngIf="routingRuleForm.get('assignedUserId')?.dirty && routingRuleForm.get('assignedUserId')?.hasError('required')">
+        Assigned User is required.
+      </div>
+    </div>
+
+    <!-- Priority & Status Row -->
+    <div style="display: flex; gap: 20px;">
+      <!-- Priority -->
+      <div class="form-field" style="flex: 1;">
+        <label class="form-label"><span class="required-asterisk">*</span> Priority</label>
+        <input
+          type="number"
+          nz-input
+          formControlName="priority"
+          placeholder="e.g. 1"
+          class="premium-input"
+        />
+        <div class="form-error-msg" *ngIf="routingRuleForm.get('priority')?.dirty && routingRuleForm.get('priority')?.hasError('required')">
+          Priority is required.
+        </div>
+      </div>
+
+      <!-- Status Toggle -->
+      <div class="form-field" style="flex: 1;">
+        <label class="form-label">Status</label>
+        <div class="status-switch-wrapper">
+          <nz-switch
+            formControlName="isActive"
+            [nzCheckedChildren]="'Active'"
+            [nzUnCheckedChildren]="'Inactive'"
+          ></nz-switch>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pinned Footer buttons -->
+  <div class="drawer-footer">
+    <button type="button" class="btn-secondary" (click)="handleCancel()" [disabled]="loading">
+      Cancel
+    </button>
+    <button type="submit" class="btn-primary" [disabled]="loading">
+      <span *ngIf="loading" nz-icon nzType="loading" nzTheme="outline" style="margin-right: 6px;"></span>
+      {{ loading ? 'Saving...' : 'Save' }}
+    </button>
+  </div>
+</form>

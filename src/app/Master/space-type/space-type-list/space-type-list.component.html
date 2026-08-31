@@ -1,0 +1,155 @@
+<div class="city-master-page">
+  <!-- Page Header -->
+  <div class="page-header-flex">
+    <div>
+      <h2 class="page-title">Space Type Master</h2>
+    </div>
+    <div class="header-actions">
+      <div class="search-input-wrapper">
+        <input
+          type="text"
+          [(ngModel)]="searchQuery"
+          (ngModelChange)="onSearch()"
+          placeholder="Search space type..."
+          class="premium-input table-search-input"
+        />
+        <span nz-icon nzType="search" nzTheme="outline" class="search-input-icon"></span>
+      </div>
+      <button class="btn-primary" (click)="openAddDrawer()">
+        <span nz-icon nzType="plus" nzTheme="outline"></span>
+        Add New Space Type
+      </button>
+    </div>
+  </div>
+
+  <!-- Space Type List Table -->
+  <div class="table-card-wrapper">
+    <div class="premium-table-container">
+      <table class="premium-table">
+        <thead>
+          <tr>
+            <!-- ACTION COLUMN FIRST -->
+            <th style="width: 100px;" class="text-center">Edit</th>
+            <th class="sortable-header" (click)="toggleSort('displayOrder')" style="width: 150px;">
+              <span class="header-label-flex">
+                Seq No
+                <span class="sort-icon-container">
+                  <span nz-icon nzType="caret-up" [class.active-sort]="sortBy === 'displayOrder' && sortOrder === 'ASC'"></span>
+                  <span nz-icon nzType="caret-down" [class.active-sort]="sortBy === 'displayOrder' && sortOrder === 'DESC'"></span>
+                </span>
+              </span>
+            </th>
+            <th class="sortable-header" (click)="toggleSort('name')">
+              <span class="header-label-flex">
+                Space Type
+                <span class="sort-icon-container">
+                  <span nz-icon nzType="caret-up" [class.active-sort]="sortBy === 'name' && sortOrder === 'ASC'"></span>
+                  <span nz-icon nzType="caret-down" [class.active-sort]="sortBy === 'name' && sortOrder === 'DESC'"></span>
+                </span>
+              </span>
+            </th>
+            <th style="width: 140px;" class="text-center">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Loading state -->
+          <tr *ngIf="loading && spaceTypes.length === 0">
+            <td colspan="4" class="text-center empty-table-cell">
+              <span nz-icon nzType="loading" style="font-size: 20px; color: #722F37;"></span>
+              <div style="margin-top: 6px;">Loading Space Types...</div>
+            </td>
+          </tr>
+
+          <!-- Data Rows -->
+          <tr *ngFor="let data of spaceTypes">
+            <!-- Action Column First: Edit Button -->
+            <td class="text-center">
+              <button
+                type="button"
+                class="table-edit-btn"
+                (click)="openEditDrawer(data)"
+                title="Edit Space Type"
+              >
+                <span nz-icon nzType="edit" nzTheme="outline"></span>
+              </button>
+            </td>
+
+            <!-- Sequence No -->
+            <td>
+              <span class="order-number">{{ data.displayOrder }}</span>
+            </td>
+
+            <!-- Space Type Name -->
+            <td class="city-name-cell">{{ data.name }}</td>
+
+            <!-- Status Column: Switch Toggle -->
+            <td class="text-center" (click)="$event.stopPropagation()">
+              <nz-switch
+                [ngModel]="data.isActive"
+                (ngModelChange)="toggleStatus(data)"
+                [nzCheckedChildren]="'Active'"
+                [nzUnCheckedChildren]="'Inactive'"
+              ></nz-switch>
+            </td>
+          </tr>
+
+          <!-- Empty state -->
+          <tr *ngIf="!loading && spaceTypes.length === 0">
+            <td colspan="4" class="text-center empty-table-cell">
+              <nz-empty nzNotFoundImage="simple" nzNotFoundContent="No Space Types found"></nz-empty>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Pagination Footer -->
+      <div class="table-pagination-footer" *ngIf="totalCount > 0">
+        <div class="pagination-info">
+          Showing {{ showingStart() }} to {{ showingEnd() }} of {{ totalCount }} space types
+        </div>
+        <div class="pagination-controls">
+          <button
+            type="button"
+            class="btn-pagination"
+            [disabled]="pageIndex === 1"
+            (click)="prevPage()"
+          >
+            Previous
+          </button>
+          <span class="pagination-current-page">
+            Page {{ pageIndex }} of {{ totalPages() }}
+          </span>
+          <button
+            type="button"
+            class="btn-pagination"
+            [disabled]="pageIndex === totalPages()"
+            (click)="nextPage()"
+          >
+            Next
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add/Edit Space Type Drawer -->
+<nz-drawer
+  *ngIf="drawerVisible"
+  [nzVisible]="drawerVisible"
+  nzPlacement="right"
+  [nzWidth]="420"
+  [nzTitle]="selectedSpaceType ? 'Edit Space Type' : 'Add New Space Type'"
+  [nzClosable]="true"
+  (nzOnClose)="closeDrawer()"
+  class="city-drawer"
+>
+  <ng-container *nzDrawerContent>
+    <app-add-space-type
+      [spaceTypeToEdit]="selectedSpaceType"
+      [nextSequenceNo]="nextSequenceNo"
+      (onSave)="handleSaveSuccess()"
+      (onCancel)="closeDrawer()"
+    ></app-add-space-type>
+  </ng-container>
+</nz-drawer>

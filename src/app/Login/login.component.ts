@@ -39,7 +39,7 @@ export class LoginComponent implements OnInit {
 
   ngOnInit(): void {
     this.loginForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
+      email: ['', [Validators.required]],
       password: ['', [Validators.required]],
       remember: [true]
     });
@@ -47,9 +47,11 @@ export class LoginComponent implements OnInit {
 
   submitForm(): void {
     if (this.loginForm.valid) {
-      this.loading = true;
       const { email, password } = this.loginForm.value;
+      const valEmail = (email || '').trim().toLowerCase();
 
+
+      this.loading = true;
       this.apiService.loginAuth(email, password).subscribe({
         next: (response) => {
           this.loading = false;

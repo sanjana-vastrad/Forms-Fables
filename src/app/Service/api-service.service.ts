@@ -7,7 +7,7 @@ import {
 } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { CookieService } from 'ngx-cookie-service';
-import { forkJoin, Observable, of, switchMap } from 'rxjs';
+import { forkJoin, Observable, of, Subject, switchMap } from 'rxjs';
 import { CommonFunctionService } from './CommonFunctionService';
 import { environment } from '../../environments/environment';
 @Injectable({
@@ -292,11 +292,16 @@ export class ApiServiceService {
 
   getAuthToken(): string {
     let token = '';
-    if (typeof window !== 'undefined' && window.localStorage) {
-      token = localStorage.getItem('token') || '';
+    if (typeof window !== 'undefined') {
+      if (window.localStorage) {
+        token = localStorage.getItem('token') || localStorage.getItem('authToken') || localStorage.getItem('access_token') || '';
+      }
+      if (!token && window.sessionStorage) {
+        token = sessionStorage.getItem('token') || sessionStorage.getItem('authToken') || sessionStorage.getItem('access_token') || '';
+      }
     }
     if (!token && this.cookie) {
-      token = this.cookie.get('token') || '';
+      token = this.cookie.get('token') || this.cookie.get('authToken') || '';
       if (token && typeof window !== 'undefined' && window.localStorage) {
         localStorage.setItem('token', token);
       }
@@ -357,6 +362,45 @@ export class ApiServiceService {
 
   deactivateCity(id: string | number): Observable<any> {
     return this.httpClient.patch<any>(environment.authUrl + `api/v1/cities/${id}/deactivate`, {}, this.getAuthOptions());
+  }
+
+  // ===== Space Type Master APIs =====
+  getSpaceTypes(
+    page: number = 1,
+    limit: number = 10,
+    search: string = '',
+    sortBy: string = 'displayOrder',
+    sortOrder: string = 'ASC'
+  ): Observable<any> {
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('limit', limit.toString())
+      .set('sortBy', sortBy)
+      .set('sortOrder', sortOrder);
+
+    if (search) {
+      params = params.set('search', search);
+    }
+
+    const authOptions = this.getAuthOptions();
+    const requestOptions = {
+      headers: authOptions.headers,
+      params: params
+    };
+
+    return this.httpClient.get<any>(environment.authUrl + 'api/v1/space-types', requestOptions);
+  }
+
+  createSpaceType(spaceTypeData: { name: string, displayOrder?: number, isActive?: boolean }): Observable<any> {
+    return this.httpClient.post<any>(environment.authUrl + 'api/v1/space-types', spaceTypeData, this.getAuthOptions());
+  }
+
+  updateSpaceType(id: string | number, spaceTypeData: { name?: string, displayOrder?: number, isActive?: boolean }): Observable<any> {
+    return this.httpClient.put<any>(environment.authUrl + `api/v1/space-types/${id}`, spaceTypeData, this.getAuthOptions());
+  }
+
+  deactivateSpaceType(id: string | number): Observable<any> {
+    return this.httpClient.patch<any>(environment.authUrl + `api/v1/space-types/${id}/deactivate`, {}, this.getAuthOptions());
   }
 
   // ===== FAQs APIs =====
@@ -476,6 +520,187 @@ export class ApiServiceService {
     return this.httpClient.delete<any>(environment.authUrl + `api/v1/design-idea-categories/${id}`, this.getAuthOptions());
   }
 
+  // ===== Rate Table Master APIs =====
+  getRateTables(
+    page: number = 1,
+    limit: number = 10,
+    spaceTypeId?: string | number,
+    designIdeaCategoryId?: string | number,
+    scope?: string,
+    isActive?: boolean
+  ): Observable<any> {
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('limit', limit.toString());
+
+    if (spaceTypeId) {
+      params = params.set('spaceTypeId', spaceTypeId.toString());
+    }
+    if (designIdeaCategoryId) {
+      params = params.set('designIdeaCategoryId', designIdeaCategoryId.toString());
+    }
+    if (scope) {
+      params = params.set('scope', scope);
+    }
+    if (isActive !== undefined && isActive !== null) {
+      params = params.set('isActive', isActive.toString());
+    }
+
+    const authOptions = this.getAuthOptions();
+    const requestOptions = {
+      headers: authOptions.headers,
+      params: params
+    };
+
+    return this.httpClient.get<any>(environment.authUrl + 'api/v1/rate-tables', requestOptions);
+  }
+
+  createRateTable(rateTableData: {
+    spaceTypeId: string | number,
+    designIdeaCategoryId: string | number,
+    finishTier: string,
+    scope: string,
+    rateMinPerSqft: number,
+    rateMaxPerSqft: number,
+    isActive?: boolean
+  }): Observable<any> {
+    return this.httpClient.post<any>(environment.authUrl + 'api/v1/rate-tables', rateTableData, this.getAuthOptions());
+  }
+
+  updateRateTable(
+    id: string | number,
+    rateTableData: {
+      spaceTypeId?: string | number,
+      designIdeaCategoryId?: string | number,
+      finishTier?: string,
+      scope?: string,
+      rateMinPerSqft?: number,
+      rateMaxPerSqft?: number,
+      isActive?: boolean
+    }
+  ): Observable<any> {
+    return this.httpClient.put<any>(environment.authUrl + `api/v1/rate-tables/${id}`, rateTableData, this.getAuthOptions());
+  }
+
+  deleteRateTable(id: string | number): Observable<any> {
+    return this.httpClient.delete<any>(environment.authUrl + `api/v1/rate-tables/${id}`, this.getAuthOptions());
+  }
+
+  // ===== Testimonials Master APIs =====
+  getTestimonials(
+    page: number = 1,
+    limit: number = 10,
+    status?: string,
+    search: string = ''
+  ): Observable<any> {
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('limit', limit.toString());
+
+    if (status) {
+      params = params.set('status', status);
+    }
+    if (search) {
+      params = params.set('search', search);
+    }
+
+    const authOptions = this.getAuthOptions();
+    const requestOptions = {
+      headers: authOptions.headers,
+      params: params
+    };
+
+    return this.httpClient.get<any>(environment.authUrl + 'api/v1/testimonials', requestOptions);
+  }
+
+  createTestimonial(formData: FormData | any): Observable<any> {
+    const token = this.getAuthToken();
+    let headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
+    if (!(formData instanceof FormData)) {
+      headers = headers.set('Content-Type', 'application/json');
+    }
+    return this.httpClient.post<any>(environment.authUrl + 'api/v1/testimonials', formData, { headers });
+  }
+
+  updateTestimonial(id: string | number, formData: FormData | any): Observable<any> {
+    const token = this.getAuthToken();
+    let headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
+    if (!(formData instanceof FormData)) {
+      headers = headers.set('Content-Type', 'application/json');
+    }
+    return this.httpClient.put<any>(environment.authUrl + `api/v1/testimonials/${id}`, formData, { headers });
+  }
+
+  deleteTestimonial(id: string | number): Observable<any> {
+    return this.httpClient.delete<any>(environment.authUrl + `api/v1/testimonials/${id}`, this.getAuthOptions());
+  }
+
+  // ===== City Routing Rule Master APIs =====
+  getCityRoutingRules(
+    page: number = 1,
+    limit: number = 10,
+    cityId?: string | number,
+    assignedUserId?: string | number,
+    search: string = ''
+  ): Observable<any> {
+    const token = this.getAuthToken();
+
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('limit', limit.toString());
+
+    if (token) {
+      params = params.set('token', token);
+    }
+
+    if (cityId) {
+      params = params.set('cityId', cityId.toString());
+    }
+    if (assignedUserId) {
+      params = params.set('assignedUserId', assignedUserId.toString());
+    }
+    if (search) {
+      params = params.set('search', search);
+    }
+
+    const authOptions = this.getAuthOptions();
+    const requestOptions = {
+      headers: authOptions.headers,
+      params: params
+    };
+
+    return this.httpClient.get<any>(environment.authUrl + 'api/v1/city-routing-rules', requestOptions);
+  }
+
+  createCityRoutingRule(ruleData: {
+    cityId: string | number,
+    assignedUserId: string | number,
+    priority?: number,
+    isActive?: boolean
+  }): Observable<any> {
+    return this.httpClient.post<any>(environment.authUrl + 'api/v1/city-routing-rules', ruleData, this.getAuthOptions());
+  }
+
+  updateCityRoutingRule(
+    id: string | number,
+    ruleData: {
+      cityId?: string | number,
+      assignedUserId?: string | number,
+      priority?: number,
+      isActive?: boolean
+    }
+  ): Observable<any> {
+    return this.httpClient.put<any>(environment.authUrl + `api/v1/city-routing-rules/${id}`, ruleData, this.getAuthOptions());
+  }
+
+  deleteCityRoutingRule(id: string | number): Observable<any> {
+    return this.httpClient.delete<any>(environment.authUrl + `api/v1/city-routing-rules/${id}`, this.getAuthOptions());
+  }
+
   // ===== Project Category APIs =====
   getProjectCategories(
     page: number = 1,
@@ -560,13 +785,21 @@ export class ApiServiceService {
     }
 
     const headers = new HttpHeaders({
-      'Authorization': `Bearer ${token}`
+      'Authorization': `Bearer ${token}`,
+      'X-Tunnel-Skip-AntiPhishing-Page': 'true'
     });
 
     return this.httpClient.get(fullUrl, {
       headers,
       responseType: 'blob'
     });
+  }
+
+  private formsUpdatedSubject = new Subject<void>();
+  formsUpdated$ = this.formsUpdatedSubject.asObservable();
+
+  notifyFormsUpdated() {
+    this.formsUpdatedSubject.next();
   }
 
   // ===== Form Master V1 APIs =====
@@ -613,6 +846,8 @@ export class ApiServiceService {
     description?: string;
     displayOrder?: number;
     isActive?: boolean;
+    parentId?: number | string | null;
+    icon?: string | null;
   }): Observable<any> {
     return this.httpClient.post<any>(environment.authUrl + 'api/v1/forms', formData, this.getAuthOptions());
   }
@@ -626,6 +861,8 @@ export class ApiServiceService {
       description?: string;
       displayOrder?: number;
       isActive?: boolean;
+      parentId?: number | string | null;
+      icon?: string | null;
     }
   ): Observable<any> {
     return this.httpClient.put<any>(environment.authUrl + `api/v1/forms/${id}`, formData, this.getAuthOptions());
@@ -810,6 +1047,139 @@ export class ApiServiceService {
 
   deactivateV1User(id: string | number): Observable<any> {
     return this.httpClient.patch<any>(environment.authUrl + `api/v1/users/${id}/deactivate`, {}, this.getAuthOptions());
+  }
+
+  // ===== Design Ideas V1 APIs =====
+  getV1DesignIdeas(
+    page: number = 1,
+    limit: number = 10,
+    search: string = '',
+    sortBy: string = 'displayOrder',
+    sortOrder: string = 'ASC'
+  ): Observable<any> {
+    const token = this.getAuthToken();
+    if (!token) {
+      return of({ success: false, data: { items: [], total: 0 }, message: 'Authentication token missing.' });
+    }
+
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('limit', limit.toString())
+      .set('pageSize', limit.toString())
+      .set('pageIndex', page.toString())
+      .set('sortBy', sortBy)
+      .set('sortOrder', sortOrder)
+      .set('token', token);
+
+    if (search) {
+      params = params.set('search', search);
+    }
+
+    const requestOptions = {
+      headers: this.getAuthOptions().headers,
+      params: params
+    };
+
+    return this.httpClient.get<any>(environment.authUrl + 'api/v1/design-ideas', requestOptions);
+  }
+
+  getV1DesignIdeaById(id: string | number): Observable<any> {
+    return this.httpClient.get<any>(environment.authUrl + `api/v1/design-ideas/${id}`, this.getAuthOptions());
+  }
+
+  createV1DesignIdea(payload: any): Observable<any> {
+    return this.httpClient.post<any>(environment.authUrl + 'api/v1/design-ideas', payload, this.getAuthOptions());
+  }
+
+  updateV1DesignIdea(id: string | number, payload: any): Observable<any> {
+    return this.httpClient.put<any>(environment.authUrl + `api/v1/design-ideas/${id}`, payload, this.getAuthOptions());
+  }
+
+  deleteV1DesignIdea(id: string | number): Observable<any> {
+    return this.httpClient.delete<any>(environment.authUrl + `api/v1/design-ideas/${id}`, this.getAuthOptions());
+  }
+
+  uploadV1DesignIdeaImage(designId: string | number, formData: FormData): Observable<any> {
+    const authOpts = this.getAuthOptions();
+    // Do not set Content-Type to application/json for FormData, let browser handle it.
+    let headers = authOpts.headers;
+    headers = headers.delete('Content-Type');
+
+    return this.httpClient.post<any>(environment.authUrl + `api/v1/design-ideas/${designId}/images`, formData, { headers });
+  }
+
+  deleteV1DesignIdeaImage(designId: string | number, imageId: string | number): Observable<any> {
+    return this.httpClient.delete<any>(environment.authUrl + `api/v1/design-ideas/${designId}/images/${imageId}`, this.getAuthOptions());
+  }
+
+  // ===== Leads / Contact Us Report APIs =====
+  getLeads(
+    page: number = 1,
+    limit: number = 10,
+    search: string = '',
+    sortBy: string = 'createdAt',
+    sortOrder: string = 'DESC'
+  ): Observable<any> {
+    const token = this.getAuthToken();
+    if (!token) {
+      return of({ success: false, data: { items: [], total: 0 }, message: 'Authentication token missing.' });
+    }
+
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('limit', limit.toString())
+      .set('sortBy', sortBy)
+      .set('sortOrder', sortOrder)
+      .set('token', token);
+
+    if (search) {
+      params = params.set('search', search).set('q', search).set('query', search);
+    }
+
+    const authOptions = this.getAuthOptions();
+    const requestOptions = {
+      headers: authOptions.headers,
+      params: params
+    };
+
+    return this.httpClient.get<any>(environment.authUrl + 'api/v1/leads/contacts', requestOptions);
+  }
+
+  deleteLead(id: string | number): Observable<any> {
+    return this.httpClient.delete<any>(environment.authUrl + `api/v1/leads/contacts/${id}`, this.getAuthOptions());
+  }
+
+  // ===== Consultation Leads Report APIs =====
+  getConsultationLeads(
+    page: number = 1,
+    limit: number = 10,
+    search: string = '',
+    sortBy: string = 'createdAt',
+    sortOrder: string = 'DESC'
+  ): Observable<any> {
+    const token = this.getAuthToken();
+    if (!token) {
+      return of({ success: false, data: { items: [], total: 0 }, message: 'Authentication token missing.' });
+    }
+
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('limit', limit.toString())
+      .set('sortBy', sortBy)
+      .set('sortOrder', sortOrder)
+      .set('token', token);
+
+    if (search) {
+      params = params.set('search', search).set('q', search).set('query', search);
+    }
+
+    const authOptions = this.getAuthOptions();
+    const requestOptions = {
+      headers: authOptions.headers,
+      params: params
+    };
+
+    return this.httpClient.get<any>(environment.authUrl + 'api/v1/leads/consultations', requestOptions);
   }
 
 }

@@ -1,0 +1,58 @@
+<form [formGroup]="spaceTypeForm" (ngSubmit)="submitForm()" class="add-space-type-form">
+  <div class="form-body">
+    <!-- Space Type Name Field -->
+    <div class="form-field">
+      <label class="form-label"><span class="required-asterisk">*</span> Space Type</label>
+      <input
+        type="text"
+        nz-input
+        formControlName="name"
+        placeholder="Enter Space Type"
+        class="premium-input"
+      />
+      <div class="form-error-msg" *ngIf="spaceTypeForm.get('name')?.dirty && spaceTypeForm.get('name')?.hasError('required')">
+        Space Type is required.
+      </div>
+    </div>
+
+    <div style="display: flex; gap: 20px; margin-top: 8px;">
+      <!-- Active Status Field -->
+      <div class="form-field" style="flex: 1;">
+        <label class="form-label">Status</label>
+        <div class="status-switch-wrapper">
+          <nz-switch
+            formControlName="isActive"
+            [nzCheckedChildren]="'Active'"
+            [nzUnCheckedChildren]="'Inactive'"
+          ></nz-switch>
+        </div>
+      </div>
+
+      <!-- Sequence No Field -->
+      <div class="form-field" style="flex: 1;">
+        <label class="form-label"><span class="required-asterisk">*</span> Sequence No</label>
+        <input
+          type="number"
+          nz-input
+          formControlName="displayOrder"
+          class="premium-input"
+          placeholder="Enter Sequence No"
+        />
+        <div class="form-error-msg" *ngIf="spaceTypeForm.get('displayOrder')?.dirty && spaceTypeForm.get('displayOrder')?.hasError('required')">
+          Sequence No is required.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer buttons -->
+  <div class="drawer-footer">
+    <button type="button" class="btn-secondary" (click)="handleCancel()" [disabled]="loading">
+      Cancel
+    </button>
+    <button type="submit" class="btn-primary" [disabled]="loading">
+      <span *ngIf="loading" nz-icon nzType="loading" nzTheme="outline" style="margin-right: 6px;"></span>
+      {{ loading ? 'Saving...' : 'Save' }}
+    </button>
+  </div>
+</form>

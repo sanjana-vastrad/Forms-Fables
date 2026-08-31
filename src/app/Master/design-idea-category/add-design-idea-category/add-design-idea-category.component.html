@@ -47,6 +47,7 @@
       Cancel
     </button>
     <button type="submit" class="btn-primary" [disabled]="loading">
+      <span *ngIf="loading" nz-icon nzType="loading" nzTheme="outline" style="margin-right: 6px;"></span>
       {{ loading ? 'Saving...' : 'Save' }}
     </button>
   </div>

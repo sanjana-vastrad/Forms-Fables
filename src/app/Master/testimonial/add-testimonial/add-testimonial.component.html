@@ -1,0 +1,124 @@
+<form [formGroup]="testimonialForm" (ngSubmit)="submitForm()" class="add-testimonial-form">
+  <div class="form-body">
+    <!-- Client Name -->
+    <div class="form-field">
+      <label class="form-label"><span class="required-asterisk">*</span> Client Name</label>
+      <input
+        type="text"
+        nz-input
+        formControlName="name"
+        placeholder="e.g. Rahul Sharma"
+        class="premium-input"
+      />
+      <div class="form-error-msg" *ngIf="testimonialForm.get('name')?.dirty && testimonialForm.get('name')?.hasError('required')">
+        Client name is required.
+      </div>
+    </div>
+
+    <!-- Testimonial Message -->
+    <div class="form-field">
+      <label class="form-label"><span class="required-asterisk">*</span> Testimonial Message</label>
+      <textarea
+        nz-input
+        formControlName="message"
+        rows="4"
+        placeholder="Enter client testimonial message..."
+        class="premium-textarea"
+      ></textarea>
+      <div class="form-error-msg" *ngIf="testimonialForm.get('message')?.dirty && testimonialForm.get('message')?.hasError('required')">
+        Testimonial message is required.
+      </div>
+    </div>
+
+    <!-- Client Photo Upload Row -->
+    <div nz-row [nzGutter]="16" class="form-field">
+      <!-- Upload Dropzone (10 span) -->
+      <div nz-col [nzSpan]="10">
+        <label class="form-label">Client Photo (Optional)</label>
+        <div class="image-upload-box compact-upload-box" (click)="photoInput.click()">
+          <input #photoInput type="file" accept="image/*" (change)="onPhotoSelected($event)" style="display: none;" />
+          <span nz-icon nzType="camera" nzTheme="outline" class="upload-icon"></span>
+          <span class="upload-text">Upload Photo</span>
+          <span class="upload-subtext">JPG, PNG, WEBP</span>
+        </div>
+      </div>
+
+      <!-- Photo Preview Card (14 span) -->
+      <div nz-col [nzSpan]="14">
+        <label class="form-label">Photo Preview</label>
+        <div class="uploaded-image-card" *ngIf="photoPreview">
+          <img [src]="photoPreview" alt="Client Photo" class="uploaded-preview-img" crossorigin="anonymous" />
+          <div class="uploaded-card-actions">
+            <button type="button" class="change-image-btn" (click)="photoInput2.click()" nz-tooltip nzTooltipTitle="Change Photo">
+              <span nz-icon nzType="edit" nzTheme="outline"></span> Change
+            </button>
+            <button type="button" class="remove-image-btn" (click)="removePhoto()" nz-tooltip nzTooltipTitle="Remove Photo">
+              <span nz-icon nzType="delete" nzTheme="outline"></span>
+            </button>
+            <input #photoInput2 type="file" accept="image/*" (change)="onPhotoSelected($event)" style="display: none;" />
+          </div>
+        </div>
+        <div class="empty-preview-placeholder" *ngIf="!photoPreview">
+          <span class="placeholder-text">No photo uploaded yet</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Video Testimonial Upload Row -->
+    <div nz-row [nzGutter]="16" class="form-field">
+      <!-- Upload Dropzone (10 span) -->
+      <div nz-col [nzSpan]="10">
+        <label class="form-label">Video Testimonial (Optional)</label>
+        <div class="image-upload-box compact-upload-box" (click)="videoInput.click()">
+          <input #videoInput type="file" accept="video/*" (change)="onVideoSelected($event)" style="display: none;" />
+          <span nz-icon nzType="video-camera" nzTheme="outline" class="upload-icon"></span>
+          <span class="upload-text">Upload Video</span>
+          <span class="upload-subtext">MP4, MOV, WEBM</span>
+        </div>
+      </div>
+
+      <!-- Video Preview Card (14 span) -->
+      <div nz-col [nzSpan]="14">
+        <label class="form-label">Video Preview</label>
+        <div class="uploaded-image-card" *ngIf="videoPreviewUrl">
+          <video [src]="videoPreviewUrl" controls class="uploaded-preview-img" style="max-height: 52px; max-width: 90px; object-fit: contain; background: #000;" crossorigin="anonymous"></video>
+          <div class="uploaded-card-actions">
+            <button type="button" class="change-image-btn" (click)="videoInput2.click()" nz-tooltip nzTooltipTitle="Change Video">
+              <span nz-icon nzType="edit" nzTheme="outline"></span> Change
+            </button>
+            <button type="button" class="remove-image-btn" (click)="removeVideo()" nz-tooltip nzTooltipTitle="Remove Video">
+              <span nz-icon nzType="delete" nzTheme="outline"></span>
+            </button>
+            <input #videoInput2 type="file" accept="video/*" (change)="onVideoSelected($event)" style="display: none;" />
+          </div>
+        </div>
+        <div class="empty-preview-placeholder" *ngIf="!videoPreviewUrl">
+          <span class="placeholder-text">No video uploaded yet</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Status Field -->
+    <div class="form-field">
+      <label class="form-label">Status</label>
+      <div class="status-switch-wrapper">
+        <nz-switch
+          formControlName="isActive"
+          [nzCheckedChildren]="'Active'"
+          [nzUnCheckedChildren]="'Inactive'"
+        ></nz-switch>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pinned Footer buttons -->
+  <div class="drawer-footer">
+    <button type="button" class="btn-secondary" (click)="handleCancel()" [disabled]="loading">
+      Cancel
+    </button>
+    <button type="submit" class="btn-primary" [disabled]="loading">
+      <span *ngIf="loading" nz-icon nzType="loading" nzTheme="outline" style="margin-right: 6px;"></span>
+      {{ loading ? 'Saving...' : 'Save' }}
+    </button>
+  </div>
+</form>

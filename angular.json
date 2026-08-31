@@ -77,7 +77,8 @@
               "buildTarget": "forms-fables-b2c:build:production"
             },
             "development": {
-              "buildTarget": "forms-fables-b2c:build:development"
+              "buildTarget": "forms-fables-b2c:build:development",
+              "proxyConfig": "proxy.conf.json"
             }
           },
           "defaultConfiguration": "development"
