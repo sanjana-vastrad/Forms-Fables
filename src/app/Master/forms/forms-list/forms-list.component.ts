@@ -62,6 +62,26 @@ export class FormsListComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadForms();
+    this.loadAllFormsForLookup();
+  }
+
+  loadAllFormsForLookup(): void {
+    this.apiService.getV1Forms(1, 10, '', 'name', 'ASC').subscribe({
+      next: (res: any) => {
+        let rawList: any[] = [];
+        if (res) {
+          if (Array.isArray(res)) rawList = res;
+          else if (res.items && Array.isArray(res.items)) rawList = res.items;
+          else if (res.data && Array.isArray(res.data.items)) rawList = res.data.items;
+          else if (Array.isArray(res.data)) rawList = res.data;
+          else if (res.data && Array.isArray(res.data.forms)) rawList = res.data.forms;
+        }
+        this.allFormsForLookup = rawList.map((item: any) => ({
+          id: item.id || item.ID || item._id,
+          name: item.name || item.title || item.FORM_NAME || 'Untitled Form'
+        }));
+      }
+    });
   }
 
   loadForms(): void {
@@ -194,7 +214,7 @@ export class FormsListComponent implements OnInit {
 
   toggleStatus(formItem: FormMasterItem, newStatus: boolean): void {
     this.updatingStatusId = formItem.id;
-    
+
     // Call update API or deactivate API
     const updateObs = !newStatus
       ? this.apiService.deactivateV1Form(formItem.id)

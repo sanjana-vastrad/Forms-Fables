@@ -48,16 +48,76 @@ export class AddFormComponent implements OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['formToEdit'] && this.formToEdit) {
-      this.formGroup.patchValue({
-        name: this.formToEdit.name || '',
-        slug: this.formToEdit.slug || '',
-        routePath: this.formToEdit.routePath || '',
-        description: this.formToEdit.description || '',
-        displayOrder: this.formToEdit.displayOrder !== undefined ? this.formToEdit.displayOrder : this.nextDisplayOrder,
-        isActive: this.formToEdit.isActive !== undefined ? this.formToEdit.isActive : true
-      });
+      this.loadParentForms();
+      this.applyFormToEdit();
     } else if ((changes['formToEdit'] && !this.formToEdit) || changes['nextDisplayOrder']) {
       this.resetForm();
+      this.loadParentForms();
+    }
+  }
+
+  applyFormToEdit(): void {
+    if (!this.formToEdit) return;
+
+    let pId: any = 0;
+    const rawPId = this.formToEdit.parentId !== undefined ? this.formToEdit.parentId : this.formToEdit.parent_id;
+
+    if (rawPId !== undefined && rawPId !== null && rawPId !== 'null' && rawPId !== '' && rawPId !== 0 && rawPId !== '0') {
+      const match = this.localParentOptions.find(opt => String(opt.id) === String(rawPId));
+      pId = match ? match.id : rawPId;
+    }
+
+    this.formGroup.patchValue({
+      name: this.formToEdit.name || '',
+      slug: this.formToEdit.slug || '',
+      routePath: this.formToEdit.routePath || '',
+      parentId: pId,
+      icon: this.formToEdit.icon || '',
+      description: this.formToEdit.description || '',
+      displayOrder: this.formToEdit.displayOrder !== undefined ? this.formToEdit.displayOrder : this.nextDisplayOrder,
+      isActive: this.formToEdit.isActive !== undefined ? this.formToEdit.isActive : true
+    });
+  }
+
+  loadParentForms(): void {
+    this.apiService.getV1Forms(1, 10, '', 'name', 'ASC').subscribe({
+      next: (res: any) => {
+        let rawList: any[] = [];
+        if (res) {
+          if (Array.isArray(res)) rawList = res;
+          else if (res.items && Array.isArray(res.items)) rawList = res.items;
+          else if (res.data && Array.isArray(res.data.items)) rawList = res.data.items;
+          else if (Array.isArray(res.data)) rawList = res.data;
+          else if (res.data && Array.isArray(res.data.forms)) rawList = res.data.forms;
+        }
+        this.localParentOptions = rawList.map((item: any) => ({
+          id: item.id || item.ID || item._id,
+          name: item.name || item.title || item.FORM_NAME || 'Untitled Form'
+        }));
+
+        if (this.formToEdit) {
+          this.applyFormToEdit();
+        }
+      },
+      error: () => {
+        // Fallback to parentFormOptions if provided
+        if (this.parentFormOptions && this.parentFormOptions.length > 0) {
+          this.localParentOptions = [...this.parentFormOptions];
+          if (this.formToEdit) {
+            this.applyFormToEdit();
+          }
+        }
+      }
+    });
+  }
+
+  get filteredParentForms(): any[] {
+    const list = this.localParentOptions && this.localParentOptions.length > 0
+      ? this.localParentOptions
+      : this.parentFormOptions;
+
+    if (!this.formToEdit || !this.formToEdit.id) {
+      return list;
     }
   }
 

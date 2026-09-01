@@ -1,0 +1,148 @@
+<div class="home-type-master-page">
+  <!-- Page Header -->
+  <div class="page-header-flex">
+    <div>
+      <h2 class="page-title">Home Type Master</h2>
+    </div>
+    <div class="header-actions">
+      <div class="search-input-wrapper">
+        <input
+          type="text"
+          [(ngModel)]="searchQuery"
+          (ngModelChange)="onSearch()"
+          placeholder="Search home type..."
+          class="premium-input table-search-input"
+        />
+        <span nz-icon nzType="search" nzTheme="outline" class="search-input-icon"></span>
+      </div>
+      <button class="btn-primary" (click)="openAddDrawer()">
+        <span nz-icon nzType="plus" nzTheme="outline"></span>
+        Add New Home Type
+      </button>
+    </div>
+  </div>
+
+  <!-- List Table -->
+  <div class="table-card-wrapper">
+    <div class="premium-table-container">
+      <table class="premium-table">
+        <thead>
+          <tr>
+            <th style="width: 100px;">Edit</th>
+            <th class="sortable-header" (click)="toggleSort('sequenceNo')" style="width: 150px;">
+              <span class="header-label-flex">
+                Seq No
+                <span class="sort-icon-container">
+                  <span nz-icon nzType="caret-up" [class.active-sort]="sortBy === 'sequenceNo' && sortOrder === 'ASC'"></span>
+                  <span nz-icon nzType="caret-down" [class.active-sort]="sortBy === 'sequenceNo' && sortOrder === 'DESC'"></span>
+                </span>
+              </span>
+            </th>
+            <th class="sortable-header" (click)="toggleSort('homeType')">
+              <span class="header-label-flex">
+                Home Type
+                <span class="sort-icon-container">
+                  <span nz-icon nzType="caret-up" [class.active-sort]="sortBy === 'homeType' && sortOrder === 'ASC'"></span>
+                  <span nz-icon nzType="caret-down" [class.active-sort]="sortBy === 'homeType' && sortOrder === 'DESC'"></span>
+                </span>
+              </span>
+            </th>
+            <th style="width: 120px;" class="text-center">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let data of homeTypes">
+            <td>
+              <button
+                type="button"
+                class="table-edit-btn"
+                (click)="openEditDrawer(data)"
+                title="Edit Home Type"
+              >
+                <span nz-icon nzType="edit" nzTheme="outline"></span>
+              </button>
+            </td>
+            <td>
+              <span class="order-number">{{ data.displayOrder }}</span>
+            </td>
+            <td class="home-type-name-cell">{{ data.name }}</td>
+            <td class="text-center">
+              <button
+                type="button"
+                *ngIf="data.isActive"
+                class="status-active-btn"
+                (click)="deactivateHomeType(data)"
+                title="Click to Deactivate"
+              >
+                <span nz-icon nzType="check-circle" nzTheme="outline"></span>
+              </button>
+              <button
+                type="button"
+                *ngIf="!data.isActive"
+                class="status-inactive-btn"
+                title="Deactivated"
+                disabled
+              >
+                <span nz-icon nzType="close-circle" nzTheme="outline"></span>
+              </button>
+            </td>
+          </tr>
+          <tr *ngIf="homeTypes.length === 0">
+            <td colspan="4" class="text-center empty-table-cell">
+              <nz-empty nzNotFoundImage="simple"></nz-empty>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Pagination Footer -->
+      <div class="table-pagination-footer" *ngIf="totalCount > 0">
+        <div class="pagination-info">
+          Showing {{ showingStart() }} to {{ showingEnd() }} of {{ totalCount }} home types
+        </div>
+        <div class="pagination-controls">
+          <button
+            type="button"
+            class="btn-pagination"
+            [disabled]="pageIndex === 1"
+            (click)="prevPage()"
+          >
+            Previous
+          </button>
+          <span class="pagination-current-page">
+            Page {{ pageIndex }} of {{ totalPages() }}
+          </span>
+          <button
+            type="button"
+            class="btn-pagination"
+            [disabled]="pageIndex === totalPages()"
+            (click)="nextPage()"
+          >
+            Next
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add/Edit Drawer -->
+<nz-drawer
+  *ngIf="drawerVisible"
+  [nzVisible]="drawerVisible"
+  nzPlacement="right"
+  [nzWidth]="420"
+  [nzTitle]="selectedHomeType ? 'Edit Home Type' : 'Add New Home Type'"
+  [nzClosable]="true"
+  (nzOnClose)="closeDrawer()"
+  class="home-type-drawer"
+>
+  <ng-container *nzDrawerContent>
+    <app-add-home-type
+      [homeTypeToEdit]="selectedHomeType"
+      [nextSequenceNo]="nextSequenceNo"
+      (onSave)="handleSaveSuccess()"
+      (onCancel)="closeDrawer()"
+    ></app-add-home-type>
+  </ng-container>
+</nz-drawer>

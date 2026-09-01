@@ -10,22 +10,20 @@ import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzPopconfirmModule } from 'ng-zorro-antd/popconfirm';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { ApiServiceService } from '../../../Service/api-service.service';
-import { AddFaqComponent } from '../../faqs/add-faq/add-faq.component';
+import { AddBlogCategoryComponent } from '../add-blog-category/add-blog-category.component';
 import { Subject, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
-export interface Faq {
+export interface BlogCategory {
   id?: string | number;
-  category?: string;
-  question: string;
-  answer: string;
+  name: string;
   displayOrder: number;
   isActive: boolean;
   statusLoading?: boolean;
 }
 
 @Component({
-  selector: 'app-faqs-list',
+  selector: 'app-blog-category-list',
   standalone: true,
   imports: [
     CommonModule,
@@ -37,16 +35,16 @@ export interface Faq {
     NzSwitchModule,
     NzPopconfirmModule,
     NzToolTipModule,
-    AddFaqComponent
+    AddBlogCategoryComponent
   ],
-  templateUrl: './faqs-list.component.html',
-  styleUrl: './faqs-list.component.css'
+  templateUrl: './blog-category-list.component.html',
+  styleUrl: './blog-category-list.component.css'
 })
-export class FaqsListComponent implements OnInit, OnDestroy {
-  faqs: Faq[] = [];
+export class BlogCategoryListComponent implements OnInit, OnDestroy {
+  categories: BlogCategory[] = [];
   loading = false;
   drawerVisible = false;
-  selectedFaq: Faq | null = null;
+  selectedCategory: BlogCategory | null = null;
   nextDisplayOrder: number = 1;
 
   // Pagination & Search States
@@ -66,17 +64,16 @@ export class FaqsListComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    // Setup debounced search to ensure removing text with backspace loads correctly without race conditions
     this.searchSubscription = this.searchSubject.pipe(
       debounceTime(400),
       distinctUntilChanged()
     ).subscribe(searchTerm => {
       this.searchQuery = searchTerm;
       this.pageIndex = 1;
-      this.loadFaqs();
+      this.loadCategories();
     });
 
-    this.loadFaqs();
+    this.loadCategories();
   }
 
   ngOnDestroy(): void {
@@ -85,9 +82,9 @@ export class FaqsListComponent implements OnInit, OnDestroy {
     }
   }
 
-  loadFaqs(): void {
+  loadCategories(): void {
     this.loading = true;
-    this.apiService.getFaqs(
+    this.apiService.getBlogCategories(
       this.pageIndex,
       this.pageSize,
       this.searchQuery,
@@ -96,7 +93,6 @@ export class FaqsListComponent implements OnInit, OnDestroy {
     ).subscribe({
       next: (res: any) => {
         this.loading = false;
-
         let rawList: any[] = [];
         let total = 0;
 
@@ -113,38 +109,31 @@ export class FaqsListComponent implements OnInit, OnDestroy {
           } else if (Array.isArray(res.data)) {
             rawList = res.data;
             total = res.total || res.totalCount || res.data.length;
-          } else if (res.data && Array.isArray(res.data.faqs)) {
-            rawList = res.data.faqs;
-            total = res.data.total || res.data.totalCount || res.data.faqs.length;
           }
-
           if (total === 0) {
             if (res.total !== undefined) total = res.total;
             else if (res.totalCount !== undefined) total = res.totalCount;
           }
         }
-
         this.totalCount = total;
 
         if (rawList && rawList.length > 0) {
-          this.faqs = rawList.map((item: any) => ({
+          this.categories = rawList.map((item: any) => ({
             id: item.id || item.ID || item._id,
-            category: item.category || item.Category || '',
-            question: item.question || item.Question,
-            answer: item.answer || item.Answer,
-            displayOrder: item.displayOrder || item.DisplayOrder || 0,
+            name: item.name || item.Name,
+            displayOrder: item.displayOrder || item.sequenceNo || item.SequenceNo || 0,
             isActive: item.isActive !== undefined ? item.isActive : true,
             statusLoading: false
           }));
         } else {
-          this.faqs = [];
+          this.categories = [];
         }
       },
       error: (err: any) => {
         this.loading = false;
-        console.error('Error fetching FAQs:', err);
-        this.message.error('Failed to load FAQs');
-        this.faqs = [];
+        console.error('Error fetching Blog Categories:', err);
+        this.message.error('Failed to load Blog Categories');
+        this.categories = [];
         this.totalCount = 0;
       }
     });
@@ -157,14 +146,14 @@ export class FaqsListComponent implements OnInit, OnDestroy {
   prevPage(): void {
     if (this.pageIndex > 1) {
       this.pageIndex--;
-      this.loadFaqs();
+      this.loadCategories();
     }
   }
 
   nextPage(): void {
     if (this.pageIndex < this.totalPages()) {
       this.pageIndex++;
-      this.loadFaqs();
+      this.loadCategories();
     }
   }
 
@@ -173,7 +162,7 @@ export class FaqsListComponent implements OnInit, OnDestroy {
   }
 
   showingStart(): number {
-    if (this.faqs.length === 0) return 0;
+    if (this.categories.length === 0) return 0;
     return (this.pageIndex - 1) * this.pageSize + 1;
   }
 
@@ -182,75 +171,38 @@ export class FaqsListComponent implements OnInit, OnDestroy {
   }
 
   openAddDrawer(): void {
-    this.selectedFaq = null;
+    this.selectedCategory = null;
     this.nextDisplayOrder = this.totalCount + 1;
     this.drawerVisible = true;
   }
 
-  openEditDrawer(faq: Faq): void {
-    this.selectedFaq = faq;
+  openEditDrawer(category: BlogCategory): void {
+    this.selectedCategory = category;
     this.drawerVisible = true;
   }
 
   closeDrawer(): void {
     this.drawerVisible = false;
-    this.selectedFaq = null;
+    this.selectedCategory = null;
   }
 
   handleSaveSuccess(): void {
     this.closeDrawer();
-    this.loadFaqs();
+    this.loadCategories();
   }
 
-  onStatusChange(faq: Faq, newStatus: boolean): void {
-    faq.statusLoading = true;
-    this.apiService.toggleFaqActiveStatus(faq.id as string, newStatus).subscribe({
+  onStatusChange(category: BlogCategory, newStatus: boolean): void {
+    category.statusLoading = true;
+    this.apiService.toggleBlogCategoryActiveStatus(category.id as string, newStatus).subscribe({
       next: () => {
-        faq.statusLoading = false;
-        this.message.success(`FAQ status updated successfully!`);
+        category.statusLoading = false;
+        this.message.success(`Category status updated successfully!`);
       },
       error: (err) => {
-        faq.statusLoading = false;
-        faq.isActive = !newStatus; // Revert change on error
-        const errMsg = err?.error?.message || err?.message || 'Failed to update FAQ status.';
+        category.statusLoading = false;
+        category.isActive = !newStatus; // Revert change on error
+        const errMsg = err?.error?.message || err?.message || "Failed to update category status.";
         this.message.error(errMsg);
-      }
-    });
-  }
-
-  moveUp(index: number): void {
-    if (index > 0) {
-      this.swapOrder(index, index - 1);
-    }
-  }
-
-  moveDown(index: number): void {
-    if (index < this.faqs.length - 1) {
-      this.swapOrder(index, index + 1);
-    }
-  }
-
-  swapOrder(index1: number, index2: number): void {
-    const tempOrder = this.faqs[index1].displayOrder;
-    this.faqs[index1].displayOrder = this.faqs[index2].displayOrder;
-    this.faqs[index2].displayOrder = tempOrder;
-
-    const tempFaq = this.faqs[index1];
-    this.faqs[index1] = this.faqs[index2];
-    this.faqs[index2] = tempFaq;
-
-    const reorderPayload = [
-      { id: this.faqs[index1].id as string, displayOrder: this.faqs[index1].displayOrder },
-      { id: this.faqs[index2].id as string, displayOrder: this.faqs[index2].displayOrder }
-    ];
-
-    this.apiService.reorderFaqs(reorderPayload).subscribe({
-      next: () => {
-        this.message.success('FAQ order updated successfully');
-      },
-      error: (err) => {
-        this.message.error('Failed to update FAQ order');
-        this.loadFaqs();
       }
     });
   }
@@ -262,18 +214,19 @@ export class FaqsListComponent implements OnInit, OnDestroy {
       this.sortBy = column;
       this.sortOrder = 'ASC';
     }
-    this.loadFaqs();
+    this.loadCategories();
   }
-  deleteFaq(id: string | number): void {
+  
+  deleteCategory(id: string | number): void {
     this.loading = true;
-    this.apiService.deleteFaq(id).subscribe({
+    this.apiService.deleteBlogCategory(id).subscribe({
       next: () => {
-        this.message.success('FAQ deleted successfully');
-        this.loadFaqs();
+        this.message.success('Category deleted successfully');
+        this.loadCategories();
       },
       error: (err) => {
         this.loading = false;
-        this.message.error('Failed to delete FAQ');
+        this.message.error('Failed to delete category');
       }
     });
   }

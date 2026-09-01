@@ -1,5 +1,21 @@
 <form [formGroup]="faqForm" (ngSubmit)="submitForm()" class="add-faq-form">
   <div class="form-body">
+    <!-- Category Field -->
+    <div class="form-field">
+      <label class="form-label"><span class="required-asterisk">*</span> Category</label>
+      <nz-select 
+        formControlName="category"
+        nzPlaceHolder="Select Category"
+        nzSize="large"
+        style="width: 100%; border-radius: 6px;">
+        <nz-option nzValue="Home page" nzLabel="Home page"></nz-option>
+        <nz-option nzValue="About Us" nzLabel="About Us"></nz-option>
+      </nz-select>
+      <div class="form-error-msg" *ngIf="faqForm.get('category')?.dirty && faqForm.get('category')?.hasError('required')">
+        Category is required.
+      </div>
+    </div>
+
     <!-- Question Field -->
     <div class="form-field">
       <label class="form-label"><span class="required-asterisk">*</span> Question</label>

@@ -1,0 +1,60 @@
+<form [formGroup]="homeTypeForm" (ngSubmit)="submitForm()" class="add-home-type-form">
+  <div class="form-body">
+
+    <!-- Home Type Name Field -->
+    <div class="form-field">
+      <label class="form-label"><span class="required-asterisk">*</span> Home Type Name</label>
+      <input
+        type="text"
+        formControlName="name"
+        placeholder="Enter Home Type Name"
+        class="premium-input"
+      />
+      <div class="form-error-msg" *ngIf="homeTypeForm.get('name')?.dirty && homeTypeForm.get('name')?.hasError('required')">
+        Home Type name is required.
+      </div>
+      <div class="form-error-msg" *ngIf="homeTypeForm.get('name')?.dirty && homeTypeForm.get('name')?.hasError('maxlength')">
+        Please enter a valid home type name (max 100 characters).
+      </div>
+    </div>
+
+    <div style="display: flex; gap: 20px; margin-top: 8px;">
+      <!-- Active Status Field -->
+      <div class="form-field" style="flex: 1;">
+        <label class="form-label">Status</label>
+        <div class="status-switch-wrapper">
+          <nz-switch 
+            formControlName="isActive"
+            nzCheckedChildren="Active" 
+            nzUnCheckedChildren="Inactive">
+          </nz-switch>
+        </div>
+      </div>
+
+      <!-- Sequence No Field -->
+      <div class="form-field" style="flex: 1;">
+        <label class="form-label"><span class="required-asterisk">*</span> Sequence No</label>
+        <input
+          type="number"
+          formControlName="displayOrder"
+          class="premium-input"
+          placeholder="Auto Generated"
+          readonly
+        />
+        <div class="form-error-msg" *ngIf="homeTypeForm.get('displayOrder')?.dirty && homeTypeForm.get('displayOrder')?.hasError('required')">
+          Sequence No is required.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer buttons -->
+  <div class="drawer-footer">
+    <button type="button" class="btn-secondary" (click)="handleCancel()" [disabled]="loading">
+      Cancel
+    </button>
+    <button type="submit" class="btn-primary" [disabled]="loading">
+      {{ loading ? 'Saving...' : 'Save' }}
+    </button>
+  </div>
+</form>
