@@ -46,7 +46,18 @@ import {
   FilterFill,
   DownloadOutline,
   FileDoneOutline,
-  PercentageOutline
+  PercentageOutline,
+  AppstoreOutline,
+  TagsOutline,
+  FolderOutline,
+  SecurityScanOutline,
+  EnvironmentOutline,
+  PictureOutline,
+  QuestionCircleOutline,
+  ToolOutline,
+  BulbOutline,
+  ProjectOutline,
+  SafetyCertificateOutline
 } from '@ant-design/icons-angular/icons';
 
 registerLocaleData(en);
@@ -86,7 +97,18 @@ const icons = [
   FilterFill,
   DownloadOutline,
   FileDoneOutline,
-  PercentageOutline
+  PercentageOutline,
+  AppstoreOutline,
+  TagsOutline,
+  FolderOutline,
+  SecurityScanOutline,
+  EnvironmentOutline,
+  PictureOutline,
+  QuestionCircleOutline,
+  ToolOutline,
+  BulbOutline,
+  ProjectOutline,
+  SafetyCertificateOutline
 ];
 
 export const appConfig: ApplicationConfig = {

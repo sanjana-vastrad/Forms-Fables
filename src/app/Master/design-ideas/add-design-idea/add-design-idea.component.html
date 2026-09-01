@@ -1,0 +1,312 @@
+<form [formGroup]="designForm" (ngSubmit)="submitForm()" class="add-design-form">
+
+  <!-- TWO COLUMN BODY LAYOUT -->
+  <div class="drawer-two-column-layout">
+
+    <!-- ================= LEFT COLUMN ================= -->
+    <div class="drawer-column left-column">
+
+      <!-- Section: Basic Information -->
+      <div class="form-section-card">
+        <h3 class="section-plain-title">Basic Information</h3>
+
+        <!-- 1. Row: Category (Half Width) & Layout Type -->
+        <div class="field-row-grid">
+          <div class="form-field-group">
+            <label class="field-label"><span class="required-asterisk">*</span> Category</label>
+            <nz-select
+              formControlName="categoryId"
+              nzPlaceHolder="Select Category"
+              class="premium-select-field"
+              (ngModelChange)="onCategorySelectChange($event)"
+            >
+              <nz-option *ngFor="let cat of categoryOptions" [nzValue]="cat.id" [nzLabel]="cat.name"></nz-option>
+            </nz-select>
+            <div class="field-error-msg" *ngIf="designForm.get('categoryId')?.dirty && designForm.get('categoryId')?.hasError('required')">
+              Category is required.
+            </div>
+          </div>
+
+          <div class="form-field-group">
+            <label class="field-label">Layout Type</label>
+            <input
+              type="text"
+              nz-input
+              formControlName="layoutType"
+              placeholder="e.g. L-Shape, Island, Open Plan"
+              class="premium-form-input"
+            />
+          </div>
+        </div>
+
+        <!-- 2. Design Title -->
+        <div class="form-field-group">
+          <label class="field-label"><span class="required-asterisk">*</span> Design Title</label>
+          <input
+            type="text"
+            nz-input
+            formControlName="title"
+            placeholder="e.g. Contemporary Kitchen Design with White Cabinets"
+            class="premium-form-input"
+            (input)="onTitleChange()"
+          />
+          <div class="field-error-msg" *ngIf="designForm.get('title')?.dirty && designForm.get('title')?.hasError('required')">
+            Design Title is required.
+          </div>
+        </div>
+
+        <!-- 3. Row: URL Slug & Area -->
+        <div class="field-row-grid">
+          <div class="form-field-group">
+            <label class="field-label"><span class="required-asterisk">*</span> URL Slug</label>
+            <input
+              type="text"
+              nz-input
+              formControlName="slug"
+              placeholder="/contemporary-kitchen-white-cabinets"
+              class="premium-form-input slug-font"
+            />
+            <div class="field-error-msg" *ngIf="designForm.get('slug')?.dirty && designForm.get('slug')?.hasError('required')">
+              URL Slug is required.
+            </div>
+          </div>
+
+          <div class="form-field-group">
+            <label class="field-label">Area</label>
+            <input
+              type="text"
+              nz-input
+              formControlName="area"
+              placeholder="e.g. 13x8 Feet"
+              class="premium-form-input"
+            />
+          </div>
+        </div>
+
+        <!-- 5. Full Description -->
+        <div class="form-field-group">
+          <label class="field-label"><span class="required-asterisk">*</span> Full Description</label>
+          <textarea
+            rows="4"
+            nz-input
+            formControlName="description"
+            placeholder="Provide a detailed description of the design style, materials, cabinetry finishes, and lighting..."
+            class="premium-form-textarea"
+          ></textarea>
+          <div class="field-error-msg" *ngIf="designForm.get('description')?.dirty && designForm.get('description')?.hasError('required')">
+            Description is required.
+          </div>
+        </div>
+      </div>
+
+      <!-- Section: Design Images -->
+      <div class="form-section-card">
+        <div class="section-title-with-badge">
+          <h3 class="section-plain-title">Design Images</h3>
+          <span class="image-count-pill">{{ uploadedImages.length }} / 10 Images</span>
+        </div>
+
+        <!-- Images Grid Container -->
+        <div class="images-upload-grid">
+          <!-- Thumbnail Cards -->
+          <div
+            *ngFor="let imgObj of uploadedImages; let i = index"
+            class="image-preview-card"
+            [class.cover-position-card]="i === 0"
+          >
+            <ng-container *ngIf="imgObj.loading">
+              <div class="flex items-center justify-center h-full w-full bg-gray-50 rounded-lg" style="min-height: 100px;">
+                <nz-spin nzSimple></nz-spin>
+              </div>
+            </ng-container>
+            <img *ngIf="!imgObj.loading" [src]="imgObj.preview" [alt]="'Design image ' + (i + 1)" class="preview-img-element" />
+
+            <!-- Position Badge -->
+            <div class="position-badge" [class.cover-badge]="i === 0">
+              {{ i === 0 ? 'Cover / Thumbnail' : 'Pos ' + i }}
+            </div>
+
+            <!-- Image Actions Overlay -->
+            <div class="img-actions-overlay">
+              <button
+                type="button"
+                class="img-action-btn move-btn"
+                [disabled]="i === 0"
+                (click)="moveImage(i, 'left')"
+                title="Move Left"
+              >
+                <span nz-icon nzType="left"></span>
+              </button>
+              <button
+                type="button"
+                class="img-action-btn delete-btn"
+                (click)="removeImage(i)"
+                title="Remove Image"
+              >
+                <span nz-icon nzType="delete"></span>
+              </button>
+              <button
+                type="button"
+                class="img-action-btn move-btn"
+                [disabled]="i === uploadedImages.length - 1"
+                (click)="moveImage(i, 'right')"
+                title="Move Right"
+              >
+                <span nz-icon nzType="right"></span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Add Image Dropzone Button -->
+          <label *ngIf="uploadedImages.length < 10" class="image-dropzone-box">
+            <input
+              type="file"
+              accept="image/*"
+              multiple
+              (change)="onImagesSelected($event)"
+              style="display: none;"
+            />
+            <span nz-icon nzType="plus" class="dropzone-icon"></span>
+            <span class="dropzone-text">Upload Image</span>
+            <span class="dropzone-subtext">PNG, JPG up to 10MB</span>
+          </label>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ================= RIGHT COLUMN ================= -->
+    <div class="drawer-column right-column">
+
+      <!-- Section: About This Design -->
+      <div class="form-section-card">
+        <h3 class="section-plain-title">About This Design</h3>
+
+        <div formArrayName="aboutPoints" class="checklist-rows-container">
+          <div
+            *ngFor="let pointControl of aboutPointsArray.controls; let i = index"
+            class="checklist-input-row"
+          >
+            <span class="checklist-row-icon" nz-icon nzType="check-circle" nzTheme="fill"></span>
+            <input
+              type="text"
+              nz-input
+              [formControlName]="i"
+              placeholder="e.g. Glossy acrylic finish cabinets with soft-close hinges"
+              class="premium-form-input checklist-input"
+            />
+            <button
+              type="button"
+              class="remove-row-btn"
+              (click)="removeAboutPoint(i)"
+              title="Remove Point"
+            >
+              <span nz-icon nzType="close"></span>
+            </button>
+          </div>
+        </div>
+
+        <button type="button" class="btn-add-repeater" (click)="addAboutPoint()">
+          <span nz-icon nzType="plus"></span>
+          Add Point
+        </button>
+      </div>
+
+      <!-- Section: Overview Panel -->
+      <div class="form-section-card">
+        <h3 class="section-plain-title">Overview Panel</h3>
+
+        <div formArrayName="overviewAttributes" class="overview-rows-container">
+          <div
+            *ngFor="let attrGroup of overviewAttributesArray.controls; let i = index"
+            [formGroupName]="i"
+            class="overview-attribute-row"
+          >
+            <!-- Icon Upload Control Slot -->
+            <div class="overview-icon-upload-wrapper">
+              <label class="icon-upload-box" title="Click to upload custom icon (SVG, PNG, JPG)">
+                <input
+                  type="file"
+                  accept="image/*,.svg"
+                  (change)="handleAttributeIconUpload($event, i)"
+                  style="display: none;"
+                />
+
+                <ng-container *ngIf="attrGroup.get('iconLoading')?.value; else loadedState">
+                  <div class="uploaded-icon-container flex items-center justify-center">
+                    <nz-spin nzSimple nzSize="small"></nz-spin>
+                  </div>
+                </ng-container>
+
+                <ng-template #loadedState>
+                  <!-- Uploaded Icon State -->
+                  <ng-container *ngIf="attrGroup.get('previewIconUrl')?.value; else defaultIconState">
+                    <div class="uploaded-icon-container">
+                      <img [src]="attrGroup.get('previewIconUrl')?.value" alt="Uploaded Icon" class="uploaded-icon-img" />
+                      <button
+                        type="button"
+                        class="remove-icon-badge"
+                        (click)="removeAttributeIcon(i, $event)"
+                        title="Remove Icon"
+                      >
+                        <span nz-icon nzType="close"></span>
+                      </button>
+                    </div>
+                  </ng-container>
+                </ng-template>
+
+                <!-- Default State (Builtin Icon + Click to Upload Label) -->
+                <ng-template #defaultIconState>
+                  <div class="default-icon-container">
+                    <span
+                      nz-icon
+                      [nzType]="attrGroup.get('iconName')?.value || 'appstore'"
+                      class="builtin-icon-symbol"
+                    ></span>
+                    <span class="upload-badge-trigger" title="Upload Icon">
+                      <span nz-icon nzType="upload"></span>
+                    </span>
+                  </div>
+                </ng-template>
+              </label>
+            </div>
+
+            <!-- Label Input -->
+            <input
+              type="text"
+              nz-input
+              formControlName="label"
+              placeholder="Label (e.g. Layout)"
+              class="premium-form-input attr-label-input"
+            />
+
+            <!-- Value Input -->
+            <input
+              type="text"
+              nz-input
+              formControlName="value"
+              placeholder="Value (e.g. L-Shape)"
+              class="premium-form-input attr-value-input"
+            />
+
+            <!-- Remove Button -->
+            <button
+              type="button"
+              class="remove-row-btn"
+              (click)="removeOverviewAttribute(i)"
+              title="Remove Attribute"
+            >
+              <span nz-icon nzType="close"></span>
+            </button>
+          </div>
+        </div>
+
+        <button type="button" class="btn-add-repeater" (click)="addOverviewAttribute()">
+          <span nz-icon nzType="plus"></span>
+          Add Attribute
+        </button>
+      </div>
+
+    </div>
+  </div>
+</form>

@@ -15,7 +15,15 @@ export const routes: Routes = [
         loadChildren: () => import('./Master/master.routes').then(m => m.MASTER_ROUTES)
       },
       {
+        path: 'masters',
+        loadChildren: () => import('./Master/master.routes').then(m => m.MASTER_ROUTES)
+      },
+      {
         path: 'report',
+        loadChildren: () => import('./Report/report.routes').then(m => m.REPORT_ROUTES)
+      },
+      {
+        path: 'reports',
         loadChildren: () => import('./Report/report.routes').then(m => m.REPORT_ROUTES)
       },
       { path: '', redirectTo: '/dashboard', pathMatch: 'full' }

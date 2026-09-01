@@ -6,6 +6,7 @@ import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzSwitchModule } from 'ng-zorro-antd/switch';
+import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { ApiServiceService } from '../../../Service/api-service.service';
 
@@ -19,7 +20,8 @@ import { ApiServiceService } from '../../../Service/api-service.service';
     NzInputModule,
     NzSelectModule,
     NzButtonModule,
-    NzSwitchModule
+    NzSwitchModule,
+    NzIconModule
   ],
   templateUrl: './add-role.component.html',
   styleUrl: './add-role.component.css'

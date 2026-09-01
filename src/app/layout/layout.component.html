@@ -26,26 +26,14 @@
           <li nz-menu-item nzMatchRouter routerLink="/master/city">
             <span>City</span>
           </li>
-          <li nz-menu-item nzMatchRouter routerLink="/master/home-type">
-            <span>Home Type</span>
-          </li>
           <li nz-menu-item nzMatchRouter routerLink="/master/design-idea-category">
             <span>Design Idea Category</span>
           </li>
           <li nz-menu-item nzMatchRouter routerLink="/master/project-category">
             <span>Project Category</span>
           </li>
-          <li nz-menu-item nzMatchRouter routerLink="/master/portfolio-project">
-            <span>Portfolio Project</span>
-          </li>
-          <li nz-menu-item nzMatchRouter routerLink="/master/blog-category">
-            <span>Blog Category</span>
-          </li>
           <li nz-menu-item nzMatchRouter routerLink="/master/services">
             <span>Services</span>
-          </li>
-          <li nz-menu-item nzMatchRouter routerLink="/master/blog">
-            <span>Blog</span>
           </li>
           <li nz-menu-item nzMatchRouter routerLink="/master/banner">
             <span>Banner</span>
@@ -65,44 +53,23 @@
         </ul>
       </li>
 
-      <!-- Reports -->
-      <li nz-submenu nzTitle="Reports" nzIcon="bar-chart">
-        <ul>
-          <li nz-menu-item nzMatchRouter routerLink="/report">
-            <span>Report Dashboard</span>
-          </li>
-        </ul>
+      <!-- Single Child Sub-menu Item (navigates to route if valid) -->
+      <li *ngIf="!child.children || child.children.length === 0" nz-menu-item
+        [nzMatchRouter]="!!getValidRouteLink(child.routePath)" [routerLink]="getValidRouteLink(child.routePath)">
+        <span nz-icon [nzType]="getSafeIcon(child.icon, child.name)" nzTheme="outline"></span>
+        <span>{{ child.name }}</span>
       </li>
+      </ng-container>
+    </ul>
+    </li>
 
-      <!-- Forms -->
-      <li nz-menu-item nzMatchRouter routerLink="/master/forms">
-        <span nz-icon nzType="form" nzTheme="outline"></span>
-        <span>Forms</span>
-      </li>
-
-      <!-- Tables -->
-      <li nz-menu-item nzMatchRouter>
-        <span nz-icon nzType="table" nzTheme="outline"></span>
-        <span>Tables</span>
-      </li>
-
-      <!-- Charts -->
-      <li nz-menu-item nzMatchRouter>
-        <span nz-icon nzType="pie-chart" nzTheme="outline"></span>
-        <span>Charts</span>
-      </li>
-
-      <!-- Pages -->
-      <li nz-submenu nzTitle="Pages" nzIcon="file">
-        <ul>
-          <li nz-menu-item>
-            <span>Page 1</span>
-          </li>
-          <li nz-menu-item>
-            <span>Page 2</span>
-          </li>
-        </ul>
-      </li>
+    <!-- Single Top-Level Menu Item (navigates to route if valid) -->
+    <li *ngIf="!item.children || item.children.length === 0" nz-menu-item
+      [nzMatchRouter]="!!getValidRouteLink(item.routePath)" [routerLink]="getValidRouteLink(item.routePath)">
+      <span nz-icon [nzType]="getSafeIcon(item.icon, item.name)" nzTheme="outline"></span>
+      <span>{{ item.name }}</span>
+    </li>
+    </ng-container>
     </ul>
   </nz-sider>
 
@@ -115,8 +82,8 @@
           (click)="toggleSidebar()"></span>
         <div class="header-breadcrumb">
           <span class="breadcrumb-parent">Forms & Fables</span>
-          <span class="breadcrumb-separator">/</span>
-          <span class="breadcrumb-current">Admin Dashboard</span>
+          <!-- <span class="breadcrumb-separator">/</span> -->
+          <!-- <span class="breadcrumb-current">Admin Dashboard</span> -->
         </div>
       </div>
       <div class="header-right">

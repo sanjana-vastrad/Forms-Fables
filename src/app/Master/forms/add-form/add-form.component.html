@@ -1,5 +1,23 @@
 <form [formGroup]="formGroup" (ngSubmit)="submitForm()" class="add-form-container">
   <div class="form-body">
+    <!-- Parent Field -->
+    <div class="form-field">
+      <label class="form-label">Parent</label>
+      <nz-select
+        formControlName="parentId"
+        nzPlaceHolder="Select Parent"
+        style="width: 100%;"
+        class="premium-select"
+      >
+        <nz-option [nzValue]="0" nzLabel="None"></nz-option>
+        <nz-option
+          *ngFor="let p of filteredParentForms"
+          [nzValue]="p.id"
+          [nzLabel]="p.name"
+        ></nz-option>
+      </nz-select>
+    </div>
+
     <!-- Form Name Field -->
     <div class="form-field">
       <label class="form-label"><span class="required-asterisk">*</span> Form Name</label>
@@ -30,6 +48,17 @@
       <div class="form-error-msg" *ngIf="formGroup.get('slug')?.dirty && formGroup.get('slug')?.hasError('maxlength')">
         Max length is 150 characters.
       </div>
+    </div>
+
+    <!-- Icon Field -->
+    <div class="form-field">
+      <label class="form-label">Icon</label>
+      <input
+        type="text"
+        formControlName="icon"
+        placeholder="e.g. dashboard, user, setting, file, home"
+        class="premium-input"
+      />
     </div>
 
     <!-- Route Path Field -->
@@ -93,6 +122,7 @@
       Cancel
     </button>
     <button type="submit" class="btn-primary" [disabled]="loading">
+      <span *ngIf="loading" nz-icon nzType="loading" nzTheme="outline" style="margin-right: 6px;"></span>
       {{ loading ? 'Saving...' : 'Save' }}
     </button>
   </div>

@@ -19,6 +19,8 @@ export interface FormMasterItem {
   description?: string;
   displayOrder?: number;
   isActive: boolean;
+  parentId?: string | number | null;
+  icon?: string | null;
   statusLoading?: boolean;
 }
 
@@ -41,6 +43,7 @@ export interface FormMasterItem {
 })
 export class FormsListComponent implements OnInit {
   forms: FormMasterItem[] = [];
+  allFormsForLookup: { id: string | number; name: string }[] = [];
   loading = false;
   drawerVisible = false;
   selectedForm: FormMasterItem | null = null;
@@ -62,6 +65,26 @@ export class FormsListComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadForms();
+    this.loadAllFormsForLookup();
+  }
+
+  loadAllFormsForLookup(): void {
+    this.apiService.getV1Forms(1, 1000, '', 'name', 'ASC').subscribe({
+      next: (res: any) => {
+        let rawList: any[] = [];
+        if (res) {
+          if (Array.isArray(res)) rawList = res;
+          else if (res.items && Array.isArray(res.items)) rawList = res.items;
+          else if (res.data && Array.isArray(res.data.items)) rawList = res.data.items;
+          else if (Array.isArray(res.data)) rawList = res.data;
+          else if (res.data && Array.isArray(res.data.forms)) rawList = res.data.forms;
+        }
+        this.allFormsForLookup = rawList.map((item: any) => ({
+          id: item.id || item.ID || item._id,
+          name: item.name || item.title || item.FORM_NAME || 'Untitled Form'
+        }));
+      }
+    });
   }
 
   loadForms(): void {
@@ -116,6 +139,8 @@ export class FormsListComponent implements OnInit {
             description: item.description || item.DESCRIPTION || '',
             displayOrder: item.displayOrder !== undefined ? item.displayOrder : 1,
             isActive: item.isActive !== undefined ? item.isActive : true,
+            parentId: item.parentId !== undefined ? item.parentId : (item.PARENT_ID !== undefined ? item.PARENT_ID : (item.parent_id !== undefined ? item.parent_id : null)),
+            icon: item.icon || item.ICON || item.iconName || '',
             statusLoading: false
           }));
 
@@ -138,6 +163,14 @@ export class FormsListComponent implements OnInit {
         this.totalCount = 0;
       }
     });
+  }
+
+  getParentName(parentId: string | number | null | undefined): string {
+    if (!parentId || parentId === 'null' || parentId === 0 || parentId === '0') {
+      return 'None';
+    }
+    const parent = this.allFormsForLookup.find(f => String(f.id) === String(parentId));
+    return parent ? parent.name : 'None';
   }
 
   onSearch(): void {
@@ -190,6 +223,8 @@ export class FormsListComponent implements OnInit {
   handleSaveSuccess(): void {
     this.closeDrawer();
     this.loadForms();
+    this.loadAllFormsForLookup();
+    this.apiService.notifyFormsUpdated();
   }
 
   toggleStatus(formItem: FormMasterItem, newStatus: boolean): void {
@@ -205,6 +240,7 @@ export class FormsListComponent implements OnInit {
         this.updatingStatusId = null;
         formItem.isActive = newStatus;
         this.message.success(`Form status updated to ${newStatus ? 'Active' : 'Inactive'}`);
+        this.apiService.notifyFormsUpdated();
       },
       error: (err) => {
         this.updatingStatusId = null;
@@ -225,6 +261,7 @@ export class FormsListComponent implements OnInit {
         this.updatingStatusId = null;
         formItem.isActive = false;
         this.message.success(`${formItem.name} deactivated successfully!`);
+        this.apiService.notifyFormsUpdated();
       },
       error: (err) => {
         this.updatingStatusId = null;

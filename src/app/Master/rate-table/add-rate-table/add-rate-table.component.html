@@ -1,0 +1,108 @@
+<form [formGroup]="rateTableForm" (ngSubmit)="submitForm()" class="add-rate-table-form">
+  <div class="form-body">
+    <!-- Space Type Dropdown -->
+    <div class="form-field">
+      <label class="form-label"><span class="required-asterisk">*</span> Space Type</label>
+      <nz-select
+        formControlName="spaceTypeId"
+        nzPlaceHolder="Select Space Type"
+        class="premium-select"
+      >
+        <nz-option *ngFor="let st of spaceTypesList" [nzValue]="st.id" [nzLabel]="st.name"></nz-option>
+      </nz-select>
+      <div class="form-error-msg" *ngIf="rateTableForm.get('spaceTypeId')?.dirty && rateTableForm.get('spaceTypeId')?.hasError('required')">
+        Space Type is required.
+      </div>
+    </div>
+
+    <!-- Design Category Dropdown -->
+    <div class="form-field">
+      <label class="form-label"><span class="required-asterisk">*</span> Design Category</label>
+      <nz-select
+        formControlName="designIdeaCategoryId"
+        nzPlaceHolder="Select Design Category"
+        class="premium-select"
+      >
+        <nz-option *ngFor="let cat of designCategoriesList" [nzValue]="cat.id" [nzLabel]="cat.name"></nz-option>
+      </nz-select>
+      <div class="form-error-msg" *ngIf="rateTableForm.get('designIdeaCategoryId')?.dirty && rateTableForm.get('designIdeaCategoryId')?.hasError('required')">
+        Design Category is required.
+      </div>
+    </div>
+
+    <!-- Finish Tier & Scope Row -->
+    <div style="display: flex; gap: 16px;">
+      <!-- Finish Tier -->
+      <div class="form-field" style="flex: 1;">
+        <label class="form-label"><span class="required-asterisk">*</span> Finish Tier</label>
+        <nz-select formControlName="finishTier" class="premium-select">
+          <nz-option *ngFor="let tier of finishTierOptions" [nzValue]="tier" [nzLabel]="tier"></nz-option>
+        </nz-select>
+      </div>
+
+      <!-- Scope -->
+      <div class="form-field" style="flex: 1;">
+        <label class="form-label"><span class="required-asterisk">*</span> Scope</label>
+        <nz-select formControlName="scope" class="premium-select">
+          <nz-option *ngFor="let s of scopeOptions" [nzValue]="s" [nzLabel]="s"></nz-option>
+        </nz-select>
+      </div>
+    </div>
+
+    <!-- Min & Max Rate Sqft Row -->
+    <div style="display: flex; gap: 16px;">
+      <!-- Min Rate -->
+      <div class="form-field" style="flex: 1;">
+        <label class="form-label"><span class="required-asterisk">*</span> Min Rate / Sqft (₹)</label>
+        <input
+          type="number"
+          nz-input
+          formControlName="rateMinPerSqft"
+          placeholder="e.g. 1000"
+          class="premium-input"
+        />
+        <div class="form-error-msg" *ngIf="rateTableForm.get('rateMinPerSqft')?.dirty && rateTableForm.get('rateMinPerSqft')?.hasError('required')">
+          Min rate is required.
+        </div>
+      </div>
+
+      <!-- Max Rate -->
+      <div class="form-field" style="flex: 1;">
+        <label class="form-label"><span class="required-asterisk">*</span> Max Rate / Sqft (₹)</label>
+        <input
+          type="number"
+          nz-input
+          formControlName="rateMaxPerSqft"
+          placeholder="e.g. 1500"
+          class="premium-input"
+        />
+        <div class="form-error-msg" *ngIf="rateTableForm.get('rateMaxPerSqft')?.dirty && rateTableForm.get('rateMaxPerSqft')?.hasError('required')">
+          Max rate is required.
+        </div>
+      </div>
+    </div>
+
+    <!-- Status Field -->
+    <div class="form-field">
+      <label class="form-label">Status</label>
+      <div class="status-switch-wrapper">
+        <nz-switch
+          formControlName="isActive"
+          [nzCheckedChildren]="'Active'"
+          [nzUnCheckedChildren]="'Inactive'"
+        ></nz-switch>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer buttons -->
+  <div class="drawer-footer">
+    <button type="button" class="btn-secondary" (click)="handleCancel()" [disabled]="loading">
+      Cancel
+    </button>
+    <button type="submit" class="btn-primary" [disabled]="loading">
+      <span *ngIf="loading" nz-icon nzType="loading" nzTheme="outline" style="margin-right: 6px;"></span>
+      {{ loading ? 'Saving...' : 'Save' }}
+    </button>
+  </div>
+</form>

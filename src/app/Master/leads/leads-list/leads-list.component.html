@@ -1,0 +1,186 @@
+<div class="city-master-page">
+  <!-- Page Header -->
+  <div class="page-header-flex">
+    <div>
+      <h2 class="page-title">Contact Us Leads Report</h2>
+    </div>
+    <div class="header-actions">
+      <!-- Search Input -->
+      <div class="search-input-wrapper">
+        <input
+          type="text"
+          [(ngModel)]="searchQuery"
+          (ngModelChange)="onSearch()"
+          placeholder="Search name, email, phone, city..."
+          class="premium-input table-search-input"
+        />
+        <span nz-icon nzType="search" nzTheme="outline" class="search-input-icon"></span>
+      </div>
+
+      <!-- Export CSV Button -->
+      <button class="btn-primary" (click)="exportCSV()" title="Export CSV Report">
+        <span nz-icon nzType="download" nzTheme="outline"></span>
+        Export CSV
+      </button>
+    </div>
+  </div>
+
+  <!-- Table Card Wrapper -->
+  <div class="table-card-wrapper">
+    <div class="premium-table-container">
+      <!-- Scrollable Table Wrapper -->
+      <div class="table-scroll-wrapper">
+        <table class="premium-table">
+          <thead>
+            <tr>
+              <th style="width: 160px;">Date & Time</th>
+              <th style="width: 170px;">Contact Person</th>
+              <th style="width: 220px;">Email</th>
+              <th style="width: 140px;">Phone Number</th>
+              <th style="width: 180px;">Subject / Service</th>
+              <th>Message Preview</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Loading state -->
+            <tr *ngIf="loading && leads.length === 0">
+              <td colspan="6" class="text-center empty-table-cell">
+                <span nz-icon nzType="loading" style="font-size: 20px; color: #722F37;"></span>
+                <div style="margin-top: 6px;">Loading Leads Report...</div>
+              </td>
+            </tr>
+
+            <!-- Data Rows -->
+            <tr *ngFor="let data of leads">
+              <!-- Date -->
+              <td class="date-cell">
+                {{ formatDate(data.createdAt) }}
+              </td>
+
+              <!-- Contact Person (Name) -->
+              <td class="contact-name-cell">
+                <div class="user-name-text">{{ data.name }}</div>
+              </td>
+
+              <!-- Email -->
+              <td class="state-cell">
+                {{ data.email || '-' }}
+              </td>
+
+              <!-- Phone Number -->
+              <td class="state-cell">
+                {{ data.phone || '-' }}
+              </td>
+
+              <!-- Subject -->
+              <td class="subject-cell">
+                <nz-tag [nzColor]="'magenta'">{{ data.subject }}</nz-tag>
+              </td>
+
+              <!-- Message Preview -->
+              <td class="state-cell">
+                <div class="testimonial-message-clamp" [title]="data.message !== '-' ? data.message : ''">
+                  {{ data.message || '-' }}
+                </div>
+              </td>
+            </tr>
+
+            <!-- Empty state -->
+            <tr *ngIf="!loading && leads.length === 0">
+              <td colspan="6" class="text-center empty-table-cell">
+                <nz-empty nzNotFoundImage="simple" nzNotFoundContent="No Contact Us lead submissions found"></nz-empty>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination Footer -->
+      <div class="table-pagination-footer" *ngIf="totalCount > 0">
+        <div class="pagination-info">
+          Showing {{ showingStart() }} to {{ showingEnd() }} of {{ totalCount }} leads
+        </div>
+        <div class="pagination-controls">
+          <button
+            type="button"
+            class="btn-pagination"
+            [disabled]="pageIndex === 1"
+            (click)="prevPage()"
+          >
+            Previous
+          </button>
+          <span class="pagination-current-page">
+            Page {{ pageIndex }} of {{ totalPages() }}
+          </span>
+          <button
+            type="button"
+            class="btn-pagination"
+            [disabled]="pageIndex === totalPages()"
+            (click)="nextPage()"
+          >
+            Next
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Lead Detail View Drawer -->
+<nz-drawer
+  *ngIf="drawerVisible"
+  [nzVisible]="drawerVisible"
+  nzPlacement="right"
+  [nzWidth]="480"
+  nzTitle="Contact Us Lead Details"
+  [nzClosable]="true"
+  (nzOnClose)="closeDrawer()"
+  class="city-drawer"
+>
+  <ng-container *nzDrawerContent>
+    <div class="drawer-detail-table-wrapper" *ngIf="selectedLead">
+      <table class="detail-key-value-table">
+        <tbody>
+          <tr>
+            <th style="width: 130px;">Date & Time</th>
+            <td>{{ formatDate(selectedLead.createdAt) }}</td>
+          </tr>
+          <tr>
+            <th>Name</th>
+            <td><strong>{{ selectedLead.name }}</strong></td>
+          </tr>
+          <tr>
+            <th>Email</th>
+            <td>{{ selectedLead.email || '-' }}</td>
+          </tr>
+          <tr>
+            <th>Phone / Mobile</th>
+            <td>{{ selectedLead.phone || '-' }}</td>
+          </tr>
+          <tr>
+            <th>City</th>
+            <td>{{ selectedLead.city || '-' }}</td>
+          </tr>
+          <tr>
+            <th>Subject / Form</th>
+            <td>
+              <nz-tag [nzColor]="'magenta'">{{ selectedLead.subject }}</nz-tag>
+            </td>
+          </tr>
+          <tr>
+            <th>Message</th>
+            <td class="drawer-message-cell">
+              {{ selectedLead.message || '-' }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="drawer-footer" style="margin-top: 24px;">
+        <button type="button" class="btn-secondary" style="width: 100%;" (click)="closeDrawer()">
+          Close
+        </button>
+      </div>
+    </div>
+  </ng-container>
+</nz-drawer>

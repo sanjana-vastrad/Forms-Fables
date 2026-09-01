@@ -1,0 +1,232 @@
+<div class="design-ideas-page">
+
+  <!-- PAGE HEADER ROW -->
+  <div class="page-header-flex">
+    <div class="header-titles">
+      <h2 class="page-title">Design Ideas</h2>
+    </div>
+    <div class="header-actions">
+      <button class="btn-primary" (click)="openAddDrawer()">
+        <span nz-icon nzType="plus" nzTheme="outline"></span>
+        Add New Design Idea
+      </button>
+    </div>
+  </div>
+
+  <!-- FILTER TABS & SEARCH BAR ROW -->
+  <div class="filter-controls-row">
+    <!-- Filter Tabs (Pill Style) -->
+    <div class="filter-tabs-pills">
+      <button
+        *ngFor="let tab of filterTabs"
+        type="button"
+        class="tab-pill-btn"
+        [class.active-pill]="activeTab === tab"
+        (click)="setFilterTab(tab)"
+      >
+        {{ tab }}
+      </button>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="search-input-wrapper">
+      <input
+        type="text"
+        [(ngModel)]="searchQuery"
+        (ngModelChange)="onSearch()"
+        placeholder="Search title, category, slug..."
+        class="premium-input table-search-input"
+      />
+      <span nz-icon nzType="search" nzTheme="outline" class="search-input-icon"></span>
+    </div>
+  </div>
+
+  <!-- DATA TABLE CARD -->
+  <div class="table-card-wrapper">
+    <div class="premium-table-container">
+      <div class="table-scroll-wrapper">
+        <table class="premium-table" style="min-width: 950px;">
+          <thead>
+            <tr>
+              <th style="width: 100px;" class="text-center">Actions</th>
+              <th class="sortable-header" (click)="toggleSort('title')">
+                <span class="header-label-flex">
+                  Design
+                  <span class="sort-icon-container">
+                    <span nz-icon nzType="caret-up" [class.active-sort]="sortBy === 'title' && sortOrder === 'ASC'"></span>
+                    <span nz-icon nzType="caret-down" [class.active-sort]="sortBy === 'title' && sortOrder === 'DESC'"></span>
+                  </span>
+                </span>
+              </th>
+              <th style="width: 140px;" class="sortable-header" (click)="toggleSort('category')">
+                <span class="header-label-flex">
+                  Category
+                  <span class="sort-icon-container">
+                    <span nz-icon nzType="caret-up" [class.active-sort]="sortBy === 'category' && sortOrder === 'ASC'"></span>
+                    <span nz-icon nzType="caret-down" [class.active-sort]="sortBy === 'category' && sortOrder === 'DESC'"></span>
+                  </span>
+                </span>
+              </th>
+              <th style="width: 130px;">Area</th>
+              <th style="width: 120px;" class="text-center">Images</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              *ngFor="let data of pagedDesigns"
+              class="clickable-table-row"
+              (click)="openEditDrawer(data)"
+              nz-tooltip
+              nzTooltipTitle="Click row to edit"
+            >
+              <!-- Actions (Edit + Delete) -->
+              <td class="text-center" (click)="$event.stopPropagation()">
+                <div class="table-actions-flex">
+                  <button
+                    type="button"
+                    class="table-action-btn edit-btn"
+                    (click)="openEditDrawer(data, $event)"
+                    nz-tooltip
+                    nzTooltipTitle="Edit Design Idea"
+                  >
+                    <span nz-icon nzType="edit" nzTheme="outline"></span>
+                  </button>
+                  <button
+                    type="button"
+                    class="table-action-btn delete-btn"
+                    nz-popconfirm
+                    nzPopconfirmTitle="Are you sure you want to delete this Design Idea?"
+                    nzOkText="Delete"
+                    nzCancelText="Cancel"
+                    (nzOnConfirm)="deleteDesign(data.id)"
+                    nz-tooltip
+                    nzTooltipTitle="Delete Design Idea"
+                  >
+                    <span nz-icon nzType="delete" nzTheme="outline"></span>
+                  </button>
+                </div>
+              </td>
+
+              <!-- Design (Thumbnail + Title + Slug) -->
+              <td class="design-info-cell">
+                <div class="design-thumbnail-flex">
+                  <div class="thumbnail-wrapper">
+                    <ng-container *ngIf="data.loadingThumbnail">
+                      <div class="flex items-center justify-center h-full w-full bg-gray-50 rounded" style="min-height: 40px; min-width: 40px;">
+                        <nz-spin nzSimple nzSize="small"></nz-spin>
+                      </div>
+                    </ng-container>
+                    <img
+                      *ngIf="!data.loadingThumbnail"
+                      [src]="data.thumbnail"
+                      [alt]="data.title"
+                      class="design-thumb-img"
+                      (error)="$any($event.target).src = 'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=120&q=80'"
+                    />
+                  </div>
+                  <div class="design-details flex-1">
+                    <div class="design-title-text">{{ data.title }}</div>
+                    <code class="design-slug-badge">{{ data.slug }}</code>
+                  </div>
+                </div>
+              </td>
+
+              <!-- Category -->
+              <td>
+                <span class="category-badge">{{ data.category }}</span>
+              </td>
+
+              <!-- Area -->
+              <td class="area-cell">
+                {{ data.area || '—' }}
+              </td>
+
+              <!-- Images Count -->
+              <td class="text-center font-medium images-count-cell">
+                <span nz-icon nzType="picture" nzTheme="outline" style="margin-right: 4px; color: #722F37;"></span>
+                {{ data.imagesCount || (data.images ? data.images.length : 1) }} / {{ data.imagesTotal || 10 }}
+              </td>
+            </tr>
+
+            <!-- Empty Table Row -->
+            <tr *ngIf="pagedDesigns.length === 0 && !loading">
+              <td colspan="5" class="text-center empty-table-cell">
+                <nz-empty nzNotFoundImage="simple" nzNotFoundContent="No Design Ideas found"></nz-empty>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- PAGINATION FOOTER -->
+      <div class="table-pagination-footer" *ngIf="filteredDesigns.length > 0">
+        <div class="pagination-info">
+          Showing {{ showingStart() }} to {{ showingEnd() }} of {{ filteredDesigns.length }} designs
+        </div>
+        <div class="pagination-controls">
+          <button
+            type="button"
+            class="btn-pagination"
+            [disabled]="pageIndex === 1"
+            (click)="prevPage()"
+          >
+            Previous
+          </button>
+          <span class="pagination-current-page">
+            Page {{ pageIndex }} of {{ totalPages() }}
+          </span>
+          <button
+            type="button"
+            class="btn-pagination"
+            [disabled]="pageIndex === totalPages()"
+            (click)="nextPage()"
+          >
+            Next
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE-IN DRAWER FORM (Wide 92% Width Over Screen) -->
+<nz-drawer
+  *ngIf="drawerVisible"
+  [nzVisible]="drawerVisible"
+  nzPlacement="right"
+  [nzWidth]="'92%'"
+  [nzTitle]="drawerHeaderTpl"
+  [nzFooter]="drawerFooterTpl"
+  [nzClosable]="true"
+  (nzOnClose)="closeDrawer()"
+  class="design-drawer"
+>
+  <ng-template #drawerHeaderTpl>
+    <div class="custom-drawer-header">
+      <h3 class="drawer-title">
+        {{ selectedDesign ? 'Edit Design Idea' : 'Add New Design Idea' }}
+      </h3>
+    </div>
+  </ng-template>
+
+  <ng-container *nzDrawerContent>
+    <app-add-design-idea
+      #addDesignComp
+      [designToEdit]="selectedDesign"
+      (onSave)="handleSaveSuccess()"
+      (onCancel)="closeDrawer()"
+    ></app-add-design-idea>
+  </ng-container>
+
+  <ng-template #drawerFooterTpl>
+    <div class="drawer-footer-actions-fixed">
+      <button type="button" class="btn-drawer-cancel" (click)="closeDrawer()">
+        Cancel
+      </button>
+      <button type="button" class="btn-drawer-save" [disabled]="isSaveLoading()" (click)="saveDesign()">
+        <span *ngIf="isSaveLoading()" nz-icon nzType="loading" style="margin-right: 6px;"></span>
+        Save Design
+      </button>
+    </div>
+  </ng-template>
+</nz-drawer>

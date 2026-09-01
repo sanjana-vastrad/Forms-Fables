@@ -39,6 +39,8 @@
                   </span>
                 </span>
               </th>
+              <th>Parent</th>
+              <th>Icon</th>
               <th>Slug</th>
               <th>Route Path</th>
               <th>Description</th>
@@ -63,6 +65,22 @@
 
               <!-- Name -->
               <td class="form-name-cell">{{ data.name }}</td>
+
+              <!-- Parent -->
+              <td>
+                <span [class.muted-text]="!data.parentId || data.parentId === 'null'">
+                  {{ getParentName(data.parentId) }}
+                </span>
+              </td>
+
+              <!-- Icon -->
+              <td>
+                <span *ngIf="data.icon" style="display: inline-flex; align-items: center; gap: 6px;">
+                  <span nz-icon [nzType]="data.icon" nzTheme="outline"></span>
+                  <code>{{ data.icon }}</code>
+                </span>
+                <span *ngIf="!data.icon" class="muted-text">—</span>
+              </td>
 
               <!-- Slug -->
               <td>
@@ -102,7 +120,7 @@
 
             <!-- Empty Table Row -->
             <tr *ngIf="forms.length === 0 && !loading">
-              <td colspan="7" class="text-center empty-table-cell">
+              <td colspan="9" class="text-center empty-table-cell">
                 <nz-empty nzNotFoundImage="simple"></nz-empty>
               </td>
             </tr>
@@ -156,6 +174,7 @@
     <app-add-form
       [formToEdit]="selectedForm"
       [nextDisplayOrder]="nextDisplayOrder"
+      [parentFormOptions]="allFormsForLookup"
       (onSave)="handleSaveSuccess()"
       (onCancel)="closeDrawer()"
     ></app-add-form>
